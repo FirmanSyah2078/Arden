@@ -58,9 +58,6 @@ export default function Home() {
   return (
     <>
       <style>{`
-        body { 
-          background-color: #000000 !important; 
-        }
         @keyframes scroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-100%); }
@@ -71,9 +68,14 @@ export default function Home() {
       `}
       </style>
 
-      <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 relative overflow-hidden flex flex-col">
+      <div className="min-h-screen text-white selection:bg-indigo-500/30 relative overflow-hidden flex flex-col">
 
-        <VantaBackground />
+        {/* --- PERBAIKAN 1: LAYER VANTA --- */}
+        {/* Bungkus Vanta dalam div absolute dengan z-0. 
+            Ini membuatnya duduk DI ATAS body hitam, tapi DI BAWAH konten (z-10) */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+            <VantaBackground />
+        </div>
 
         {/* --- NAVBAR --- */}
         <header className="absolute top-0 left-0 right-0 container mx-auto flex items-center justify-between py-6 px-4 z-50">

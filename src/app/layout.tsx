@@ -29,6 +29,16 @@ const montserrat = localFont({
   weight: "100 900",
 });
 
+// 4. Plus Jakarta Sans (BARU - Font Tambahan)
+const plusJakarta = localFont({
+  src: [
+    { path: "../fonts/PlusJakartaSans-VariableFont_wght.ttf", style: "normal" },
+    { path: "../fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf", style: "italic" },
+  ],
+  variable: "--font-plus-jakarta", // Nama variabel CSS baru
+  weight: "200 800",
+});
+
 export const metadata: Metadata = {
   title: "ARDEN",
   description: "Sistem Absensi Karakter Siswi",
@@ -40,11 +50,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      {/* Gabungkan semua variable di className body */}
-      {/* 'font-sans' di sini akan otomatis merujuk ke Inter karena settingan tailwind nanti */}
+    <html lang="en" className="dark">
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} ${montserrat.variable} font-sans antialiased`}
+        className={`
+          ${inter.variable} 
+          ${spaceGrotesk.variable} 
+          ${montserrat.variable} 
+          ${plusJakarta.variable} 
+          font-sans antialiased bg-[#000000] text-white selection:bg-indigo-500/30
+        `}
       >
         {children}
       </body>
