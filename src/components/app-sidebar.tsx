@@ -1,156 +1,67 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
+  LayoutDashboard,
+  Database,
+  School,
+  FileText,
   Settings2,
-  SquareTerminal,
+  BookOpen,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
+// --- DATA MENU (ENGLISH VERSION) ---
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Admin ARDEN",
+    email: "admin@man-blitar.sch.id",
+    avatar: "", 
   },
-  teams: [
+  Dashboard: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      title: "Home",
+      url: "/dashboard",
+      icon: LayoutDashboard,
     },
     {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
+      title: "Classes", // Kelas -> Classes
+      url: "/dashboard/class",
+      icon: School,
     },
     {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      title: "Database",
+      url: "/dashboard/database",
+      icon: Database,
+    },
+    {
+      title: "Recapitulation", // Rekapitulasi -> Summary (Lebih pendek & pas di UI)
+      url: "/dashboard/rekapitulasi",
+      icon: FileText,
     },
   ],
-  navMain: [
+  system: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
+      title: "Settings", // Pengaturan -> Settings
+      url: "/dashboard/settings",
       icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      title: "Documentation", // Dokumentasi -> Documentation
+      url: "/dashboard/docs",
+      icon: BookOpen,
     },
   ],
 }
@@ -159,12 +70,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              {/* LOGO: Menggunakan variabel global (Putih/Hitam) */}
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-(--logo-fg) text-(--logo-bg)">
+                {/* Gunakan Image component pointing ke file di folder public */}
+                <Image 
+                  src="/icon.ico"  // Pastikan file icon.ico ada di folder public
+                  alt="ARDEN Logo" 
+                  width={32} 
+                  height={32} 
+                  className="size-5 object-contain" // object-contain agar gambar tidak gepeng
+                />
+              </div>
+              <div className="text-left text-sm leading-tight">
+                <span className="truncate font-bold text-gray-200">ARDEN</span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {/* Panggil NavMain dengan Label Bahasa Inggris */}
+        <NavMain label="Dashboard" items={data.Dashboard} />
+        <NavMain label="System" items={data.system} />
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>

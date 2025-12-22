@@ -15,6 +15,13 @@
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Mapping Warna Baru untuk Cycle Quality Chart */
+  --color-minimal: var(--minimal);
+  --color-standard: var(--standard);
+  --color-maximal: var(--maximal);
+  --color-over: var(--over);
+  --color-sholat: var(--sholat);
   
   /* Mapping Warna Dashboard ke Tailwind */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -53,6 +60,7 @@
   --color-mobile-surface: var(--mobile-surface);
   --color-mobile-border: var(--mobile-border);
   --color-mobile-muted: var(--mobile-muted);
+
 }
 
 /* --- ANIMASI & UTILITIES --- */
@@ -64,7 +72,40 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .sidebar-shine {
+    position: relative;
+    overflow: hidden;
+  }
   
+  .sidebar-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    transform: skewX(-20deg);
+    transition: left 0.5s;
+    pointer-events: none;
+  }
+
+  /* Efek jalan saat hover atau active */
+  .sidebar-shine:hover::before,
+  .sidebar-shine[data-active="true"]::before {
+    animation: shine-anim 1.5s infinite;
+  }
+}
+
+@keyframes shine-anim {
+  0% { left: -100%; }
+  100% { left: 200%; }
 }
 
 /* --- LOGIKA WARNA (THE MAGIC FIX) --- */
@@ -95,6 +136,8 @@
   --border: oklch(1 0 0 / 10%);            /* Border tipis transparan */
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
+  --logo-bg: oklch(0.985 0 0);  /* Background Kotak (Misal: Putih) */
+  --logo-fg: oklch(24.354% 0.00003 271.152);  /* Warna Icon/Huruf (Misal: Hitam) */
   
   /* Charts & Sidebar (Dark) */
   --chart-1: oklch(0.488 0.243 264.376);
@@ -104,8 +147,8 @@
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(70.826% 0.00346 15.958);            /* Putih Bersih */
+  --sidebar-primary-foreground: oklch(91.279% 0.0001 271.152); /* Hitam Pekat */
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
@@ -117,6 +160,13 @@
   --mobile-surface: #27272A;
   --mobile-border: #3F3F3F;
   --mobile-muted: #B3B3B3;
+
+  /* WARNA KHUSUS CYCLE QUALITY (OKLCH Version) */
+  --minimal: oklch(0.707 0.165 254.624);
+  --standard: oklch(0.633 0.188 163.653);
+  --maximal: oklch(0.769 0.188 70.08);
+  --over: oklch(0.627 0.194 27.392);
+  --sholat: oklch(0.25 0 0); /* Abu-abu Gelap */
 }
 
 /* OPSIONAL: LIGHT MODE

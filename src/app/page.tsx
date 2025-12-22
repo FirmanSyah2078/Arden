@@ -134,7 +134,7 @@ export default function Home() {
             <p className="text-gray-400 max-w-3xl mx-auto mb-10 text-base md:text-ms drop-shadow-md leading-relaxed">
               Attendance is just the beginning.
               <span className="text-indigo-300 font-semibold mx-1">
-                ARDEN (Automated Record & Data Engine)
+                ARDEN (Automated Record and Data Engine)
               </span>
               is here to build an ecosystem of honesty and discipline. Through QR Code validation,
               we monitor students health cycles while closing loopholes for manipulation,
