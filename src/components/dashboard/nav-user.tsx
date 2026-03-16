@@ -51,10 +51,12 @@ export function NavUser({
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          {/* 🔥 FIX SKELETON: Panah dihapus agar seragam dengan nav-role */}
           <SidebarMenuButton size="lg" className="opacity-50 cursor-default hover:bg-transparent">
-            <div className="h-8 w-8 rounded-lg bg-white/10 animate-pulse" />
-            <div className="grid flex-1 gap-1.5 text-left text-sm leading-tight ml-1">
+            {/* 🔥 FIX 1: Tambahkan shrink-0 agar tidak gepeng */}
+            <div className="h-8 w-8 shrink-0 rounded-lg bg-white/10 animate-pulse" />
+            
+            {/* 🔥 FIX 2: Tambahkan group-data-[collapsible=icon]:hidden agar hilang saat ditutup */}
+            <div className="grid flex-1 gap-1.5 text-left text-sm leading-tight ml-1 group-data-[collapsible=icon]:hidden">
               <div className="h-3 w-20 rounded bg-white/10 animate-pulse" />
               <div className="h-2 w-12 rounded bg-white/10 animate-pulse" />
             </div>
@@ -73,16 +75,16 @@ export function NavUser({
               size="lg"
               className="select-none group/trigger transition-all duration-500 ease-(--transition-timing-function-smooth) hover:bg-white/5 focus-visible:ring-0 outline-none border-none bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-sidebar-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              {/* 🔥 FIX 3: Tambahkan shrink-0 pada Avatar asli */}
+              <Avatar className="h-8 w-8 shrink-0 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                {/* 🔥 FIX AVATAR: Background gelap elegan jika foto tidak ada */}
                 <AvatarFallback className="rounded-lg bg-white/10 text-white font-bold border border-white/5">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               
-              {/* 🔥 FIX FONT: Disamakan dengan gaya nav-role */}
-              <div className="grid flex-1 text-left text-sm leading-tight ml-1">
+              {/* 🔥 FIX 4: Sembunyikan teks secara absolut saat sidebar ditutup */}
+              <div className="grid flex-1 text-left text-sm leading-tight ml-1 group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-bold text-white tracking-tight">
                   {user.name}
                 </span>
@@ -91,7 +93,8 @@ export function NavUser({
                 </span>
               </div>
               
-              <div className="ml-auto flex size-6 shrink-0 items-center justify-center">
+              {/* 🔥 FIX 5: Sembunyikan panah saat sidebar ditutup */}
+              <div className="ml-auto flex size-6 shrink-0 items-center justify-center group-data-[collapsible=icon]:hidden">
                 <div className="flex flex-col items-center justify-center will-change-transform transition-transform duration-500 ease-(--transition-timing-function-snappy) group-data-[state=open]/trigger:rotate-180">
                   <ChevronUp className="size-3.5 -mb-0.75 text-muted-foreground will-change-transform transition-transform duration-500 ease-(--transition-timing-function-snappy) group-data-[state=open]/trigger:-rotate-180" />
                   <ChevronDown className="size-3.5 -mt-0.75 text-muted-foreground will-change-transform transition-transform duration-500 ease-(--transition-timing-function-snappy) group-data-[state=open]/trigger:-rotate-180" />

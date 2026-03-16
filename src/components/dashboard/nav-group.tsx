@@ -82,7 +82,8 @@ function NavCollapsibleItem({ item }: { item: NavItemType }) {
             tooltip={item.title} 
             isActive={item.isActive && !isOpen}
             className={cn(
-              "select-none transition-colors duration-300 hover:bg-white/5 focus-visible:ring-0 outline-none border-none bg-transparent data-[state=open]:bg-transparent",
+              // 🔥 FIX BG: data-[active=true]:bg-white/5 menyamakan bg aktif dengan hover
+              "select-none transition-colors duration-300 hover:bg-white/5 data-[active=true]:bg-white/5 focus-visible:ring-0 outline-none border-none bg-transparent data-[state=open]:bg-transparent",
               !(item.isActive && !isOpen) && "sidebar-shine"
             )}
           >
@@ -96,9 +97,9 @@ function NavCollapsibleItem({ item }: { item: NavItemType }) {
                 )} 
               />
             )}
-            {/* 🔥 TYPOGRAPHY FIX: text-sm, font-medium, tracking-tight */}
+            {/* 🔥 FIX TEXT: Hapus tracking-tight agar jarak huruf normal dan lega */}
             <span className={cn(
-              "text-sm font-medium tracking-tight transition-colors duration-300", 
+              "text-sm font-medium transition-colors duration-300", 
               (item.isActive || isOpen) ? "text-white" : "text-sidebar-foreground/70"
             )}>
               {item.title}
@@ -114,14 +115,15 @@ function NavCollapsibleItem({ item }: { item: NavItemType }) {
                   asChild 
                   isActive={subItem.isActive} 
                   className={cn(
-                    "select-none transition-colors duration-300 hover:bg-white/5 focus-visible:ring-0 outline-none border-none",
+                    // 🔥 FIX BG SUB-MENU: Disamakan dengan hover
+                    "select-none transition-colors duration-300 hover:bg-white/5 data-[active=true]:bg-white/5 focus-visible:ring-0 outline-none border-none",
                     !subItem.isActive && "sidebar-shine"
                   )}
                 >
                   <Link href={subItem.url || "#"}>
-                    {/* 🔥 TYPOGRAPHY FIX SUB-MENU */}
+                    {/* 🔥 FIX TEXT SUB-MENU: Hapus tracking-tight */}
                     <span className={cn(
-                      "text-sm font-medium tracking-tight transition-colors duration-300", 
+                      "text-sm font-medium transition-colors duration-300", 
                       subItem.isActive ? "text-white" : "text-sidebar-foreground/70 hover:text-white"
                     )}>
                       {subItem.title}
@@ -152,7 +154,8 @@ export function NavGroup({
   return (
     <SidebarGroup>
       {label && (
-        <SidebarGroupLabel className="select-none text-sidebar-foreground/50 font-sans text-[11px] uppercase tracking-[0.2em] font-semibold">
+        // 🔥 FIX LABEL: capitalize, text-xs, font-medium, dan hapus tracking-[0.2em]
+        <SidebarGroupLabel className="select-none text-sidebar-foreground/50 font-sans text-xs capitalize font-medium">
           {label}
         </SidebarGroupLabel>
       )}
@@ -175,7 +178,8 @@ export function NavGroup({
                   tooltip={item.title}
                   isActive={item.isActive}
                   className={cn(
-                    "select-none transition-colors duration-300 hover:bg-white/5 focus-visible:ring-0 outline-none border-none",
+                    // 🔥 FIX BG
+                    "select-none transition-colors duration-300 hover:bg-white/5 data-[active=true]:bg-white/5 focus-visible:ring-0 outline-none border-none",
                     !item.isActive && "sidebar-shine"
                   )}
                 >
@@ -190,9 +194,9 @@ export function NavGroup({
                          )} 
                        />
                     )}
-                    {/* 🔥 TYPOGRAPHY FIX */}
+                    {/* 🔥 FIX TEXT */}
                     <span className={cn(
-                      "text-sm font-medium tracking-tight transition-colors duration-300", 
+                      "text-sm font-medium transition-colors duration-300", 
                       item.isActive ? "text-white" : "text-sidebar-foreground/70"
                     )}>
                       {item.title}
@@ -245,7 +249,8 @@ export function NavGroup({
                 tooltip={item.title}
                 isActive={item.isActive}
                 className={cn(
-                  "select-none transition-colors duration-300 hover:bg-white/5 focus-visible:ring-0 outline-none border-none",
+                  // 🔥 FIX BG
+                  "select-none transition-colors duration-300 hover:bg-white/5 data-[active=true]:bg-white/5 focus-visible:ring-0 outline-none border-none",
                   !item.isActive && "sidebar-shine"
                 )}
               >
@@ -260,9 +265,9 @@ export function NavGroup({
                       )} 
                     />
                   )}
-                  {/* 🔥 TYPOGRAPHY FIX */}
+                  {/* 🔥 FIX TEXT */}
                   <span className={cn(
-                    "text-sm font-medium tracking-tight transition-colors duration-300", 
+                    "text-sm font-medium transition-colors duration-300", 
                     item.isActive ? "text-white" : "text-sidebar-foreground/70"
                   )}>
                     {item.title}

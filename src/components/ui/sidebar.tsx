@@ -389,7 +389,10 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        // 🔥 FIX SCROLLBAR GLITCH: 
+        // Ganti 'overflow-auto' menjadi 'overflow-y-auto overflow-x-hidden'
+        // Opsional: Tambahkan 'no-scrollbar' (yang kita buat di global.css kemarin) agar scrollbar vertikalnya juga tersembunyi tapi tetap bisa di-scroll pakai mouse/touchpad!
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden no-scrollbar group-data-[collapsible=icon]:overflow-hidden",
         className
       )}
       {...props}

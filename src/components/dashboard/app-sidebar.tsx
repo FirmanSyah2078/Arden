@@ -14,6 +14,11 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar"
 
 import { useDashboard } from "@/logic/dashboard/system/context"
@@ -85,13 +90,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         {!isReady ? (
-          <div className="flex items-center gap-2 p-2">
-            <div className="size-8 shrink-0 rounded-lg bg-white/10 animate-pulse" />
-            <div className="flex flex-col gap-1.5 w-full">
-              <div className="h-3 w-20 rounded bg-white/10 animate-pulse" />
-              <div className="h-2 w-12 rounded bg-white/10 animate-pulse" />
-            </div>
-          </div>
+          // 🔥 FIX SKELETON ROLE: Pakai komponen resmi agar patuh saat sidebar tertutup
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" className="opacity-50 cursor-default hover:bg-transparent">
+                <div className="size-8 shrink-0 rounded-lg bg-white/10 animate-pulse" />
+                <div className="grid flex-1 gap-1.5 text-left text-sm leading-tight ml-1">
+                  <div className="h-3 w-20 rounded bg-white/10 animate-pulse" />
+                  <div className="h-2 w-12 rounded bg-white/10 animate-pulse" />
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         ) : (
           <NavRole roles={systemRoles} />
         )}
@@ -99,12 +109,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         {!isReady ? (
-          <div className="flex flex-col gap-4 p-4">
-             <div className="h-3 w-24 bg-white/10 rounded animate-pulse mb-2" />
-             <div className="h-8 w-full bg-white/5 rounded-md animate-pulse" />
-             <div className="h-8 w-full bg-white/5 rounded-md animate-pulse" />
-             <div className="h-8 w-full bg-white/5 rounded-md animate-pulse" />
-          </div>
+          // 🔥 FIX SKELETON MENU: Pakai komponen resmi agar teks otomatis hilang saat tertutup
+          <SidebarGroup>
+            <SidebarGroupLabel>
+              <div className="h-2 w-20 bg-white/10 rounded animate-pulse" />
+            </SidebarGroupLabel>
+            <SidebarMenu>
+              {[1, 2, 3, 4].map((i) => (
+                <SidebarMenuItem key={i}>
+                  <SidebarMenuButton className="opacity-50 cursor-default hover:bg-transparent">
+                    <div className="size-4 shrink-0 rounded bg-white/10 animate-pulse" />
+                    <div className="h-3 w-24 rounded bg-white/10 animate-pulse" />
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
         ) : (
           // Render menu yang sudah dicerdaskan oleh logika di atas
           currentMenus.map((group) => (
