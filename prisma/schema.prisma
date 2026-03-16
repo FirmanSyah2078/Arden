@@ -43,12 +43,11 @@ model tbl_kelas {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model tbl_log_aktivitas {
-  id_log        BigInt     @id @default(autoincrement())
+  id_log        BigInt    @id @default(autoincrement())
   id_user       BigInt?
-  aktivitas     String?    @db.VarChar(255)
-  tanggal_waktu DateTime?  @default(now()) @db.Timestamptz(6)
+  aktivitas     String?   @db.VarChar(255)
+  tanggal_waktu DateTime? @default(now()) @db.Timestamptz(6)
   keterangan    String?
-  tbl_users     tbl_users? @relation(fields: [id_user], references: [id_user], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -135,14 +134,13 @@ model tbl_siswi {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model tbl_users {
-  id_user           BigInt              @id @default(autoincrement())
-  nama_lengkap      String              @db.VarChar(100)
-  username          String              @unique @db.VarChar(50)
-  password          String              @db.VarChar(255)
-  role              String?             @db.VarChar(20)
-  last_login        DateTime?           @db.Timestamptz(6)
-  foto_url          String?
-  status_akun       String?             @default("Aktif") @db.VarChar
-  status_kehadiran  String?             @default("Offline")
-  tbl_log_aktivitas tbl_log_aktivitas[]
+  id_user      BigInt    @id @default(autoincrement())
+  nama_lengkap String    @db.VarChar(100)
+  username     String    @unique @db.VarChar(50)
+  password     String    @db.VarChar(255)
+  role         String?   @db.VarChar(20)
+  last_login   DateTime? @db.Timestamptz(6)
+  foto_url     String?
+  is_active    Boolean   @default(true)
+  is_online    Boolean   @default(false)
 }

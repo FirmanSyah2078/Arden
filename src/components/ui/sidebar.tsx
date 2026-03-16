@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
+import { PanelLeftIcon, ChevronLeft } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -280,7 +280,7 @@ function SidebarTrigger({
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, state } = useSidebar() 
 
   return (
     <button
@@ -289,18 +289,33 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       aria-label="Toggle Sidebar"
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Toggle Sidebar"
+      // 🔥 HAPUS: title="Toggle Sidebar" agar tooltip bawaan browser yang kaku tidak muncul
       className={cn(
-        "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 sm:flex", // Perubahan di sini: after:w-[2px] -> after:w-0.5
-        "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",
-        "[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize",
+        "group/rail absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear sm:flex items-center justify-center",
+        "group-data-[side=left]:-right-4 group-data-[side=right]:left-0",
+        
+        "after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 hover:after:bg-sidebar-border",
+        
+        // 🔥 KURSOR ELEGAN: Kita hapus cursor-w-resize dan ganti jadi kursor tangan biasa (pointer)
+        "cursor-pointer",
+        
         "hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
         "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
         "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
         className
       )}
       {...props}
-    />
+    >
+      {/* IKON PANAH (MUNCUL SAAT DI-HOVER) */}
+      <div className="absolute z-30 flex h-6 w-4 items-center justify-center rounded-sm border border-sidebar-border bg-background opacity-0 transition-all duration-200 group-hover/rail:opacity-100 shadow-sm">
+        <ChevronLeft 
+          className={cn(
+            "h-3 w-3 text-sidebar-foreground transition-transform duration-200", 
+            state === "collapsed" && "rotate-180"
+          )} 
+        />
+      </div>
+    </button>
   )
 }
 

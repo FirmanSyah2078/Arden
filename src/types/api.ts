@@ -78,7 +78,8 @@ export interface User {
   role: Role;
   last_login: string | null;
   foto_url: string | null;
-  status_akun: string;
+  is_active: boolean; // 🔥 Diubah ke boolean
+  is_online: boolean; // 🔥 Diubah ke boolean
 }
 
 export interface Class {

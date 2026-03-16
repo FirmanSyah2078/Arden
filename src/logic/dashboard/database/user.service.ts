@@ -11,9 +11,10 @@ export class UserService {
         nama_lengkap: true,
         username: true,
         role: true,
-        status_akun: true,
         foto_url: true,
-        last_login: true
+        last_login: true,
+        is_active: true, 
+        is_online: true,
       },
       orderBy: { id_user: 'asc' }
     });
@@ -30,7 +31,6 @@ export class UserService {
         nama_lengkap: true,
         username: true,
         role: true,
-        status_akun: true,
         last_login: true,
         foto_url: true
       }
@@ -54,7 +54,7 @@ export class UserService {
         username: data.username,
         password: hashedPassword,
         role: data.role || 'Pelaksana',
-        status_akun: 'Aktif'
+        is_active: true, // 🔥 Default true
       }
     });
 
@@ -68,7 +68,11 @@ export class UserService {
     const payload: any = {};
     if (data.nama_lengkap) payload.nama_lengkap = data.nama_lengkap;
     if (data.role) payload.role = data.role;
-    if (data.status_akun) payload.status_akun = data.status_akun;
+    
+    // Konversi nilai 'true'/'false' dari Dropdown (Select UI) menjadi boolean beneran
+    if (data.is_active !== undefined) {
+      payload.is_active = String(data.is_active) === 'true';
+    }
 
     const updated = await prisma.tbl_users.update({
       where: { id_user: id },

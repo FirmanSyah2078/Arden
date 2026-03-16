@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-import { ShieldCheck, Circle, Pencil, Trash2, KeyRound, UserCog } from "lucide-react"
+// 🔥 IMPORT ICON TAMBAHAN UNTUK BADGE
+import { ShieldCheck, Circle, Pencil, Trash2, KeyRound, UserCog, UserCheck, UserX } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { User } from "@/types/api"
 
@@ -28,11 +29,9 @@ export function UsersDataTable({ data }: { data: User[] }) {
   const [deleteUser, setDeleteUser] = useState<User | null>(null)
   const [resetUser, setResetUser] = useState<User | null>(null)
   
-  // State untuk menyimpan data user yang sedang login
   const [currentUser, setCurrentUser] = useState<User | null>(null)
 
   useEffect(() => {
-    // Fetch data "Who am I?"
     fetch("/api/database/user/me", { cache: "no-store" })
       .then(res => res.json())
       .then(res => { 
@@ -60,13 +59,17 @@ export function UsersDataTable({ data }: { data: User[] }) {
       options: [{label:"Admin", value:"Admin"}, {label:"Pemantau", value:"Pemantau"}, {label:"Pelaksana", value:"Pelaksana"}] 
     },
     {
-      name: "status_akun", label: "Status", type: "select",
-      options: [{label:"Aktif", value:"Aktif"}, {label:"Nonaktif", value:"Nonaktif"}]
+      name: "is_active", label: "Account Status", type: "select",
+      options: [{label:"Active", value:"true"}, {label:"Restricted / Banned", value:"false"}]
     }
   ]
 
+  // --- STYLE UNTUK BADGE GLOBAL (Agar Seragam) ---
+  const uniformBadgeClass = "gap-1.5 border-white/5 bg-[#121212] hover:bg-[#1a1a1a] text-[10px] font-semibold text-gray-300 py-1 transition-colors"
+
   // --- COLUMNS ---
   const columns: ColumnDef<User>[] = [
+    // 1. PROFILE (Tetap tidak diubah, nyatu dengan Name)
     {
       id: "profile",
       meta: { className: "w-[50px] pr-0 pl-6" },
@@ -82,85 +85,107 @@ export function UsersDataTable({ data }: { data: User[] }) {
         </div>
       ),
     },
+    // 2. NAME (Dibiarkan elastis untuk menyerap sisa layar)
     {
+      accessorKey: "nama_lengkap",
       id: "Name",
       header: "Name",
-      meta: { className: "pl-3 text-left" },
+      meta: { className: "pl-3 text-left min-w-[180px]" }, 
       cell: ({ row }) => (
         <span className="text-sm text-white tracking-tight font-medium">{row.original.nama_lengkap}</span>
       ),
     },
+    // 3. USERNAME (Dikunci di 140px agar tidak terlalu lebar)
     {
-      accessorKey: "Username",
+      accessorKey: "username",
+      id: "Username",
       header: "Username",
-      meta: { className: "text-left px-4" },
+      meta: { className: "text-left px-4 w-[140px]" }, 
       cell: ({ row }) => (
-        <span className="text-xs text-gray-500 font-mono font-bold tracking-tight">@{row.original.username}</span>
+        <span className="text-xs text-gray-500 font-mono font-medium tracking-tight">@{row.original.username}</span>
       ),
     },
+    // 4. ROLE (Dikunci di 130px)
     {
-      accessorKey: "Role",
+      accessorKey: "role",
+      id: "Role",
       header: "Role",
-      meta: { className: "text-center px-4" },
+      meta: { className: "text-center px-4 w-[130px]" },
       cell: ({ row }) => (
         <div className="flex justify-center">
-          <Badge variant="outline" className="gap-1.5 border-white/5 bg-white/5 text-[10px] font-bold text-gray-400">
-            <ShieldCheck className="h-3 w-3 text-indigo-400" />
+          <Badge variant="outline" className={uniformBadgeClass}>
+            <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
             {row.original.role}
           </Badge>
         </div>
       ),
     },
+    // 5. ACCOUNT (Dikunci di 140px)
     {
-      accessorKey: "Status",
-      header: "Status",
-      meta: { className: "text-center px-4" },
+      accessorKey: "is_active", 
+      id: "Account",            
+      header: "Account",
+      meta: { className: "text-center px-4 w-[140px]" },
       cell: ({ row }) => {
-        const isOnline = row.original.status_akun === "Online"
+        const isActive = row.original.is_active;
         return (
           <div className="flex justify-center">
-            <Badge className={cn("rounded-md border-none text-[10px] font-bold pl-1.5 pr-2 py-0.5", isOnline ? "bg-emerald-500/10 text-emerald-500" : "bg-zinc-500/10 text-zinc-500")}>
-              <Circle className={cn("h-1.5 w-1.5 mr-1.5 fill-current", isOnline ? "animate-pulse" : "")} />
-              {row.original.status_akun || "OFFLINE"}
+            <Badge variant="outline" className={uniformBadgeClass}>
+              {isActive ? (
+                <><UserCheck className="h-3.5 w-3.5 text-emerald-500" /> ACTIVE</>
+              ) : (
+                <><UserX className="h-3.5 w-3.5 text-red-500" /> RESTRICTED</>
+              )}
             </Badge>
           </div>
         )
       },
     },
+    // 6. PRESENCE (Dikunci di 130px)
+    {
+      accessorKey: "is_online",
+      id: "Presence",
+      header: "Presence",
+      meta: { className: "text-center px-4 w-[130px]" },
+      cell: ({ row }) => {
+        const isOnline = row.original.is_online;
+        return (
+          <div className="flex justify-center">
+            <Badge variant="outline" className={uniformBadgeClass}>
+              <Circle className={cn("h-2.5 w-2.5 fill-current", isOnline ? "text-emerald-500 animate-pulse" : "text-gray-600")} />
+              {isOnline ? "ONLINE" : "OFFLINE"}
+            </Badge>
+          </div>
+        )
+      },
+    },
+    // 7. ACTIONS (Dikunci di 140px agar icon tidak dempet)
     {
       id: "actions",
       header: "Action",
-      meta: { className: "text-center px-4" },
+      meta: { className: "text-center px-4 w-[140px]" },
       cell: ({ row }) => {
         const targetUser = row.original;
         
-        // 1. Cek apakah ini diri sendiri?
-        // Kita bandingkan username karena ID kadang number/string beda
         const isSelf = currentUser?.username === targetUser.username;
-
-        // 2. Cek apakah ini sesama Admin?
         const isPeerAdmin = currentUser?.role === 'Admin' && targetUser.role === 'Admin';
 
-        // LOGIKA TAMPILAN
         if (isSelf) {
           return (
             <div className="flex justify-center">
-               <Badge variant="outline" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 text-[10px] px-2 py-1 gap-1">
-                  <UserCog className="w-3 h-3" /> YOUR ACCOUNT
+               <Badge variant="outline" className="bg-[#121212] text-indigo-400 border-white/5 text-[10px] px-2 py-1 gap-1.5 shadow-[0_0_10px_rgba(99,102,241,0.1)]">
+                  <UserCog className="w-3.5 h-3.5" /> YOUR ACCOUNT
                </Badge>
             </div>
           )
         }
 
-        // Logic disable tombol
-        // Reset password tetap boleh untuk sesama admin (opsional, set true jika mau disable juga)
         const disableEditDelete = isPeerAdmin; 
 
         return (
           <TooltipProvider delayDuration={0}>
             <div className="flex justify-center gap-1">
               
-              {/* EDIT BUTTON */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
@@ -168,32 +193,30 @@ export function UsersDataTable({ data }: { data: User[] }) {
                     size="icon" 
                     disabled={disableEditDelete}
                     onClick={() => setEditUser(targetUser)} 
-                    className={cn("h-7 w-7", disableEditDelete ? "opacity-30 cursor-not-allowed text-gray-600" : "hover:bg-blue-500/10 hover:text-blue-400")}
+                    className={cn("h-8 w-8", disableEditDelete ? "opacity-30 cursor-not-allowed text-gray-600" : "text-gray-400 hover:bg-white/5 hover:text-white")}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <Pencil className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-[#0a0a0a] border-white/10 text-white text-[10px]">
+                <TooltipContent className="bg-black border-white/10 text-white text-[10px]">
                   {disableEditDelete ? "Cannot edit fellow Admin" : "Edit User"}
                 </TooltipContent>
               </Tooltip>
 
-              {/* RESET PASSWORD (Bisa diedit logicnya kalau mau disable juga) */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     variant="ghost" 
                     size="icon" 
                     onClick={() => setResetUser(targetUser)} 
-                    className="h-7 w-7 hover:bg-amber-500/10 hover:text-amber-400"
+                    className="h-8 w-8 text-gray-400 hover:bg-amber-500/10 hover:text-amber-400"
                   >
-                    <KeyRound className="h-3.5 w-3.5" />
+                    <KeyRound className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-[#0a0a0a] border-white/10 text-white text-[10px]">Reset Password</TooltipContent>
+                <TooltipContent className="bg-black border-white/10 text-white text-[10px]">Reset Password</TooltipContent>
               </Tooltip>
 
-              {/* DELETE BUTTON */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
@@ -201,12 +224,12 @@ export function UsersDataTable({ data }: { data: User[] }) {
                     size="icon" 
                     disabled={disableEditDelete}
                     onClick={() => setDeleteUser(targetUser)} 
-                    className={cn("h-7 w-7", disableEditDelete ? "opacity-30 cursor-not-allowed text-gray-600" : "hover:bg-red-500/10 hover:text-red-400")}
+                    className={cn("h-8 w-8", disableEditDelete ? "opacity-30 cursor-not-allowed text-gray-600" : "text-gray-400 hover:bg-red-500/10 hover:text-red-400")}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-[#0a0a0a] border-white/10 text-white text-[10px]">
+                <TooltipContent className="bg-black border-white/10 text-white text-[10px]">
                   {disableEditDelete ? "Cannot delete fellow Admin" : "Delete User"}
                 </TooltipContent>
               </Tooltip>
@@ -242,7 +265,7 @@ export function UsersDataTable({ data }: { data: User[] }) {
           open={!!editUser} 
           onOpenChange={(open) => !open && setEditUser(null)} 
           title="Edit User Data"
-          endpoint="/api/database/user" // Pastikan endpoint ini mengarah ke file yang punya method PATCH
+          endpoint="/api/database/user"
           initialData={editUser as unknown as Record<string, unknown>}
           idField="id_user"
           fields={editFields}
@@ -264,10 +287,6 @@ export function UsersDataTable({ data }: { data: User[] }) {
           title="Delete User"
           itemName={deleteUser.nama_lengkap} 
           description={<span>Are you sure? This will permanently delete <b>{deleteUser.nama_lengkap}</b>.</span>}
-          // 🔥 PERHATIKAN: GenericDeleteDialog defaultnya kirim ?id=... ke endpoint
-          // Tapi routemu pakai dynamic [id]. 
-          // SOLUSI SEMENTARA: Kita ubah di delete-dialog.tsx agar support /api/user/[id]
-          // ATAU, karena kita pakai Generic, kita set endpoint API khusus di bawah ini
           endpoint="/api/database/user" 
           id={deleteUser.id_user}
         />

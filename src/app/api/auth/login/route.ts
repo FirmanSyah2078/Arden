@@ -41,6 +41,9 @@ export async function POST(req: Request) {
     })
 
   } catch (err) {
+
+    console.log("ALASAN GAGAL LOGIN:", err instanceof Error ? err.message : err);
+
     return NextResponse.json({
       status: 'fail',
       message: err instanceof Error ? err.message : 'Kesalahan server'

@@ -22,8 +22,9 @@ export default function RegisterPage() {
     role: "Admin" // Default Admin karena ini buat akun pertama
   })
 
+  // Perbaikan 1: Gunakan prev state agar data tidak tertimpa saat mengetik cepat
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -31,22 +32,29 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const res = await fetch("/api/user", {
+      const res = await fetch("/api/database/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       })
 
+      // Perbaikan 2: Cek apakah responnya benar-benar JSON (Mencegah Crash HTML 500)
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Terjadi kesalahan sistem pada server.");
+      }
+
       const json = await res.json()
 
-      if (!res.ok) {
+      // Perbaikan 3: Cek !res.ok ATAU json.status === 'fail' (Kadang API membalas 200 OK padahal gagal)
+      if (!res.ok || json.status === 'fail') {
         throw new Error(json.message || "Gagal mendaftar")
       }
 
       toast.success("Akun berhasil dibuat! Silakan login.")
-      router.push("/login") // Pastikan arahkan ke halaman login
+      router.push("/login") 
       
-    } catch (error: unknown) { // UBAH DISINI: 'any' jadi 'unknown'
+    } catch (error: unknown) { 
       const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan saat mendaftar";
       toast.error(errorMessage)
     } finally {
@@ -76,7 +84,9 @@ export default function RegisterPage() {
                 placeholder="Ex: Super Admin" 
                 className="bg-[#1a1a1a] border-white/10"
                 required
+                value={formData.nama_lengkap} // 🔥 WAJIB ADA (Controlled Input)
                 onChange={handleChange}
+                disabled={loading} // 🔥 Biar user tidak mengetik saat loading
               />
             </div>
 
@@ -89,7 +99,9 @@ export default function RegisterPage() {
                 placeholder="Ex: admin" 
                 className="bg-[#1a1a1a] border-white/10"
                 required
+                value={formData.username} // 🔥 WAJIB ADA
                 onChange={handleChange}
+                disabled={loading}
               />
             </div>
 
@@ -103,7 +115,9 @@ export default function RegisterPage() {
                 placeholder="******" 
                 className="bg-[#1a1a1a] border-white/10"
                 required
+                value={formData.password} // 🔥 WAJIB ADA
                 onChange={handleChange}
+                disabled={loading}
               />
             </div>
 
@@ -111,8 +125,9 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label>Role Access</Label>
               <Select 
-                defaultValue="Admin" 
-                onValueChange={(val) => setFormData({...formData, role: val})}
+                value={formData.role} // 🔥 Gunakan value, bukan defaultValue
+                onValueChange={(val) => setFormData((prev) => ({...prev, role: val}))}
+                disabled={loading}
               >
                 <SelectTrigger className="bg-[#1a1a1a] border-white/10">
                   <SelectValue placeholder="Pilih Role" />
@@ -133,7 +148,7 @@ export default function RegisterPage() {
           <CardFooter className="flex flex-col gap-3">
             <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create First Account
+              {loading ? "Membuat Akun..." : "Create First Account"}
             </Button>
             
             <p className="text-xs text-center text-gray-500">
