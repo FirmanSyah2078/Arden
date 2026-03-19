@@ -74,13 +74,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     })
   }));
 
-  const [userData, setUserData] = useState({ name: "Loading...", role: "...", avatar: "" })
+  const [userData, setUserData] = useState({ name: "Loading...", username: "...", avatar: "" })
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    const savedUsername = getCookie("user_username");
+    
     setUserData({
       name: getCookie("user_name") || "User ARDEN",
-      role: getCookie("user_role") || "Authenticated",
+      // 🔥 FIX: Pastikan kalau cookie-nya benar-benar kosong (""), dia tetap pakai fallback
+      username: savedUsername !== "" ? savedUsername : "admin_arden", 
       avatar: getCookie("user_photo") || "",
     })
     setMounted(true)

@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     cookieStore.set('auth_token', token, { ...cookieOptions, httpOnly: true }) // httpOnly = Aman dari XSS
     cookieStore.set('user_role', user.role || 'Pelaksana', cookieOptions)
     cookieStore.set('user_name', user.nama_lengkap, cookieOptions)
+    cookieStore.set('user_username', user.username, cookieOptions)
     if (user.foto_url) {
       cookieStore.set('user_photo', user.foto_url, cookieOptions)
     }
@@ -41,8 +42,6 @@ export async function POST(req: Request) {
     })
 
   } catch (err) {
-
-    console.log("ALASAN GAGAL LOGIN:", err instanceof Error ? err.message : err);
 
     return NextResponse.json({
       status: 'fail',

@@ -9,6 +9,7 @@ export async function POST() {
   cookieStore.delete('auth_token')
   cookieStore.delete('user_name')
   cookieStore.delete('user_photo')
+  cookieStore.delete('user_username')
 
   return NextResponse.json({ status: 'success', message: 'Berhasil logout' })
 }
