@@ -14,23 +14,22 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 
 import { useDashboard } from "@/logic/dashboard/system/context"
 import { getActiveBreadcrumb } from "@/logic/dashboard/system/navigation"
+import { cn } from "@/lib/utils" 
 
 export function DashboardHeader() {
   const pathname = usePathname(); 
-  const { activeRole, isReady } = useDashboard(); // 🔥 TAMBAHKAN isReady DI SINI
+  const { activeRole, isReady } = useDashboard();
   
-  // 🔥 OTOMATISASI MAGIS: Mencocokkan URL dengan data menu role saat ini
   const activePath = getActiveBreadcrumb(pathname, activeRole.name);
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b border-white/5 bg-[#0a0a0a]/50 backdrop-blur-md">
+    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 bg-background/80 backdrop-blur-md">
       <div className="flex items-center gap-2 px-4 w-full">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4 bg-white/10" />
         
         <Breadcrumb>
           <BreadcrumbList>
-            {/* 🔥 FIX SKELETON: Dibungkus BreadcrumbItem agar jarak flex-nya aman dan tidak menabrak tombol */}
             {!isReady ? (
                <>
                  <BreadcrumbItem className="hidden md:block">
@@ -42,28 +41,33 @@ export function DashboardHeader() {
                  </BreadcrumbItem>
                </>
             ) : (
-              // RENDER BREADCRUMB ASLI JIKA SUDAH SIAP
               <>
+                {/* 1. LABEL (Contoh: Projek / Management) */}
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbPage className="text-muted-foreground font-medium tracking-wide text-xs uppercase">
+                  {/* 🔥 FIX: Hapus text-xs dan tracking-wide agar ukurannya persis sama */}
+                  <BreadcrumbPage className="text-muted-foreground font-medium capitalize">
                     {activePath.label}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
+                
                 <BreadcrumbSeparator className="hidden md:block text-white/20" />
+                
+                {/* 2. TITLE (Contoh: Home / Settings) */}
                 <BreadcrumbItem>
                   <BreadcrumbPage className={cn(
-                    "transition-colors",
-                    activePath.subTitle ? "text-muted-foreground hidden md:block" : "font-bold text-white tracking-tight"
+                    "transition-colors capitalize font-medium",
+                    activePath.subTitle ? "text-muted-foreground hidden md:block" : "text-foreground" // 🔥 Pakai text-foreground
                   )}>
                     {activePath.title}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
 
+                {/* 3. SUB-TITLE (Jika ada) */}
                 {activePath.subTitle && (
                   <>
                     <BreadcrumbSeparator className="text-white/20" />
                     <BreadcrumbItem>
-                      <BreadcrumbPage className="font-bold text-white tracking-tight">
+                      <BreadcrumbPage className="font-medium text-foreground capitalize">
                         {activePath.subTitle}
                       </BreadcrumbPage>
                     </BreadcrumbItem>
@@ -77,6 +81,3 @@ export function DashboardHeader() {
     </header>
   )
 }
-
-// Helper untuk gabung class
-import { cn } from "@/lib/utils"

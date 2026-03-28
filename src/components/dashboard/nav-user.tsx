@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import {
   LogOut,
   ChevronUp,
@@ -34,6 +35,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useLogout } from "@/hooks/use-logout"
+import { SettingsDialog } from "@/components/dashboard/settings/settings-dialog"
 
 export function NavUser({
   user,
@@ -45,6 +47,7 @@ export function NavUser({
   const { handleLogout } = useLogout()
 
   const [mounted, setMounted] = React.useState(false)
+  const [showSettings, setShowSettings] = React.useState(false)
 
   React.useEffect(() => {
     setMounted(true)
@@ -143,11 +146,15 @@ export function NavUser({
             <DropdownMenuSeparator className="bg-white/10 -mx-1 my-1" />
 
             {/* --- AREA 2: ACCOUNT & UPDATES --- */}
-            <DropdownMenuItem className="cursor-pointer gap-2 p-2 focus:bg-white/5 focus:text-white text-sidebar-foreground/70 transition-colors duration-200">
+            <DropdownMenuItem 
+              onClick={() => setShowSettings(true)}
+              className="cursor-pointer gap-2 p-2 focus:bg-white/5 focus:text-white text-sidebar-foreground/70 transition-colors duration-200"
+            >
               <Settings className="size-4" />
               <span>Account Settings</span>
             </DropdownMenuItem>
 
+            {/* Untuk System Updates, biarkan dulu karena nanti pakai Modal/Pop-up */}
             <DropdownMenuItem className="cursor-pointer gap-2 p-2 focus:bg-white/5 focus:text-white text-sidebar-foreground/70 transition-colors duration-200">
               <Sparkles className="size-4" />
               <span>System Updates</span>
@@ -194,6 +201,11 @@ export function NavUser({
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+
+      {showSettings && (
+        <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
+      )}
+
     </SidebarMenu>
   )
 }

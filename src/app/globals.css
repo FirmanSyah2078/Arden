@@ -100,6 +100,7 @@
   --shadow-glow-primary: 0 0 8px var(--glow-primary), 0 0 24px color-mix(in oklab, var(--glow-primary) 60%, transparent);
   --shadow-glow-accent: 0 0 8px var(--glow-accent), 0 0 24px color-mix(in oklab, var(--glow-accent) 60%, transparent);
 
+
   /* --- ANIMASI CUSTOM (Siap pakai untuk komponen lain) --- */
   
   /* Meteor */
@@ -167,6 +168,32 @@
   @keyframes shine {
     0% { left: -100%; }
     100% { left: 200%; }
+  }
+
+  /* Floating Diamond Animations */
+  --animate-diamond-1: diamond-1 4s ease-in-out infinite;
+  --animate-diamond-2: diamond-2 6s ease-in-out infinite;
+  --animate-diamond-3: diamond-3 8s ease-in-out infinite;
+
+  @keyframes diamond-1 {
+    /* 0%: Lahir dari bawah dalam keadaan tidak terlihat (gaib) */
+    0% { transform: translateY(15px) rotate(45deg) scale(0.2); opacity: 0; }
+    /* 50%: Bersinar terang dan membesar saat di tengah perjalanan */
+    50% { transform: translateY(-20px) rotate(45deg) scale(1.2); opacity: 0.9; }
+    /* 100%: Menghilang sempurna sebelum mengulang lagi ke bawah */
+    100% { transform: translateY(-60px) rotate(45deg) scale(0.2); opacity: 0; }
+  }
+
+  @keyframes diamond-2 {
+    0% { transform: translateY(20px) rotate(45deg) scale(0.3); opacity: 0; }
+    50% { transform: translateY(-30px) rotate(45deg) scale(1.1); opacity: 0.7; }
+    100% { transform: translateY(-80px) rotate(45deg) scale(0.3); opacity: 0; }
+  }
+
+  @keyframes diamond-3 {
+    0% { transform: translateY(10px) rotate(45deg) scale(0.4); opacity: 0; }
+    50% { transform: translateY(-15px) rotate(45deg) scale(1.3); opacity: 1; }
+    100% { transform: translateY(-40px) rotate(45deg) scale(0.4); opacity: 0; }
   }
 }
 

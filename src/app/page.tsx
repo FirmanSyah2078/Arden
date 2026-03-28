@@ -295,7 +295,7 @@ export default function Home() {
         {/* SECTION: SEAMLESS WORKFLOW (5 STEPS SRS)  */}
         <section className="relative z-10 py-24 overflow-hidden border-b border-white/5 bg-black/40 backdrop-blur-sm">
           {/* Background Glow Effect */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-900/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-100 bg-indigo-900/10 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="container mx-auto px-4 relative">
             <div className="text-center mb-16">
