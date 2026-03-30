@@ -53,7 +53,7 @@ export function GenericCreateDialog({
   const handleInputChange = (key: string, value: string | number) => {
     let finalValue = value;
     if (typeof value === "string") {
-      if (key === "nama_lengkap") finalValue = toTitleCase(value);
+      if (key === "name") finalValue = toTitleCase(value);
       else if (key === "nama_kelas") finalValue = value.toUpperCase();
     }
     setFormData((prev) => ({ ...prev, [key]: finalValue }))
@@ -70,7 +70,7 @@ export function GenericCreateDialog({
 
   // 🔥 HELPER: Cari nama untuk pesan Toast (agar spesifik)
   const getIdentifierName = () => {
-    return formData.nama_lengkap || formData.nama_kelas || formData.username || "Item baru";
+    return formData.name || formData.nama_kelas || formData.username || "Item baru";
   }
 
   async function handleSubmit() {

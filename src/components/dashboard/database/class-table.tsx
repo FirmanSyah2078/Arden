@@ -21,9 +21,9 @@ import { GenericDeleteDialog } from "./ui/delete-dialog"
 
 interface ClassWithMetrics extends Class {
   total_students?: number // Data ini sekarang Real dari backend
-  active_period?: number 
-  permissions?: number   
-  warnings?: number      
+  active_period?: number
+  permissions?: number
+  warnings?: number
   health_status?: "Excellent" | "Good" | "Attention" | "Critical"
 }
 
@@ -166,7 +166,7 @@ export function ClassDataTable({ data }: { data: ClassWithMetrics[] }) {
         onOpenChange={setOpenCreate} 
         title="Buat Kelas Baru" 
         description="Pastikan format nama kelas baku (Contoh: X RPL 1)."
-        endpoint="/api/database/class" 
+        endpoint="/api/class" 
         fields={classFields} 
       />
 
@@ -176,7 +176,7 @@ export function ClassDataTable({ data }: { data: ClassWithMetrics[] }) {
           onOpenChange={(open) => !open && setEditData(null)} 
           title="Edit Data Kelas"
           description="Ubah nama atau wali kelas."
-          endpoint="/api/database/class" 
+          endpoint="/api/class" 
           initialData={editData as unknown as Record<string, unknown>} 
           idField="id_kelas" 
           fields={classFields} 
@@ -202,7 +202,7 @@ export function ClassDataTable({ data }: { data: ClassWithMetrics[] }) {
               </div>
             </div>
           } 
-          endpoint="/api/database/class" 
+          endpoint="/api/class" 
           itemName={deleteData.nama_kelas}
           id={deleteData.id_kelas || 0} 
         />

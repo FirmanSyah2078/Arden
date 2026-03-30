@@ -1,111 +1,102 @@
 "use client"
 
-import { KeyRound, AlertTriangle, Trash2, Smartphone, Monitor, ShieldCheck } from "lucide-react"
+import { AlertTriangle, Trash2, Smartphone, Monitor, ShieldCheck, KeyRound } from "lucide-react"
 
 export default function SecurityForm() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div>
-        <h3 className="text-lg font-medium text-foreground">Keamanan & Akses</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          Kelola kata sandi, pantau perangkat aktif, dan amankan akun Anda.
+      
+      {/* --- INFO CARD TRANSPARAN --- */}
+      <div className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/5 p-4 text-[13px] text-white/70">
+        <ShieldCheck className="size-4 shrink-0 mt-0.5 text-white/50" />
+        <p className="leading-relaxed">
+          Amankan akun Anda. Perbarui kata sandi secara berkala dan pantau perangkat aktif yang sedang mengakses akun Anda saat ini.
         </p>
       </div>
 
-      <div className="h-px w-full bg-border" />
-
       {/* --- PASSWORD SECTION --- */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 text-foreground">
-          <KeyRound className="size-5 text-primary" />
-          <h4 className="text-base font-medium">Ubah Kata Sandi</h4>
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-white/90">
+          <KeyRound className="size-4 text-white/50" />
+          <h4 className="text-[14px] font-medium">Kredensial Login</h4>
         </div>
         
-        <div className="grid gap-5">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-foreground">Kata Sandi Saat Ini</label>
-              {/* 🔥 SOLUSI LUPA PASSWORD */}
-              <button className="text-xs font-medium text-primary hover:underline">
-                Lupa kata sandi?
+        <div className="grid gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between max-w-md">
+              <label className="text-[13px] font-medium text-white/80">Kata Sandi Saat Ini</label>
+              <button className="text-[11px] font-medium text-white/60 hover:text-white transition-colors">
+                Lupa sandi?
               </button>
             </div>
             <input
               type="password"
-              className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              className="w-full max-w-md rounded-md border border-white/10 bg-black/20 px-3 py-2 text-[13px] text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
               placeholder="••••••••"
             />
-            <p className="text-[11px] text-muted-foreground max-w-md">
-              Jika Anda lupa kata sandi saat ini, klik tombol di atas untuk mengirimkan tautan reset ke WhatsApp/Email Anda.
-            </p>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Kata Sandi Baru</label>
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-medium text-white/80">Kata Sandi Baru</label>
             <input
               type="password"
-              className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              className="w-full max-w-md rounded-md border border-white/10 bg-black/20 px-3 py-2 text-[13px] text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
               placeholder="Minimal 8 karakter"
             />
           </div>
 
-          <div className="pt-2">
-            <button className="rounded-md border border-border bg-transparent px-4 py-2 text-sm font-medium text-foreground transition-all hover:bg-muted">
-              Perbarui Kata Sandi
+          <div className="pt-1">
+            <button className="rounded-md border border-white/10 bg-white/5 px-4 py-2 text-[13px] font-medium text-white transition-all hover:bg-white/10">
+              Perbarui Sandi
             </button>
           </div>
         </div>
       </div>
 
-      <div className="h-px w-full bg-border" />
-
-      {/* --- SESSIONS SECTION (FITUR TAMBAHAN PRO) --- */}
+      {/* --- SESSIONS SECTION --- */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2 text-foreground">
-          <ShieldCheck className="size-5 text-primary" />
-          <h4 className="text-base font-medium">Perangkat Aktif</h4>
+        <div className="flex items-center gap-2 text-white/90">
+          <Monitor className="size-4 text-white/50" />
+          <h4 className="text-[14px] font-medium">Perangkat Aktif</h4>
         </div>
-        <div className="rounded-lg border border-border bg-background divide-y divide-border">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-4">
-              <Monitor className="size-6 text-muted-foreground" />
+        <div className="rounded-lg border border-white/10 bg-black/20 divide-y divide-white/5">
+          <div className="flex items-center justify-between p-3.5">
+            <div className="flex items-center gap-3">
+              <Monitor className="size-5 text-white/40" />
               <div>
-                <p className="text-sm font-medium text-foreground">Windows • Chrome</p>
-                <p className="text-xs text-success">Perangkat saat ini • Aktif sekarang</p>
+                <p className="text-[13px] font-medium text-white/90">Windows • Chrome</p>
+                <p className="text-[11px] text-emerald-400/80 mt-0.5">Sesi saat ini • Aktif</p>
               </div>
             </div>
           </div>
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-4">
-              <Smartphone className="size-6 text-muted-foreground" />
+          <div className="flex items-center justify-between p-3.5">
+            <div className="flex items-center gap-3">
+              <Smartphone className="size-5 text-white/40" />
               <div>
-                <p className="text-sm font-medium text-foreground">Android • Mobile App</p>
-                <p className="text-xs text-muted-foreground">Aktif 2 jam yang lalu</p>
+                <p className="text-[13px] font-medium text-white/90">Android • ARDEN App</p>
+                <p className="text-[11px] text-white/40 mt-0.5">Aktif 2 jam lalu</p>
               </div>
             </div>
-            <button className="text-xs font-medium text-destructive hover:underline">Keluar</button>
+            <button className="text-[11px] font-medium text-red-400/80 hover:text-red-400 transition-colors">Cabut</button>
           </div>
         </div>
       </div>
 
-      <div className="h-px w-full bg-border" />
-
       {/* --- DANGER ZONE --- */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-destructive">
-          <AlertTriangle className="size-5" />
-          <h4 className="text-base font-medium">Zona Berbahaya</h4>
-        </div>
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-5 transition-colors hover:border-destructive/50">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-4 pt-4">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4 transition-colors hover:border-red-500/30">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1">
-              <h5 className="text-sm font-medium text-foreground">Hapus Akun Permanen</h5>
-              <p className="text-xs text-muted-foreground max-w-md leading-relaxed">
-                Tindakan ini tidak dapat dibatalkan. Semua data profil dan akses Anda ke sistem akan dihapus.
+              <h5 className="text-[13px] font-medium text-white/90 flex items-center gap-2">
+                <AlertTriangle className="size-3.5 text-red-400" />
+                Hapus Akun Permanen
+              </h5>
+              <p className="text-[11px] text-white/50 max-w-sm leading-relaxed">
+                Tindakan ini bersifat final. Seluruh data akademik dan akses sistem Anda akan dimusnahkan.
               </p>
             </div>
-            <button className="flex shrink-0 items-center justify-center gap-2 rounded-md bg-destructive/10 px-4 py-2 text-sm font-medium text-destructive transition-all hover:bg-destructive hover:text-destructive-foreground">
-              <Trash2 className="size-4" />
+            <button className="flex shrink-0 items-center justify-center gap-1.5 rounded-md bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-400 transition-all hover:bg-red-500/20">
+              <Trash2 className="size-3.5" />
               Hapus Akun
             </button>
           </div>

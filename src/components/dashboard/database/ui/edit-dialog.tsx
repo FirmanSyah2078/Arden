@@ -47,7 +47,7 @@ export function GenericEditDialog({
   const handleInputChange = (key: string, value: string | number | boolean) => {
     let finalValue = value;
     if (typeof value === "string") {
-      if (key === "nama_lengkap") finalValue = toTitleCase(value);
+      if (key === "name") finalValue = toTitleCase(value);
       else if (key === "nama_kelas") finalValue = value.toUpperCase();
     }
     setFormData((prev) => ({ ...prev, [key]: finalValue }))
@@ -73,7 +73,7 @@ export function GenericEditDialog({
     });
   }, [formData, fields]);
 
-  const getName = () => formData.nama_lengkap || formData.nama_kelas || formData.username || "Data";
+  const getName = () => formData.name || formData.nama_kelas || formData.username || "Data";
 
   async function handleSubmit() {
     setLoading(true)

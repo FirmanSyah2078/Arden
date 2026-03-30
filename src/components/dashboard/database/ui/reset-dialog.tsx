@@ -90,7 +90,7 @@ export function ResetPasswordDialog({
 
         <div className="rounded-md border border-white/10 bg-white/5 p-3">
           <div className="text-sm">
-            <div className="font-medium text-white">{user.nama_lengkap}</div>
+            <div className="font-medium text-white">{user.name}</div>
             <div className="text-xs text-gray-400 mt-1">
               @{user.username} — {user.role}
             </div>

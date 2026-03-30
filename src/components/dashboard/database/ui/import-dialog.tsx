@@ -32,7 +32,7 @@ export function ImportDialog({
   // ✅ FIX: Definisi placeholderSql ditambahkan kembali
   const placeholderSql = "-- Paste your SQL INSERT statement here..."
 
-  const simpleTemplateSql = `INSERT INTO tbl_siswi (nama_lengkap, nis, nama_kelas) VALUES
+  const simpleTemplateSql = `INSERT INTO tbl_siswi (name, nis, nama_kelas) VALUES
 ('Siti Aminah', '12345', 'X MIPA 1'),
 ('Dewi Sartika', '67890', 'XI IPS 2');`
 

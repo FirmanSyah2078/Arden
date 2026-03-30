@@ -33,7 +33,8 @@ import ProfileForm from "./tabs/profile-form"
 import SecurityForm from "./tabs/security-form"
 import ConnectionsForm from "./tabs/connections-form"
 // Import ornamen kustom
-import { Ornament } from "@/components/ornament" 
+import { Ornament } from "@/components/ornament"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const settingsNav = [
   { id: "profile", name: "Profile", icon: UserCircle },
@@ -117,7 +118,6 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           </Sidebar>
 
           {/* --- KONTEN KANAN --- */}
-          {/* 🔥 Kunci simpelnya Shadcn: Pakai tinggi statis (h-[500px]) di tag main */}
           <main className="flex h-125 flex-1 flex-col overflow-hidden bg-background/50">
             <header className="flex h-14 shrink-0 items-center gap-2 border-b border-white/5 px-6 backdrop-blur-md">
               <Breadcrumb>
@@ -137,12 +137,13 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               </Breadcrumb>
             </header>
 
-            {/* Area Scrollable Form */}
-            <div className="flex flex-1 flex-col overflow-y-auto p-6 scroll-smooth no-scrollbar">
-              <div className="max-w-xl mx-auto w-full pb-8">
+            {/* 🔥 FIX: Tambahkan min-h-0 di ScrollArea agar tidak kebablasan memotong bawah */}
+            <ScrollArea className="flex-1 min-h-0 w-full z-20">
+              {/* 🔥 FIX: pb-20 agar mentoknya konten punya ruang lega dari batas bawah */}
+              <div className="max-w-xl mx-auto w-full p-6 pb-10">
                 {renderContent()}
               </div>
-            </div>
+            </ScrollArea>
           </main>
 
         </SidebarProvider>

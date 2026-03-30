@@ -38,7 +38,7 @@ export function SiswiDataTable({ data }: { data: Siswi[] }) {
   useEffect(() => {
     async function fetchClasses() {
       try {
-        const res = await fetch('/api/database/class')
+        const res = await fetch('/api/class')
         const json = await res.json()
         if (json.status === 'success') {
           const options = json.data.map((cls: Class) => ({
@@ -224,7 +224,7 @@ export function SiswiDataTable({ data }: { data: Siswi[] }) {
           onOpenChange={(open) => !open && setEditData(null)}
           title="Edit Student Data"
           description="Perbarui informasi profil, kelas, atau status akademik siswi."
-          endpoint="/api/database/siswi"
+          endpoint="/api/siswi"
           initialData={editData as unknown as Record<string, unknown>}
           idField="id_siswi"
           fields={editFields}
@@ -237,7 +237,7 @@ export function SiswiDataTable({ data }: { data: Siswi[] }) {
         onOpenChange={(open) => !open && setDeleteData(null)} 
         title="Delete Student" 
         description={<span>Are you sure? <b className="text-white">{deleteData.nama_lengkap}</b> will be deleted.</span>} 
-        endpoint="/api/database/siswi" 
+        endpoint="/api/siswi" 
         id={deleteData.id_siswi} 
         itemName={deleteData.nama_lengkap}
       />

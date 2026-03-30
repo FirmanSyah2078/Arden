@@ -6,20 +6,25 @@ export function useLogout() {
 
   const handleLogout = async () => {
     try {
-      // Panggil API Logout yang baru
       await fetch('/api/auth/logout', { method: 'POST' })
       
-      // Hapus sisa di browser
-      const cookies = ["user_role", "auth_token", "user_name", "user_photo"]
+      const cookies = ["user_role", "auth_token", "user_name", "user_photo", "user_username"]
       cookies.forEach(name => {
         document.cookie = `${name}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 UTC;`
       })
       localStorage.clear()
 
-      router.push("/login")
-      router.refresh()
+      // 🔥 FIX: Beri jeda 200ms agar Shadcn/Radix UI sempat menghapus "Layar Hitam Bening" 
+      // dan mengembalikan `pointer-events` pada tag <body>.
+      setTimeout(() => {
+        router.push("/login")
+        router.refresh()
+      }, 200)
+
     } catch (error) {
-      router.push("/login")
+      setTimeout(() => {
+        router.push("/login")
+      }, 200)
     }
   }
 

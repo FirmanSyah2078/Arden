@@ -27,9 +27,11 @@ export async function POST(req: Request) {
       sameSite: 'lax' as const
     }
 
-    cookieStore.set('auth_token', token, { ...cookieOptions, httpOnly: true }) // httpOnly = Aman dari XSS
+    cookieStore.set('auth_token', token, { ...cookieOptions, httpOnly: true }) 
     cookieStore.set('user_role', user.role || 'Pelaksana', cookieOptions)
-    cookieStore.set('user_name', user.nama_lengkap, cookieOptions)
+
+    cookieStore.set('user_name', user.name, cookieOptions) 
+
     cookieStore.set('user_username', user.username, cookieOptions)
     if (user.foto_url) {
       cookieStore.set('user_photo', user.foto_url, cookieOptions)

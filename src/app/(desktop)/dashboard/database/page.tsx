@@ -20,9 +20,9 @@ async function fetchData(endpoint: string) {
 export default async function DatabasePage() {
 
   const [siswiData, classData, userData] = await Promise.all([
-    fetchData("database/siswi"),
-    fetchData("database/class"),
-    fetchData("database/user"),
+    fetchData("siswi"),
+    fetchData("class"),
+    fetchData("user"),
   ])
 
   // Definisi Tabs

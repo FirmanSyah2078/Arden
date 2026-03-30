@@ -3,18 +3,19 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 
 export class UserService {
-  // --- 1. GET ALL USERS ---
+  /// --- 1. GET ALL USERS ---
   static async getAllUsers() {
     const users = await prisma.tbl_users.findMany({
       select: {
         id_user: true,
-        nama_lengkap: true,
+        name: true,
         username: true,
         role: true,
         foto_url: true,
         last_login: true,
-        is_active: true, 
+        is_active: true,
         is_online: true,
+        created_at: true,
       },
       orderBy: { id_user: 'asc' }
     });
@@ -23,12 +24,13 @@ export class UserService {
   }
 
   // --- 2. GET CURRENT USER (ME) ---
-  static async getMe(username: string) {
+  // 🔥 FIX: Ubah parameter jadi id (number)
+  static async getMe(id: number) { 
     const user = await prisma.tbl_users.findUnique({
-      where: { username },
+      where: { id_user: id }, // 🔥 FIX: Cari berdasarkan ID
       select: {
         id_user: true,
-        nama_lengkap: true,
+        name: true,
         username: true,
         role: true,
         last_login: true,
@@ -50,7 +52,7 @@ export class UserService {
 
     const newUser = await prisma.tbl_users.create({
       data: {
-        nama_lengkap: data.nama_lengkap,
+        name: data.name,
         username: data.username,
         password: hashedPassword,
         role: data.role || 'Pelaksana',
@@ -66,7 +68,7 @@ export class UserService {
   // --- 4. UPDATE USER ---
   static async updateUser(id: number, data: any) {
     const payload: any = {};
-    if (data.nama_lengkap) payload.nama_lengkap = data.nama_lengkap;
+    if (data.name) payload.name = data.name;
     if (data.role) payload.role = data.role;
     
     // Konversi nilai 'true'/'false' dari Dropdown (Select UI) menjadi boolean beneran

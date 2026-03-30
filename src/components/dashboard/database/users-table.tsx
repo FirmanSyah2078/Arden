@@ -32,7 +32,7 @@ export function UsersDataTable({ data }: { data: User[] }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
 
   useEffect(() => {
-    fetch("/api/database/user/me", { cache: "no-store" })
+    fetch("/api/user/me", { cache: "no-store" })
       .then(res => res.json())
       .then(res => { 
         if (res.status === 'success') setCurrentUser(res.data) 
@@ -42,7 +42,7 @@ export function UsersDataTable({ data }: { data: User[] }) {
 
   // --- CONFIG FIELDS ---
   const createFields: FieldConfig[] = [
-    { name: "nama_lengkap", label: "Full Name", type: "text", required: true },
+    { name: "name", label: "Full Name", type: "text", required: true },
     { name: "username", label: "Username", type: "text", required: true },
     { name: "password", label: "Password", type: "password", required: true },
     { 
@@ -52,7 +52,7 @@ export function UsersDataTable({ data }: { data: User[] }) {
   ]
 
   const editFields: FieldConfig[] = [
-    { name: "nama_lengkap", label: "Full Name", type: "text" },
+    { name: "name", label: "Full Name", type: "text" },
     { name: "username", label: "Username", type: "text", readOnly: true },
     { 
       name: "role", label: "Role", type: "select", 
@@ -79,7 +79,7 @@ export function UsersDataTable({ data }: { data: User[] }) {
           <Avatar className="h-9 w-9 border border-white/10 rounded-lg bg-transparent">
             <AvatarImage src={row.original.foto_url || ""} />
             <AvatarFallback className="bg-transparent text-[10px] font-bold text-gray-500">
-              {row.original.nama_lengkap.substring(0, 2).toUpperCase()}
+              {row.original.name.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </div>
@@ -87,12 +87,12 @@ export function UsersDataTable({ data }: { data: User[] }) {
     },
     // 2. NAME (Dibiarkan elastis untuk menyerap sisa layar)
     {
-      accessorKey: "nama_lengkap",
+      accessorKey: "name",
       id: "Name",
       header: "Name",
       meta: { className: "pl-3 text-left min-w-[180px]" }, 
       cell: ({ row }) => (
-        <span className="text-sm text-white tracking-tight font-medium">{row.original.nama_lengkap}</span>
+        <span className="text-sm text-white tracking-tight font-medium">{row.original.name}</span>
       ),
     },
     // 3. USERNAME (Dikunci di 140px agar tidak terlalu lebar)
@@ -256,7 +256,7 @@ export function UsersDataTable({ data }: { data: User[] }) {
         open={openCreate} 
         onOpenChange={setOpenCreate}
         title="Register New User"
-        endpoint="/api/database/user"
+        endpoint="/api/user"
         fields={createFields}
       />
 
@@ -265,7 +265,7 @@ export function UsersDataTable({ data }: { data: User[] }) {
           open={!!editUser} 
           onOpenChange={(open) => !open && setEditUser(null)} 
           title="Edit User Data"
-          endpoint="/api/database/user"
+          endpoint="/api/user"
           initialData={editUser as unknown as Record<string, unknown>}
           idField="id_user"
           fields={editFields}
@@ -285,9 +285,9 @@ export function UsersDataTable({ data }: { data: User[] }) {
           open={!!deleteUser}
           onOpenChange={(open) => !open && setDeleteUser(null)}
           title="Delete User"
-          itemName={deleteUser.nama_lengkap} 
-          description={<span>Are you sure? This will permanently delete <b>{deleteUser.nama_lengkap}</b>.</span>}
-          endpoint="/api/database/user" 
+          itemName={deleteUser.name} 
+          description={<span>Are you sure? This will permanently delete <b>{deleteUser.name}</b>.</span>}
+          endpoint="/api/user" 
           id={deleteUser.id_user}
         />
       )}

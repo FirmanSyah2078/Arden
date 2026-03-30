@@ -73,13 +73,15 @@ export interface Siswi {
 
 export interface User {
   id_user: number;
-  nama_lengkap: string;
+  name: string;
   username: string;
   role: Role;
   last_login: string | null;
   foto_url: string | null;
-  is_active: boolean; // 🔥 Diubah ke boolean
-  is_online: boolean; // 🔥 Diubah ke boolean
+  is_active: boolean;
+  is_online: boolean;
+  created_at?: string | null;
+  email?: string | null;
 }
 
 export interface Class {
