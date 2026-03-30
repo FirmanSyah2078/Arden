@@ -21,8 +21,8 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar"
 
-import { useDashboard } from "@/db/dashboard/system/context"
-import { systemRoles, roleMenus } from "@/db/dashboard/system/navigation"
+import { useDashboard } from "@/contexts/cont-dashboard"
+import { systemRoles, roleMenus } from "@/config/nav-dashboard"
 
 const getCookie = (name: string) => {
   if (typeof document === "undefined") return "";

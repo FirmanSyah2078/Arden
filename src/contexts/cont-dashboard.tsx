@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { systemRoles } from "./navigation"; 
+import { systemRoles } from "../config/nav-dashboard"; 
 
 export type RoleType = {
   name: string;

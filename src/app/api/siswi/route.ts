@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { SiswiService } from '@/db/dashboard/database/siswi.service
+import { SiswiService } from '@/db/dashboard/database/siswi.service'
 
 export async function GET(req: Request) {
   try {
