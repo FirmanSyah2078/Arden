@@ -1,6 +1,6 @@
 // src/app/api/class/route.ts
 import { NextResponse } from 'next/server';
-import { ClassService } from '@/logic/dashboard/database/class.service';
+import { ClassService } from '@/db/dashboard/database/class.service
 
 export async function GET() {
   try {

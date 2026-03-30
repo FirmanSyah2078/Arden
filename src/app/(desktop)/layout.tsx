@@ -5,7 +5,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-import { DashboardProvider } from "@/logic/dashboard/system/context"
+import { DashboardProvider } from "@/db/dashboard/system/context"
 
 export default async function DesktopLayout({
   children,

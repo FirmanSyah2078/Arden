@@ -18,7 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-import { useDashboard } from "@/logic/dashboard/system/context"
+import { useDashboard } from "@/db/dashboard/system/context"
 
 export function NavRole({
   roles,

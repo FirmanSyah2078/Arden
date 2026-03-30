@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { UserService } from "@/logic/dashboard/database/user.service"
+import { UserService } from "@/db/dashboard/database/user.service
 
 export async function POST(req: Request) {
   try {

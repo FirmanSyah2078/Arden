@@ -12,8 +12,8 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 
-import { useDashboard } from "@/logic/dashboard/system/context"
-import { getActiveBreadcrumb } from "@/logic/dashboard/system/navigation"
+import { useDashboard } from "@/db/dashboard/system/context"
+import { getActiveBreadcrumb } from "@/db/dashboard/system/navigation"
 import { cn } from "@/lib/utils" 
 
 export function DashboardHeader() {

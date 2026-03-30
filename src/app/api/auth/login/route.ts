@@ -1,7 +1,7 @@
 // src/app/api/auth/login/route.ts
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { AuthService } from '@/logic/auth/service'
+import { AuthService } from '@/db/auth/service
 
 export async function POST(req: Request) {
   try {
