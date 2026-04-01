@@ -28,7 +28,7 @@ export default function ProfileForm() {
     <div className="space-y-8 animate-in fade-in duration-500 pb-4">
       
       {/* --- INFO CARD --- */}
-      <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4 text-[13px] text-white/70">
+      <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-2 text-[12px] text-white/70">
         <Info className="size-4 shrink-0 text-white/50" />
         <p className="leading-relaxed">
           Update your photo and personal details used across ARDEN.

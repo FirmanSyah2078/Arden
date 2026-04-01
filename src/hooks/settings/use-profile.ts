@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react"
+// 🔥 IMPORT LIBRARY KOMPRESI
+import imageCompression from 'browser-image-compression';
 
 export interface UserProfileData {
   avatarUrl: string | null;
@@ -22,13 +24,11 @@ export function useProfile() {
     lastUpdated: "-",
   })
   
-  // State untuk menyimpan file fisik asli
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // 🔥 Logika DOM (Jembatan Input File)
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = () => {
@@ -44,32 +44,52 @@ export function useProfile() {
     setFormData(prev => ({ ...prev, [field]: value }));
   }
 
-  // Fungsi untuk menangani pemilihan file & membuat Preview
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 🔥 FIX: Ubah fungsi ini menjadi async untuk proses kompresi
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validasi Ukuran Maksimal 2MB
-    if (file.size > 2 * 1024 * 1024) {
-      alert("Ukuran file terlalu besar! Maksimal 2MB.");
+    // 1. Batas Awal (Bisa kita naikkan ke 5MB, karena toh nanti diperas)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ukuran file terlalu besar! Maksimal 5MB sebelum dikompresi.");
       return;
     }
 
-    // Buat URL bayangan (Preview Lokal)
-    const previewUrl = URL.createObjectURL(file);
-    handleChange("avatarUrl", previewUrl);
-    setSelectedFile(file); // Simpan file fisiknya untuk di-upload nanti
+    try {
+      // 2. Setting Mesin Pemeras Gambar
+      const options = {
+        maxSizeMB: 0.2,          // Target maksimal 200 KB (Sangat hemat!)
+        maxWidthOrHeight: 512,   // Resolusi diubah max 512x512px (Cocok untuk foto profil bundar)
+        useWebWorker: true,      // Menggunakan thread terpisah agar browser tidak lag
+      }
+
+      // 3. Proses "Diperas dan Dijemur"
+      const compressedFile = await imageCompression(file, options);
+      
+      // (Opsional) Kamu bisa melihat ukuran sebelum dan sesudah di console browser
+      console.log(`Ukuran asli: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`Setelah kompresi: ${(compressedFile.size / 1024).toFixed(2)} KB`);
+
+      // 4. Buat URL Preview dari hasil perasan
+      const previewUrl = URL.createObjectURL(compressedFile);
+      handleChange("avatarUrl", previewUrl);
+      setSelectedFile(compressedFile); // Simpan file super ringan ini untuk dikirim ke Supabase
+      
+    } catch (error) {
+      console.error("Gagal mengkompresi gambar:", error);
+      alert("Terjadi kesalahan saat memproses gambar.");
+    }
   }
 
   const handleRemoveAvatar = () => {
     handleChange("avatarUrl", null); 
-    setSelectedFile(null); // Hapus file dari antrean
+    setSelectedFile(null); 
   }
 
   const handleUndoAvatar = () => {
     if (originalData) {
       handleChange("avatarUrl", originalData.avatarUrl);
-      setSelectedFile(null); // Hapus file dari antrean
+      setSelectedFile(null); 
     }
   }
 
@@ -121,7 +141,7 @@ export function useProfile() {
     try {
       let finalAvatarUrl = formData.avatarUrl;
 
-      // Jika ada file fisik, siap-siap upload ke Supabase Storage
+      // Jika ada file fisik, upload file super ringan ini ke Supabase
       if (selectedFile) {
         const fileFormData = new FormData();
         fileFormData.append("file", selectedFile);
@@ -139,7 +159,7 @@ export function useProfile() {
         finalAvatarUrl = uploadJson.data.url; 
       }
 
-      // Simpan seluruh data ke Database Prisma
+      // KEMUDIAN baru simpan URL-nya ke Database Prisma
       const payload = { ...formData, avatarUrl: finalAvatarUrl };
       const res = await fetch('/api/user/me', {
         method: 'PATCH',
@@ -176,7 +196,7 @@ export function useProfile() {
     isAvatarRemoved, hasOriginalAvatar,
     getInitials, handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
     handleFileChange,
-    fileInputRef,       // Lemparkan jembatan ref ke UI
-    handleUploadClick   // Lemparkan fungsi klik ke UI
+    fileInputRef,
+    handleUploadClick
   }
 }
