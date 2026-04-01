@@ -1,4 +1,3 @@
-// src/logic/dashboard/database/user.service.ts
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 
@@ -34,7 +33,8 @@ export class UserService {
         username: true,
         role: true,
         last_login: true,
-        foto_url: true
+        foto_url: true,
+        created_at: true // 🔥 FIX: Ditambahkan di sini agar tidak "-" di profile
       }
     });
 

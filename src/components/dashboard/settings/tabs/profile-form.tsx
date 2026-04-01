@@ -94,19 +94,19 @@ export default function ProfileForm() {
           </p>
         </div>
 
-        {/* User Metadata Badges */}
+        {/* User Metadata Badges (Minimalist) */}
         <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-          <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[10px] text-white/60">
+          <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[10px] text-white/60 hover:text-white/90 transition-colors">
             <ShieldCheck className="size-3 text-emerald-400/80" />
-            <span>{formData.role}</span>
+            <span className="font-medium">{formData.role}</span>
           </div>
-          <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[10px] text-white/60">
+          <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[10px] text-white/60 hover:text-white/90 transition-colors">
             <CalendarDays className="size-3 text-white/40" />
-            <span>Joined: {formData.createdAt}</span>
+            <span className="font-medium">{formData.createdAt}</span>
           </div>
-          <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[10px] text-white/60">
+          <div className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-2.5 py-1 text-[10px] text-white/60 hover:text-white/90 transition-colors">
             <Clock className="size-3 text-white/40" />
-            <span>Last Login: {formData.lastUpdated}</span>
+            <span className="font-medium">{formData.lastUpdated}</span>
           </div>
         </div>
       </div>
