@@ -32,19 +32,29 @@ export default function MobilePage() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/logout', { method: 'POST' });
+      // 🔥 FIX 1: Tembak ke URL yang benar (/api/auth/logout)
+      await fetch('/api/auth/logout', { method: 'POST' }); 
+      
       localStorage.clear(); 
-      document.cookie = "user_role=; path=/; max-age=0;";
-      document.cookie = "auth_token=; path=/; max-age=0;";
+      
+      // 🔥 FIX 2: Hapus semua cookie yang berhubungan (Biar bersih)
+      const cookies = ["user_role", "auth_token", "user_name", "user_photo", "user_username"];
+      cookies.forEach(name => {
+        document.cookie = `${name}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+      });
 
       toast.success("Sampai jumpa!");
       
-      router.push('/login'); 
-      router.refresh(); 
+      // Beri sedikit jeda agar animasi & proses selesai
+      setTimeout(() => {
+        router.push('/login'); 
+        router.refresh(); 
+      }, 200);
       
     } catch {
-      // FIX: Hapus variabel 'error' jika tidak dipakai
-      router.push('/login');
+      setTimeout(() => {
+        router.push('/login');
+      }, 200);
     }
   };
 

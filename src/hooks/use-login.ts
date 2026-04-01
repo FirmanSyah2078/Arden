@@ -53,7 +53,7 @@ export function useLogin() {
       }
 
       // 4. Redirect (Cookies sudah diurus Server!)
-      router.push(role === 'Pelaksana' ? '/mobile' : '/dashboard')
+      router.push(role === 'Pelaksana' ? '/go' : '/dashboard')
 
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Terjadi kesalahan sistem.")

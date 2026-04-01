@@ -1,17 +1,27 @@
 "use client"
 
-import { Upload, Info, Clock, ShieldCheck, Trash2, Undo2, CalendarDays } from "lucide-react"
+import { Upload, Info, Clock, ShieldCheck, Trash2, Undo2, CalendarDays, Loader2, CheckCircle2, CircleDashed } from "lucide-react"
 import { useProfile } from "@/hooks/settings/use-profile" 
 
 export default function ProfileForm() {
   const { 
     formData, isLoading, isSubmitting, isSaveDisabled, isDirty,
     isAvatarRemoved, hasOriginalAvatar,
-    getInitials, handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar
+    getInitials, handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
+    handleFileChange,
+    fileInputRef,       // Disediakan oleh hook
+    handleUploadClick   // Disediakan oleh hook
   } = useProfile()
 
   if (isLoading) {
-    return <div className="text-white/50 text-sm animate-pulse">Memuat data profil ARDEN...</div>
+    return (
+      <div className="flex flex-col items-center justify-center min-h-62.5 gap-3 animate-pulse">
+        <Loader2 className="size-8 animate-spin text-primary" />
+        <span className="text-[13px] font-medium text-muted-foreground tracking-wide">
+          Memuat profil ARDEN...
+        </span>
+      </div>
+    )
   }
 
   return (
@@ -27,32 +37,44 @@ export default function ProfileForm() {
 
       {/* --- AVATAR & METADATA --- */}
       <div className="flex flex-col items-center justify-center space-y-5 pt-2">
-        <div className="relative group cursor-pointer">
-          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-black/40 shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:border-white/40">
+        <div className="relative cursor-pointer">
+          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-black/40 transition-colors hover:border-white/20">
             {formData.avatarUrl ? (
               <img src={formData.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-white/10 to-transparent text-3xl font-bold tracking-tight text-white/40 uppercase select-none">
+              <div className="flex items-center justify-center w-full h-full bg-linear-to-br from-white/10 to-transparent text-3xl font-medium tracking-tight text-white/40 uppercase select-none">
                 {getInitials(formData.name)}
               </div>
             )}
           </div>
-          <div className="absolute inset-0 -z-10 rounded-full bg-white/5 blur-xl group-hover:bg-white/20 transition-all duration-500" />
         </div>
 
         <div className="flex flex-col items-center space-y-3">
           <div className="flex items-center gap-2">
-            
-            {/* Tombol Upload (Efek Hover Scale) */}
-            <button className="flex items-center gap-2 rounded-md bg-white px-4 py-1.5 text-xs font-medium text-black transition-all hover:bg-white/90 hover:scale-105 active:scale-95 shadow-lg shadow-white/10">
-              <Upload className="size-3.5" /> Upload Photo
+
+            {/* Input File Tersembunyi */}
+            <input 
+              type="file" 
+              accept="image/png, image/jpeg, image/jpg, image/webp" 
+              className="hidden" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+            />
+
+            {/* Tombol Upload */}
+            <button 
+              onClick={handleUploadClick}
+              className="group flex items-center gap-2 rounded-md border border-transparent bg-white px-4 py-1.5 text-xs font-medium text-black transition-all duration-300 shadow-lg shadow-white/5 hover:bg-gray-200 active:bg-transparent active:border-white/40 active:text-white active:scale-95"
+            >
+              <Upload className="size-3.5 transition-transform duration-300 group-hover:-translate-y-1" /> 
+              Upload Photo
             </button>
 
-            {/* Tombol Remove / Undo Pintar */}
+            {/* Tombol Remove / Undo */}
             {isAvatarRemoved ? (
               <button 
                 onClick={handleUndoAvatar}
-                className="flex items-center gap-1.5 rounded-md border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-400 transition-all hover:bg-amber-500/20 hover:scale-105 active:scale-95"
+                className="flex items-center gap-1.5 rounded-md border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-400 transition-all hover:bg-amber-500/20"
               >
                 <Undo2 className="size-3.5" /> Undo
               </button>
@@ -60,7 +82,7 @@ export default function ProfileForm() {
               <button 
                 onClick={handleRemoveAvatar}
                 disabled={!formData.avatarUrl}
-                className="flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition-all hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:hover:scale-100 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 disabled:opacity-30 disabled:pointer-events-none disabled:cursor-not-allowed"
               >
                 <Trash2 className="size-3.5" /> Remove
               </button>
@@ -89,7 +111,7 @@ export default function ProfileForm() {
         </div>
       </div>
 
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="h-px w-full bg-linear-to-r from-transparent via-white/10 to-transparent" />
 
       {/* --- INPUT FORM --- */}
       <div className="space-y-5">
@@ -133,17 +155,25 @@ export default function ProfileForm() {
 
       {/* --- SUBMIT BUTTON PINTAR --- */}
       <div className="flex items-center justify-between pt-2">
-        {/* Indikator Status (Opsional, sangat bagus untuk UX) */}
-        <span className="text-[11px] text-white/40">
-          {isDirty ? "Unsaved changes" : "All changes saved"}
-        </span>
+        
+        <div className="flex items-center gap-1.5 text-[11px] text-white/40">
+          {isDirty ? (
+            <><CircleDashed className="size-3.5 text-amber-500 animate-spin-slow" /> Unsaved changes</>
+          ) : (
+            <><CheckCircle2 className="size-3.5 text-emerald-500/80" /> All changes saved</>
+          )}
+        </div>
         
         <button 
           onClick={handleSave}
           disabled={isSaveDisabled}
-          className="rounded-md bg-white px-5 py-2 text-[13px] font-medium text-black shadow-lg shadow-white/10 transition-all duration-300 hover:bg-white/90 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:hover:scale-100 disabled:cursor-not-allowed"
+          className="flex items-center justify-center min-w-25 gap-2 rounded-md bg-white px-5 py-2 text-[13px] font-medium text-black shadow-lg shadow-white/5 transition-all duration-300 hover:bg-gray-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-30 disabled:pointer-events-none disabled:cursor-not-allowed"
         >
-          {isSubmitting ? "Saving changes..." : "Save Profile Changes"}
+          {isSubmitting ? (
+             <><Loader2 className="size-4 animate-spin" /> Saving</>
+          ) : (
+             "Save"
+          )}
         </button>
       </div>
       

@@ -1,20 +1,17 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 export interface UserProfileData {
   avatarUrl: string | null;
-  name: string;      // Berubah jadi name
+  name: string;
   username: string;
   email: string;
   role: string;
-  createdAt: string; // Tambahan created_at
+  createdAt: string; 
   lastUpdated: string;
 }
 
 export function useProfile() {
-  // 1. STATE ORIGINAL (Penyimpanan data asli dari DB)
   const [originalData, setOriginalData] = useState<UserProfileData | null>(null)
-  
-  // 2. STATE FORM (Yang diedit user)
   const [formData, setFormData] = useState<UserProfileData>({
     avatarUrl: null,
     name: "",
@@ -25,32 +22,57 @@ export function useProfile() {
     lastUpdated: "-",
   })
   
+  // State untuk menyimpan file fisik asli
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // FUNGSI: Ambil Inisial (CUMA 1 HURUF AWAL)
+  // 🔥 Logika DOM (Jembatan Input File)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
   const getInitials = (name: string): string => {
     if (!name) return "?";
     return name.trim().charAt(0).toUpperCase();
   };
 
-  // FUNGSI: Handle Perubahan Input (Dinamis untuk string atau null)
   const handleChange = <K extends keyof UserProfileData>(field: K, value: UserProfileData[K]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }
 
-  // LOGIKA AVATAR: Remove & Undo
+  // Fungsi untuk menangani pemilihan file & membuat Preview
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validasi Ukuran Maksimal 2MB
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Ukuran file terlalu besar! Maksimal 2MB.");
+      return;
+    }
+
+    // Buat URL bayangan (Preview Lokal)
+    const previewUrl = URL.createObjectURL(file);
+    handleChange("avatarUrl", previewUrl);
+    setSelectedFile(file); // Simpan file fisiknya untuk di-upload nanti
+  }
+
   const handleRemoveAvatar = () => {
     handleChange("avatarUrl", null); 
+    setSelectedFile(null); // Hapus file dari antrean
   }
 
   const handleUndoAvatar = () => {
     if (originalData) {
       handleChange("avatarUrl", originalData.avatarUrl);
+      setSelectedFile(null); // Hapus file dari antrean
     }
   }
 
-  // AMBIL DATA DARI DB
   useEffect(() => {
     const fetchMyProfile = async () => {
       try {
@@ -59,24 +81,31 @@ export function useProfile() {
         
         if (json.status === 'success' && json.data) {
           const dbData = json.data;
-          const lastLoginStr = dbData.last_login 
-            ? new Date(dbData.last_login).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '-';
+          
+          let lastLoginStr = '-';
+          if (dbData.last_login) {
+            const ll = new Date(dbData.last_login);
+            if (!isNaN(ll.getTime())) lastLoginStr = ll.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+          }
             
-          const createdAtStr = dbData.created_at 
-            ? new Date(dbData.created_at).toLocaleString('id-ID', { month: 'short', year: 'numeric' }) : '-';
+          let createdAtStr = '-';
+          if (dbData.created_at) {
+            const ca = new Date(dbData.created_at);
+            if (!isNaN(ca.getTime())) createdAtStr = ca.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+          }
 
           const initialData: UserProfileData = {
             avatarUrl: dbData.foto_url || null,
             name: dbData.name, 
             username: dbData.username,
-            email: "", // Nanti diambil dari relasi tbl_connections
+            email: "", 
             role: dbData.role || 'Unknown',
             createdAt: createdAtStr,
             lastUpdated: lastLoginStr
           };
 
-          setOriginalData(initialData); // Simpan aslinya
-          setFormData(initialData);     // Masukkan ke form
+          setOriginalData(initialData); 
+          setFormData(initialData);     
         }
       } catch (error) {
         console.error("Gagal mengambil profil:", error);
@@ -87,14 +116,35 @@ export function useProfile() {
     fetchMyProfile();
   }, []);
 
-  // SIMPAN DATA
   const handleSave = async () => {
     setIsSubmitting(true)
     try {
+      let finalAvatarUrl = formData.avatarUrl;
+
+      // Jika ada file fisik, siap-siap upload ke Supabase Storage
+      if (selectedFile) {
+        const fileFormData = new FormData();
+        fileFormData.append("file", selectedFile);
+
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: fileFormData
+        });
+        
+        const uploadJson = await uploadRes.json();
+        if (!uploadRes.ok || uploadJson.status === 'fail') {
+          throw new Error(uploadJson.message || "Gagal mengunggah foto ke Storage");
+        }
+
+        finalAvatarUrl = uploadJson.data.url; 
+      }
+
+      // Simpan seluruh data ke Database Prisma
+      const payload = { ...formData, avatarUrl: finalAvatarUrl };
       const res = await fetch('/api/user/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
       
       const json = await res.json();
@@ -103,31 +153,30 @@ export function useProfile() {
       } else {
         alert(`Gagal: ${json.message}`);
       }
-    } catch (error) {
-      alert("Terjadi kesalahan jaringan.");
+    } catch (error: any) {
+      alert(error.message || "Terjadi kesalahan jaringan.");
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  // 🔥 LOGIKA DIRTY STATE (Apakah ada yang diubah?)
-  const isDirty = originalData ? (
+  const isDirty = (originalData ? (
     formData.name !== originalData.name ||
     formData.username !== originalData.username ||
     formData.email !== originalData.email ||
     formData.avatarUrl !== originalData.avatarUrl
-  ) : false;
+  ) : false) || selectedFile !== null;
 
-  // 🔥 LOGIKA UNDO AVATAR
   const hasOriginalAvatar = originalData?.avatarUrl != null;
   const isAvatarRemoved = hasOriginalAvatar && formData.avatarUrl === null;
-
-  // Tombol simpan hanya menyala JIKA ada perubahan DAN field wajib terisi
   const isSaveDisabled = isSubmitting || !isDirty || !formData.name || !formData.username;
 
   return {
     formData, originalData, isLoading, isSubmitting, isSaveDisabled, isDirty,
     isAvatarRemoved, hasOriginalAvatar,
-    getInitials, handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar
+    getInitials, handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
+    handleFileChange,
+    fileInputRef,       // Lemparkan jembatan ref ke UI
+    handleUploadClick   // Lemparkan fungsi klik ke UI
   }
 }

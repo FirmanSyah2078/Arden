@@ -13,32 +13,38 @@ import { toast } from "sonner"
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   
   const [formData, setFormData] = useState({
-    nama_lengkap: "",
+    name: "", 
     username: "",
     password: "",
-    role: "Admin" // Default Admin karena ini buat akun pertama
+    role: "Admin" 
   })
 
-  // Perbaikan 1: Gunakan prev state agar data tidak tertimpa saat mengetik cepat
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  // Fungsi dinamis untuk menangani input
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
+    setIsLoading(true)
 
     try {
-      const res = await fetch("/api/database/user", {
+      // 🔥 FIX: Menambahkan created_at secara eksplisit di frontend
+      const payload = {
+        ...formData,
+        created_at: new Date().toISOString()
+      }
+
+      const res = await fetch("/api/user", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
 
-      // Perbaikan 2: Cek apakah responnya benar-benar JSON (Mencegah Crash HTML 500)
+      // Mencegah Crash HTML 500 jika API salah rute
       const contentType = res.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Terjadi kesalahan sistem pada server.");
@@ -46,28 +52,26 @@ export default function RegisterPage() {
 
       const json = await res.json()
 
-      // Perbaikan 3: Cek !res.ok ATAU json.status === 'fail' (Kadang API membalas 200 OK padahal gagal)
       if (!res.ok || json.status === 'fail') {
         throw new Error(json.message || "Gagal mendaftar")
       }
 
-      toast.success("Akun berhasil dibuat! Silakan login.")
+      toast.success("Akun Admin berhasil dibuat! Silakan login.")
       router.push("/login") 
       
-    } catch (error: unknown) { 
-      const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan saat mendaftar";
-      toast.error(errorMessage)
+    } catch (error: any) { 
+      toast.error(error.message || "Terjadi kesalahan saat mendaftar")
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-4 text-white">
-      <Card className="w-full max-w-md border-white/10 bg-[#0d0d0d] text-white">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4 text-foreground">
+      <Card className="w-full max-w-md border-white/10 bg-card text-card-foreground shadow-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-center">System Setup</CardTitle>
-          <CardDescription className="text-center text-gray-400">
+          <CardDescription className="text-center text-muted-foreground">
             Buat akun Admin pertama untuk sistem ini.
           </CardDescription>
         </CardHeader>
@@ -77,32 +81,33 @@ export default function RegisterPage() {
             
             {/* Nama Lengkap */}
             <div className="space-y-2">
-              <Label htmlFor="nama_lengkap">Nama Lengkap</Label>
+              <Label htmlFor="name">Nama Lengkap</Label>
               <Input 
-                id="nama_lengkap" 
-                name="nama_lengkap" 
+                id="name" 
                 placeholder="Ex: Super Admin" 
-                className="bg-[#1a1a1a] border-white/10"
+                className="bg-black/20 border-white/10 focus:border-primary/50"
                 required
-                value={formData.nama_lengkap} // 🔥 WAJIB ADA (Controlled Input)
-                onChange={handleChange}
-                disabled={loading} // 🔥 Biar user tidak mengetik saat loading
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
             {/* Username */}
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
-              <Input 
-                id="username" 
-                name="username" 
-                placeholder="Ex: admin" 
-                className="bg-[#1a1a1a] border-white/10"
-                required
-                value={formData.username} // 🔥 WAJIB ADA
-                onChange={handleChange}
-                disabled={loading}
-              />
+              <div className="flex w-full items-center overflow-hidden rounded-md border border-white/10 bg-black/20 focus-within:border-primary/50 transition-all">
+                <span className="flex select-none items-center px-3 text-[13px] text-white/40 border-r border-white/10 bg-white/5">@</span>
+                <Input 
+                  id="username" 
+                  placeholder="admin" 
+                  className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                  required
+                  value={formData.username}
+                  onChange={(e) => handleChange("username", e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
             </div>
 
             {/* Password */}
@@ -110,14 +115,13 @@ export default function RegisterPage() {
               <Label htmlFor="password">Password</Label>
               <Input 
                 id="password" 
-                name="password" 
                 type="password" 
                 placeholder="******" 
-                className="bg-[#1a1a1a] border-white/10"
+                className="bg-black/20 border-white/10 focus:border-primary/50"
                 required
-                value={formData.password} // 🔥 WAJIB ADA
-                onChange={handleChange}
-                disabled={loading}
+                value={formData.password}
+                onChange={(e) => handleChange("password", e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
@@ -125,20 +129,20 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label>Role Access</Label>
               <Select 
-                value={formData.role} // 🔥 Gunakan value, bukan defaultValue
-                onValueChange={(val) => setFormData((prev) => ({...prev, role: val}))}
-                disabled={loading}
+                value={formData.role} 
+                onValueChange={(val) => handleChange("role", val)}
+                disabled={isLoading}
               >
-                <SelectTrigger className="bg-[#1a1a1a] border-white/10">
+                <SelectTrigger className="bg-black/20 border-white/10 focus:ring-primary/50">
                   <SelectValue placeholder="Pilih Role" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                <SelectContent className="border-white/10 bg-[#0d0d0d] text-white">
                   <SelectItem value="Admin">Admin (Full Access)</SelectItem>
                   <SelectItem value="Pemantau">Pemantau</SelectItem>
                   <SelectItem value="Pelaksana">Pelaksana</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-[10px] text-gray-500">
+              <p className="text-[10px] text-muted-foreground">
                 *Pilih Admin untuk akun pertama.
               </p>
             </div>
@@ -146,13 +150,13 @@ export default function RegisterPage() {
           </CardContent>
 
           <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "Membuat Akun..." : "Create First Account"}
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading ? "Membuat Akun..." : "Create First Account"}
             </Button>
             
-            <p className="text-xs text-center text-gray-500">
-              Sudah punya akun? <Link href="/login" className="text-indigo-400 hover:underline">Login disini</Link>
+            <p className="text-xs text-center text-muted-foreground">
+              Sudah punya akun? <Link href="/login" className="text-primary hover:underline font-medium">Login disini</Link>
             </p>
           </CardFooter>
         </form>
