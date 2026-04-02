@@ -78,15 +78,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const savedUsername = getCookie("user_username");
-    
-    setUserData({
-      name: getCookie("user_name") || "User ARDEN",
-      // 🔥 FIX: Pastikan kalau cookie-nya benar-benar kosong (""), dia tetap pakai fallback
-      username: savedUsername !== "" ? savedUsername : "admin_arden", 
-      avatar: getCookie("user_photo") || "",
-    })
-    setMounted(true)
+    // 🔥 FUNGSI PEMBACA COOKIE (Bisa dipanggil berulang kali)
+    const loadUserData = () => {
+      const savedUsername = getCookie("user_username");
+      setUserData({
+        name: getCookie("user_name") || "User ARDEN",
+        username: savedUsername !== "" ? savedUsername : "admin_arden", 
+        avatar: getCookie("user_photo") || "",
+      });
+    };
+
+    // 1. Panggil pertama kali saat layar dimuat
+    loadUserData();
+    setMounted(true);
+
+    // 2. 🔥 PASANG TELINGA: Dengarkan teriakan dari 'use-profile.ts'
+    window.addEventListener('profile-updated', loadUserData);
+
+    // 3. Bersihkan telinga saat keluar agar tidak terjadi memory leak
+    return () => {
+      window.removeEventListener('profile-updated', loadUserData);
+    };
   }, [])
 
   return (

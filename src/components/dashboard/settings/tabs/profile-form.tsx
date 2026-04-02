@@ -16,9 +16,9 @@ export default function ProfileForm() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-62.5 gap-3 animate-pulse">
-        <Loader2 className="size-8 animate-spin text-primary" />
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
         <span className="text-[13px] font-medium text-muted-foreground tracking-wide">
-          Memuat profil ARDEN...
+          Memuat profil...
         </span>
       </div>
     )

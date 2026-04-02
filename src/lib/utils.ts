@@ -23,3 +23,9 @@ export function isIError(err: unknown): err is IError {
     'message' in err
   );
 }
+
+// 🔥 FUNGSI GLOBAL BARU: Ambil 1 huruf saja untuk inisial
+export function getInitials(name?: string): string {
+  if (!name) return "?"; 
+  return name.trim().charAt(0).toUpperCase();
+}

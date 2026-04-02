@@ -76,10 +76,19 @@ export function UsersDataTable({ data }: { data: User[] }) {
       header: () => null,
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
-          <Avatar className="h-9 w-9 border border-white/10 rounded-lg bg-transparent">
-            <AvatarImage src={row.original.foto_url || ""} />
-            <AvatarFallback className="bg-transparent text-[10px] font-bold text-gray-500">
-              {row.original.name.substring(0, 2).toUpperCase()}
+          {/* 🔥 FIX: Tambahkan overflow-hidden agar gambar tidak luber dari border */}
+          <Avatar className="h-9 w-9 border border-white/10 rounded-lg bg-transparent overflow-hidden">
+            {/* 🔥 FIX: Tambahkan object-cover pada AvatarImage (jika komponennya support class) 
+                Atau styling img di dalamnya. Karena ini komponen Radix, object-cover biasanya sudah bawaan, 
+                tapi kita pertegas dengan style object-cover. */}
+            <AvatarImage 
+              src={row.original.foto_url || ""} 
+              className="object-cover h-full w-full" 
+            />
+            {/* 🔥 FIX: Gunakan getInitials jika kamu mau, atau biarkan substring. 
+                Kita gunakan substring agar tidak nambah import. Ubah font-normal agar senada dengan sidebar */}
+            <AvatarFallback className="bg-transparent text-[10px] font-normal text-gray-500 flex items-center justify-center">
+              {row.original.name.substring(0, 1).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </div>

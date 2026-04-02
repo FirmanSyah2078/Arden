@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
-// 🔥 IMPORT LIBRARY KOMPRESI
 import imageCompression from 'browser-image-compression';
+import { useRouter } from "next/navigation"; // 🔥 Tambahkan useRouter
+import { getInitials } from "@/lib/utils";   // 🔥 Gunakan fungsi Inisial Global
 
 export interface UserProfileData {
   avatarUrl: string | null;
@@ -13,6 +14,7 @@ export interface UserProfileData {
 }
 
 export function useProfile() {
+  const router = useRouter(); // 🔥 Panggil Router
   const [originalData, setOriginalData] = useState<UserProfileData | null>(null)
   const [formData, setFormData] = useState<UserProfileData>({
     avatarUrl: null,
@@ -25,7 +27,6 @@ export function useProfile() {
   })
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -35,46 +36,31 @@ export function useProfile() {
     fileInputRef.current?.click();
   };
 
-  const getInitials = (name: string): string => {
-    if (!name) return "?";
-    return name.trim().charAt(0).toUpperCase();
-  };
-
   const handleChange = <K extends keyof UserProfileData>(field: K, value: UserProfileData[K]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }
 
-  // 🔥 FIX: Ubah fungsi ini menjadi async untuk proses kompresi
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 1. Batas Awal (Bisa kita naikkan ke 5MB, karena toh nanti diperas)
     if (file.size > 5 * 1024 * 1024) {
       alert("Ukuran file terlalu besar! Maksimal 5MB sebelum dikompresi.");
       return;
     }
 
     try {
-      // 2. Setting Mesin Pemeras Gambar
       const options = {
-        maxSizeMB: 0.2,          // Target maksimal 200 KB (Sangat hemat!)
-        maxWidthOrHeight: 512,   // Resolusi diubah max 512x512px (Cocok untuk foto profil bundar)
-        useWebWorker: true,      // Menggunakan thread terpisah agar browser tidak lag
+        maxSizeMB: 0.2,          
+        maxWidthOrHeight: 512,   
+        useWebWorker: true,      
       }
 
-      // 3. Proses "Diperas dan Dijemur"
       const compressedFile = await imageCompression(file, options);
-      
-      // (Opsional) Kamu bisa melihat ukuran sebelum dan sesudah di console browser
-      console.log(`Ukuran asli: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
-      console.log(`Setelah kompresi: ${(compressedFile.size / 1024).toFixed(2)} KB`);
-
-      // 4. Buat URL Preview dari hasil perasan
       const previewUrl = URL.createObjectURL(compressedFile);
-      handleChange("avatarUrl", previewUrl);
-      setSelectedFile(compressedFile); // Simpan file super ringan ini untuk dikirim ke Supabase
       
+      handleChange("avatarUrl", previewUrl);
+      setSelectedFile(compressedFile); 
     } catch (error) {
       console.error("Gagal mengkompresi gambar:", error);
       alert("Terjadi kesalahan saat memproses gambar.");
@@ -141,25 +127,23 @@ export function useProfile() {
     try {
       let finalAvatarUrl = formData.avatarUrl;
 
-      // Jika ada file fisik, upload file super ringan ini ke Supabase
       if (selectedFile) {
         const fileFormData = new FormData();
         fileFormData.append("file", selectedFile);
 
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          body: fileFormData
-        });
-        
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: fileFormData });
         const uploadJson = await uploadRes.json();
-        if (!uploadRes.ok || uploadJson.status === 'fail') {
-          throw new Error(uploadJson.message || "Gagal mengunggah foto ke Storage");
-        }
-
+        
+        if (!uploadRes.ok) throw new Error(uploadJson.message);
         finalAvatarUrl = uploadJson.data.url; 
       }
 
-      // KEMUDIAN baru simpan URL-nya ke Database Prisma
+      if (originalData?.avatarUrl && originalData.avatarUrl !== finalAvatarUrl) {
+        await fetch(`/api/upload?url=${encodeURIComponent(originalData.avatarUrl)}`, { 
+          method: 'DELETE' 
+        });
+      }
+
       const payload = { ...formData, avatarUrl: finalAvatarUrl };
       const res = await fetch('/api/user/me', {
         method: 'PATCH',
@@ -168,8 +152,24 @@ export function useProfile() {
       });
       
       const json = await res.json();
+      
       if (json.status === 'success') {
-        window.location.reload(); 
+        const updatedData = {
+          ...formData,
+          avatarUrl: finalAvatarUrl,
+          lastUpdated: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+        };
+        
+        setOriginalData(updatedData); 
+        setFormData(updatedData);     
+        setSelectedFile(null);        
+        
+        // 🔥 FIX 1: Refresh halaman Server Components (Tabel, dsb) secara instan tanpa layar putih
+        router.refresh();
+
+        // 🔥 FIX 2: Tembakkan Custom Event agar Sidebar membaca cookie baru
+        window.dispatchEvent(new Event('profile-updated'));
+
       } else {
         alert(`Gagal: ${json.message}`);
       }
@@ -194,9 +194,10 @@ export function useProfile() {
   return {
     formData, originalData, isLoading, isSubmitting, isSaveDisabled, isDirty,
     isAvatarRemoved, hasOriginalAvatar,
-    getInitials, handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
+    getInitials, // 🔥 Fungsi ini dikembalikan agar bisa tetap dipakai oleh form profil
+    handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
     handleFileChange,
-    fileInputRef,
-    handleUploadClick
+    fileInputRef,       
+    handleUploadClick   
   }
 }

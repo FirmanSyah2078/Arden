@@ -6,14 +6,14 @@ import {
   LogOut,
   ChevronUp,
   ChevronDown,
-  UserCircle, // 🔥 TAMBAHAN: Ikon untuk Profile
-  LifeBuoy,   // 🔥 Ikon Bantuan
-  Settings,   // Ikon Account Settings
-  Sparkles,   // Ikon System Updates
-  Sun,        // Ikon Theme Light
-  Moon,       // Ikon Theme Dark
-  Monitor,    // Ikon Theme System
-  Palette,    // Ikon Induk Theme
+  UserCircle, 
+  LifeBuoy,   
+  Settings,   
+  Sparkles,   
+  Sun,        
+  Moon,       
+  Monitor,    
+  Palette,    
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -36,11 +36,11 @@ import {
 } from "@/components/ui/sidebar"
 import { useLogout } from "@/hooks/use-logout"
 import { SettingsDialog } from "@/components/dashboard/settings/settings-dialog"
+import { getInitials } from "@/lib/utils" // 🔥 Import logika Inisial dari Utils
 
 export function NavUser({
   user,
 }: {
-  // 🔥 FIX 1: Ubah 'role' menjadi 'username'
   user: { name: string; username: string; avatar: string }
 }) {
   const { isMobile } = useSidebar()
@@ -53,21 +53,14 @@ export function NavUser({
     setMounted(true)
   }, [])
 
-  const initials = user.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .substring(0, 2)
-        .toUpperCase()
-    : "AU"
+  // 🔥 Cukup panggil fungsi global (Sangat Clean!)
+  const initials = getInitials(user.name);
 
   if (!mounted) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" className="opacity-50 cursor-default hover:bg-transparent">
-            {/* 🔥 FIX 2: Ubah rounded-lg menjadi rounded-full untuk Avatar Lingkaran */}
             <div className="h-8 w-8 shrink-0 rounded-full bg-white/10 animate-pulse" />
             <div className="grid flex-1 gap-1.5 text-left text-sm leading-tight ml-1 group-data-[collapsible=icon]:hidden">
               <div className="h-3 w-20 rounded bg-white/10 animate-pulse" />
@@ -88,15 +81,19 @@ export function NavUser({
               size="lg"
               className="select-none group/trigger transition-all duration-500 ease-(--transition-timing-function-smooth) hover:bg-white/5 focus-visible:ring-0 outline-none border-none bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-sidebar-foreground"
             >
-              {/* 🔥 FIX 2: rounded-full */}
-              <Avatar className="h-8 w-8 shrink-0 rounded-full">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-full bg-white/10 text-white font-medium border border-white/5">
+              {/* 🔥 FIX: Tambahkan overflow-hidden */}
+              <Avatar className="h-8 w-8 shrink-0 rounded-full overflow-hidden">
+                {/* 🔥 FIX: Tambahkan object-cover dan ukuran penuh */}
+                <AvatarImage 
+                  src={user.avatar} 
+                  alt={user.name} 
+                  className="object-cover h-full w-full" 
+                />
+                <AvatarFallback className="rounded-full bg-white/10 text-white font-normal border border-white/5 flex items-center justify-center">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               
-              {/* 🔥 FIX 3: Tipografi Normal (Hapus bold, uppercase, tracking) */}
               <div className="grid flex-1 text-left text-sm leading-tight ml-1 group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium text-white">
                   {user.name}
@@ -123,12 +120,17 @@ export function NavUser({
             sideOffset={4}
             onCloseAutoFocus={(e) => e.preventDefault()}  
             >
-            {/* --- AREA 1: INFORMASI PROFIL --- */}
             <DropdownMenuLabel className="p-2 font-normal">
               <div className="flex items-center gap-2 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-full">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-full bg-white/10 text-white font-medium border border-white/5">
+                {/* 🔥 FIX: Tambahkan overflow-hidden */}
+                <Avatar className="h-8 w-8 rounded-full overflow-hidden">
+                  {/* 🔥 FIX: Tambahkan object-cover dan ukuran penuh */}
+                  <AvatarImage 
+                    src={user.avatar} 
+                    alt={user.name} 
+                    className="object-cover h-full w-full" 
+                  />
+                  <AvatarFallback className="rounded-full bg-white/10 text-white font-normal border border-white/5 flex items-center justify-center">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
@@ -145,7 +147,6 @@ export function NavUser({
             
             <DropdownMenuSeparator className="bg-white/10 -mx-1 my-1" />
 
-            {/* --- AREA 2: ACCOUNT & UPDATES --- */}
             <DropdownMenuItem 
               onClick={() => setShowSettings(true)}
               className="cursor-pointer gap-2 p-2 focus:bg-white/5 focus:text-white text-sidebar-foreground/70 transition-colors duration-200"
@@ -154,13 +155,11 @@ export function NavUser({
               <span>Account Settings</span>
             </DropdownMenuItem>
 
-            {/* Untuk System Updates, biarkan dulu karena nanti pakai Modal/Pop-up */}
             <DropdownMenuItem className="cursor-pointer gap-2 p-2 focus:bg-white/5 focus:text-white text-sidebar-foreground/70 transition-colors duration-200">
               <Sparkles className="size-4" />
               <span>System Updates</span>
             </DropdownMenuItem>
 
-            {/* --- AREA 3: THEME (SUB-MENU) --- */}
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="cursor-pointer gap-2 p-2 focus:bg-white/5 focus:text-white text-sidebar-foreground/70 transition-colors duration-200 data-[state=open]:bg-white/5 data-[state=open]:text-white">
                 <Palette className="size-4" />
@@ -187,10 +186,8 @@ export function NavUser({
               </DropdownMenuPortal>
             </DropdownMenuSub>
 
-            {/* 🔥 GARIS DEMARKASI */}
             <DropdownMenuSeparator className="bg-white/10 -mx-1 my-1" />
 
-            {/* --- AREA 4: LOG OUT --- */}
             <DropdownMenuItem
               onClick={handleLogout}
               className="cursor-pointer gap-2 p-2 focus:bg-transparent focus:text-red-500 text-sidebar-foreground/70 transition-colors duration-200"

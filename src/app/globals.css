@@ -243,53 +243,63 @@
 :root {
   --radius: 0.625rem;
 
-  /* --- AUTH VARIABLES (Terkunci di Dark Mode) --- */
+  /* --- AUTH VARIABLES --- */
   --auth-bg: oklch(0.145 0 0);
   --auth-card: oklch(0.205 0 0 / 0.8);
   --auth-border: oklch(1 0 0 / 0.1);
   --auth-title: oklch(0.985 0 0);
   --auth-desc: oklch(0.708 0 0);
-  --auth-accent: oklch(0.488 0.243 264.376); /* Indigo Glow */
+  --auth-accent: oklch(0.488 0.243 264.376);
 
-  /* --- DASHBOARD DARK MODE (Default ARDEN) --- */
-  --background: oklch(0.145 0 0); /* #0a0a0a equivalent */
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  /* --- DASHBOARD DARK MODE (SMART ALPHA SYSTEM) --- */
+  --background: oklch(0.145 0 0); /* Hitam pekat dasar */
+  --foreground: oklch(0.985 0 0); /* Teks putih bersih */
+
+  --card: oklch(0.17 0 0); /* Abu-abu sangat gelap (solid) untuk alas kartu */
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+
+  --popover: oklch(0.17 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  
-  --primary: oklch(0.488 0.243 264.376); /* Indigo ARDEN */
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.269 0 0);
+
+  /* 🔥 FIX 1: PRIMARY BUTTON (Putih teks Hitam) */
+  --primary: oklch(0.985 0 0); /* Background tombol utama (Putih) */
+  --primary-foreground: oklch(0.145 0 0); /* Teks dalam tombol (Hitam Pekat) */
+
+  /* 🔥 FIX 2: SECONDARY BUTTON (Transparan kalem) */
+  --secondary: oklch(1 0 0 / 0.05); /* Sama dengan bg-white/5 */
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  
-  /* Status Colors */
-  --destructive: oklch(0.637 0.237 25.331); /* Red */
+
+  /* 🔥 FIX 3: MUTED (Elemen pasif / Disabled / Subtitle) */
+  --muted: oklch(1 0 0 / 0.05); /* Background pasif transparan */
+  --muted-foreground: oklch(1 0 0 / 0.5); /* Teks redup (text-white/50) */
+
+  /* 🔥 FIX 4: ACCENT (Untuk efek Hover / Active) */
+  --accent: oklch(1 0 0 / 0.1); /* Background menyala saat dihover (bg-white/10) */
+  --accent-foreground: oklch(0.985 0 0); /* Teks menjadi putih solid saat dihover */
+
+  /* --- STATUS COLORS (Tetap Solid untuk Peringatan) --- */
+  --destructive: oklch(0.637 0.237 25.331);
   --destructive-foreground: oklch(0.985 0 0);
-  --success: oklch(0.696 0.17 162.48); /* Emerald */
+  --success: oklch(0.696 0.17 162.48);
   --success-foreground: oklch(0.145 0 0);
-  --warning: oklch(0.769 0.188 70.08); /* Amber */
+  --warning: oklch(0.769 0.188 70.08);
   --warning-foreground: oklch(0.145 0 0);
-  --info: oklch(0.488 0.243 264.376); /* Indigo */
+  --info: oklch(0.488 0.243 264.376);
   --info-foreground: oklch(0.985 0 0);
 
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: var(--primary);
+  /* 🔥 FIX 5: BORDERS & RINGS (Tipis & Elegan) */
+  --border: oklch(1 0 0 / 0.1); /* Garis batas netral (border-white/10) */
+  --input: oklch(1 0 0 / 0.1);
+  --ring: oklch(1 0 0 / 0.3); /* Cincin fokus keyboard yang tidak terlalu menusuk mata */
 
-  /* --- SIDEBAR (ARDEN Dark Tone) --- */
-  --sidebar: oklch(0.17 0 0);
+  /* --- SIDEBAR --- */
+  --sidebar: oklch(0.145 0 0); /* Mengikuti warna background agar menyatu (seamless) */
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent); /* Menggunakan aksen global (transparan) */
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
 
   /* --- CHARTS --- */
@@ -297,7 +307,7 @@
   --chart-2: var(--success);
   --chart-3: var(--warning);
   --chart-4: var(--destructive);
-  --chart-5: oklch(0.645 0.246 16.439); /* Rose */
+  --chart-5: oklch(0.645 0.246 16.439);
 
   /* --- MOBILE APP SPECIFIC --- */
   --mobile-bg: #060610;
@@ -322,7 +332,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  
+
   --primary: oklch(0.488 0.243 264.376);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -331,10 +341,10 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  
+
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(1 0 0);
-  
+
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: var(--primary);

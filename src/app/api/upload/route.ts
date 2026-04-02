@@ -60,3 +60,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: "fail", message: error.message }, { status: 500 });
   }
 }
+
+
+// 🔥 FUNGSI BARU: Untuk menghapus file lama
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const fileUrl = searchParams.get("url");
+
+    if (!fileUrl) return NextResponse.json({ status: "fail" }, { status: 400 });
+
+    // Ambil nama file dari URL (biasanya bagian terakhir setelah '/')
+    const fileName = fileUrl.split('/').pop();
+
+    if (fileName) {
+      await supabase.storage.from("avatars").remove([fileName]);
+    }
+
+    return NextResponse.json({ status: "success", message: "File lama dihapus" });
+  } catch (error: any) {
+    return NextResponse.json({ status: "fail", message: error.message }, { status: 500 });
+  }
+}
