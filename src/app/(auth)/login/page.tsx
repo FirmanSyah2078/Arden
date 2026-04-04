@@ -25,6 +25,15 @@ export default function LoginPage() {
     handleLogin
   } = useLogin()
 
+  // 🔥 FIX ULTIMATE: PEMBERSIH HANTU SHADCN / RADIX UI
+  // Begitu user mendarat di halaman login (entah karena ditendang proxy atau manual),
+  // layar akan langsung dipaksa normal dan bisa diklik!
+  useEffect(() => {
+    document.body.style.pointerEvents = "auto"
+    document.body.style.overflow = "auto"
+    document.body.removeAttribute("data-scroll-locked")
+  }, [])
+
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#050505] p-4 selection:bg-indigo-500/30 relative overflow-hidden">

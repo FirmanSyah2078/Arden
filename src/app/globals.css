@@ -11,7 +11,8 @@
   --font-jakarta: var(--font-jakarta);
   --font-space: var(--font-space);
   --font-montserrat: var(--font-montserrat);
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Consolas, monospace;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Consolas, monospace;
 
   /* --- B. AUTH LAYOUT (NVG STRUCTURE) --- */
   --color-auth-bg: var(--auth-bg);
@@ -87,8 +88,9 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
-  
-  --shadow-glow-primary: 0 0 15px color-mix(in oklab, var(--primary) 30%, transparent);
+
+  --shadow-glow-primary: 0 0 15px
+    color-mix(in oklab, var(--primary) 30%, transparent);
 
   /* --- EASING CUSTOM (Wajib untuk Nav-Role & Nav-User) --- */
   --transition-timing-function-smooth: cubic-bezier(0.4, 0, 0.2, 1);
@@ -97,44 +99,74 @@
   --transition-timing-function-bouncy: cubic-bezier(0.68, -0.55, 0.27, 1.55);
 
   /* --- ATMOSPHERE SHADOWS --- */
-  --shadow-glow-primary: 0 0 8px var(--glow-primary), 0 0 24px color-mix(in oklab, var(--glow-primary) 60%, transparent);
-  --shadow-glow-accent: 0 0 8px var(--glow-accent), 0 0 24px color-mix(in oklab, var(--glow-accent) 60%, transparent);
+  --shadow-glow-primary:
+    0 0 8px var(--glow-primary),
+    0 0 24px color-mix(in oklab, var(--glow-primary) 60%, transparent);
+  --shadow-glow-accent:
+    0 0 8px var(--glow-accent),
+    0 0 24px color-mix(in oklab, var(--glow-accent) 60%, transparent);
 
+  /* --- ANIMASI CUSTOM --- */
 
-  /* --- ANIMASI CUSTOM (Siap pakai untuk komponen lain) --- */
-  
   /* Meteor */
   --animate-meteor: meteor 5s linear infinite;
   @keyframes meteor {
-    0% { transform: translateX(0); opacity: 1; }
-    70% { opacity: 1; }
-    100% { transform: translateX(-500px); opacity: 0; }
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-500px);
+      opacity: 0;
+    }
   }
 
   /* Float */
   --animate-float: float 6s ease-in-out infinite;
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
   }
 
   /* Marquee */
   --animate-marquee: marquee var(--duration) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
   @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(calc(-100% - var(--gap))); }
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
   }
   @keyframes marquee-vertical {
-    from { transform: translateY(0); }
-    to { transform: translateY(calc(-100% - var(--gap))); }
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
   }
 
   /* Fade In Down */
   --animate-fade-in-down: fade-in-down 0.5s ease-out;
   @keyframes fade-in-down {
-    0% { opacity: 0; transform: translateY(-10px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Pulse Slow */
@@ -143,31 +175,61 @@
   /* Deep Breath (Smooth Organic Pulse) */
   --animate-deep-breath: deep-breath 4s ease-in-out infinite;
   @keyframes deep-breath {
-    0%, 100% { opacity: 0.2; box-shadow: none; }
-    50% { opacity: 1; box-shadow: 0 0 10px var(--auth-accent); }
+    0%,
+    100% {
+      opacity: 0.2;
+      box-shadow: none;
+    }
+    50% {
+      opacity: 1;
+      box-shadow: 0 0 10px var(--auth-accent);
+    }
   }
 
   /* Twinkle (Footer Stars) */
   --animate-twinkle: twinkle 4s ease-in-out infinite;
   @keyframes twinkle {
-    0%, 100% { opacity: 0.2; transform: scale(0.8); }
-    50% { opacity: 1; transform: scale(1.2); }
+    0%,
+    100% {
+      opacity: 0.2;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
   }
 
   /* Beacon Flash (Data Transmission) */
   --animate-beacon-flash: beacon-flash 2.5s ease-in-out infinite;
   @keyframes beacon-flash {
-    0%, 100% { opacity: 0.4; transform: scale(1); box-shadow: none; }
-    10% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 10px var(--auth-accent); }
-    20% { opacity: 0.4; transform: scale(1); box-shadow: none; }
-    30% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 10px var(--auth-accent); }
-    40%, 90% { opacity: 0.4; transform: scale(1); box-shadow: none; }
-  }
-
-  --animate-shine: shine 1.5s infinite;
-  @keyframes shine {
-    0% { left: -100%; }
-    100% { left: 200%; }
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: scale(1);
+      box-shadow: none;
+    }
+    10% {
+      opacity: 1;
+      transform: scale(1.5);
+      box-shadow: 0 0 10px var(--auth-accent);
+    }
+    20% {
+      opacity: 0.4;
+      transform: scale(1);
+      box-shadow: none;
+    }
+    30% {
+      opacity: 1;
+      transform: scale(1.5);
+      box-shadow: 0 0 10px var(--auth-accent);
+    }
+    40%,
+    90% {
+      opacity: 0.4;
+      transform: scale(1);
+      box-shadow: none;
+    }
   }
 
   /* Floating Diamond Animations */
@@ -177,65 +239,206 @@
 
   @keyframes diamond-1 {
     /* 0%: Lahir dari bawah dalam keadaan tidak terlihat (gaib) */
-    0% { transform: translateY(15px) rotate(45deg) scale(0.2); opacity: 0; }
+    0% {
+      transform: translateY(15px) rotate(45deg) scale(0.2);
+      opacity: 0;
+    }
     /* 50%: Bersinar terang dan membesar saat di tengah perjalanan */
-    50% { transform: translateY(-20px) rotate(45deg) scale(1.2); opacity: 0.9; }
+    50% {
+      transform: translateY(-20px) rotate(45deg) scale(1.2);
+      opacity: 0.9;
+    }
     /* 100%: Menghilang sempurna sebelum mengulang lagi ke bawah */
-    100% { transform: translateY(-60px) rotate(45deg) scale(0.2); opacity: 0; }
+    100% {
+      transform: translateY(-60px) rotate(45deg) scale(0.2);
+      opacity: 0;
+    }
   }
 
   @keyframes diamond-2 {
-    0% { transform: translateY(20px) rotate(45deg) scale(0.3); opacity: 0; }
-    50% { transform: translateY(-30px) rotate(45deg) scale(1.1); opacity: 0.7; }
-    100% { transform: translateY(-80px) rotate(45deg) scale(0.3); opacity: 0; }
+    0% {
+      transform: translateY(20px) rotate(45deg) scale(0.3);
+      opacity: 0;
+    }
+    50% {
+      transform: translateY(-30px) rotate(45deg) scale(1.1);
+      opacity: 0.7;
+    }
+    100% {
+      transform: translateY(-80px) rotate(45deg) scale(0.3);
+      opacity: 0;
+    }
   }
 
   @keyframes diamond-3 {
-    0% { transform: translateY(10px) rotate(45deg) scale(0.4); opacity: 0; }
-    50% { transform: translateY(-15px) rotate(45deg) scale(1.3); opacity: 1; }
-    100% { transform: translateY(-40px) rotate(45deg) scale(0.4); opacity: 0; }
+    0% {
+      transform: translateY(10px) rotate(45deg) scale(0.4);
+      opacity: 0;
+    }
+    50% {
+      transform: translateY(-15px) rotate(45deg) scale(1.3);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-40px) rotate(45deg) scale(0.4);
+      opacity: 0;
+    }
   }
 }
-
 
 /* =========================================
    2. UTILITIES & ANIMATIONS
    =========================================
 */
+
+/* =========================================================================
+   PERPUSTAKAAN ANIMASI IKON ARDEN (Eksklusif Ala Boxicons)
+   =========================================================================
+   CARA PAKAI (Sangat Simpel!):
+
+   [Default] Jalan 1x lalu balik ke awal.  Contoh: className="hover:ar-tada"
+   [-loop]   Jalan terus menerus tanpa henti. Contoh: className="hover:ar-tada-loop"
+   [-hold]   Jalan 1x lalu terkunci di akhir. Contoh: className="hover:ar-tada-hold"
+
+    -------------------------------------------------------------------------
+     1. AR-BOUNCE-X (Maju mundur halus - Cocok untuk panah/masuk/submit)
+     ------------------------------------------------------------------------- */
+@keyframes ar-bounce-x {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+@utility ar-bounce-x      { animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) 1; }
+@utility ar-bounce-x-loop { animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+@utility ar-bounce-x-hold { animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+/* -------------------------------------------------------------------------
+     2. AR-FLOAT (Naik-turun melayang - Cocok untuk Cloud/Upload/Download/Save)
+     ------------------------------------------------------------------------- */
+@keyframes ar-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@utility ar-float      { animation: ar-float 2s ease-in-out 1; }
+@utility ar-float-loop { animation: ar-float 2s ease-in-out infinite; }
+@utility ar-float-hold { animation: ar-float 2s ease-in-out forwards; }
+
+/* -------------------------------------------------------------------------
+     3. AR-SHAKE (Getaran scanner memudar - Cocok untuk QR/Search/Bell/Alert)
+     ------------------------------------------------------------------------- */
+@keyframes ar-shake {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  15% { transform: rotate(-10deg) scale(1.15); }
+  30% { transform: rotate(10deg) scale(1.15); }
+  45% { transform: rotate(-6deg) scale(1.15); }
+  60% { transform: rotate(6deg) scale(1.15); }
+  75% { transform: rotate(-2deg) scale(1.15); }
+  85% { transform: rotate(2deg) scale(1.15); }
+}
+@utility ar-shake      { animation: ar-shake 1.2s ease-in-out 1; }
+@utility ar-shake-loop { animation: ar-shake 1.2s ease-in-out infinite; }
+@utility ar-shake-hold { animation: ar-shake 1.2s ease-in-out forwards; }
+
+/* -------------------------------------------------------------------------
+     4. AR-TADA (Mengecil lalu meledak goyang - Cocok untuk Success/Check/Star)
+     ------------------------------------------------------------------------- */
+@keyframes ar-tada {
+  0% { transform: scale(1); }
+  10%, 20% { transform: scale(0.9) rotate(-3deg); }
+  30%, 50%, 70%, 90% { transform: scale(1.2) rotate(3deg); }
+  40%, 60%, 80% { transform: scale(1.2) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@utility ar-tada      { animation: ar-tada 1.5s ease-in-out 1; }
+@utility ar-tada-loop { animation: ar-tada 1.5s ease-in-out infinite; }
+@utility ar-tada-hold { animation: ar-tada 1.5s ease-in-out forwards; }
+
+/* -------------------------------------------------------------------------
+     5. AR-BEAT (Detak jantung - Cocok untuk Heart/Live/Active/Online Status)
+     ------------------------------------------------------------------------- */
+@keyframes ar-beat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.25); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.25); }
+  60% { transform: scale(1); }
+}
+@utility ar-beat      { animation: ar-beat 1.2s ease-in-out 1; }
+@utility ar-beat-loop { animation: ar-beat 1.2s ease-in-out infinite; }
+@utility ar-beat-hold { animation: ar-beat 1.2s ease-in-out forwards; }
+
+/* -------------------------------------------------------------------------
+     6. AR-SPIN-SLOW (Putaran sangat halus - Cocok untuk Settings/Refresh/Sync)
+     ------------------------------------------------------------------------- */
+@keyframes ar-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@utility ar-spin-slow      { animation: ar-spin-slow 4s linear 1; }
+@utility ar-spin-slow-loop { animation: ar-spin-slow 4s linear infinite; }
+@utility ar-spin-slow-hold { animation: ar-spin-slow 4s linear forwards; }
+
+
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+  /* -------------------------------------------------------------------------
+     NO SCROLLBAR (Scroll mulus tanpa jejak visual scrollbar)
+     -------------------------------------------------------------------------
+     Cara pakai: Tambahkan class "no-scrollbar" pada container yang bisa di-scroll.
+  */
   .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    -ms-overflow-style: none; /* Menyembunyikan di Internet Explorer & Edge */
+    scrollbar-width: none; /* Menyembunyikan di Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Menyembunyikan di Chrome, Safari, & Opera */
   }
 
+  /* -------------------------------------------------------------------------
+     SIDEBAR SHINE (Efek kilapan kaca melintas)
+     -------------------------------------------------------------------------
+     Cocok untuk: Menu Sidebar yang sedang Aktif, Kartu Premium, atau Tombol.
+     Otomatis menyala saat di-hover atau saat element memiliki data-active="true"
+  */
 
-  /* ARDEN Dashboard Sidebar Shine (Versi Rapi) */
+  /* 1. Resep animasinya dipindah ke sini, langsung di atas class-nya */
+  @keyframes shine {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 200%;
+    }
+  }
+
   .sidebar-shine {
     position: relative;
     overflow: hidden;
   }
+
   .sidebar-shine::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0; left: -100%;
-    width: 50%; height: 100%;
-    background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    /* 2. Upgrade Warna: Pakai color-mix agar warna kilapan otomatis ganti di Light/Dark Mode */
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      color-mix(in oklab, var(--foreground) 10%, transparent) 50%,
+      transparent 100%
+    );
     transform: skewX(-20deg);
-    transition: left 0.5s;
     pointer-events: none;
   }
 
-  /* Memanggil variabel animasi dari @theme inline */
+  /* 3. Panggil langsung animasinya tanpa perlu var(--animate-shine) lagi */
   .sidebar-shine:hover::before,
   .sidebar-shine[data-active="true"]::before,
   .sidebar-shine[data-state="active"]::before {
-    animation: var(--animate-shine); 
+    animation: shine 1.5s infinite;
   }
 }
-
 
 /* =========================================
    3. CSS VARIABLES (PALET WARNA ARDEN)
@@ -290,7 +493,9 @@
   /* 🔥 FIX 5: BORDERS & RINGS (Tipis & Elegan) */
   --border: oklch(1 0 0 / 0.1); /* Garis batas netral (border-white/10) */
   --input: oklch(1 0 0 / 0.1);
-  --ring: oklch(1 0 0 / 0.3); /* Cincin fokus keyboard yang tidak terlalu menusuk mata */
+  --ring: oklch(
+    1 0 0 / 0.3
+  ); /* Cincin fokus keyboard yang tidak terlalu menusuk mata */
 
   /* --- SIDEBAR --- */
   --sidebar: oklch(0.145 0 0); /* Mengikuti warna background agar menyatu (seamless) */
@@ -312,9 +517,9 @@
   /* --- MOBILE APP SPECIFIC --- */
   --mobile-bg: #060610;
   --mobile-card: #151419;
-  --mobile-surface: #27272A;
-  --mobile-border: #3F3F3F;
-  --mobile-muted: #B3B3B3;
+  --mobile-surface: #27272a;
+  --mobile-border: #3f3f3f;
+  --mobile-muted: #b3b3b3;
 
   /* --- CYCLE QUALITY --- */
   --minimal: oklch(0.707 0.165 254.624);
@@ -359,7 +564,6 @@
   --sidebar-ring: var(--ring);
 }
 
-
 /* =========================================
    4. BASE STYLES & FIXES
    ========================================= */
@@ -367,8 +571,9 @@
   * {
     @apply border-border; /* 🔥 KOREKSI: Hapus outline global yang bikin kotor */
   }
-  
-  html, body {
+
+  html,
+  body {
     @apply bg-background text-foreground;
   }
 
@@ -397,7 +602,6 @@
     box-shadow: inset 0 0 20px 20px transparent !important;
   }
 }
-
 
 /* =========================================
    5. GLOBAL SCROLLBAR (FUTURISTIC)

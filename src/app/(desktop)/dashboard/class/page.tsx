@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import React from "react";
-import { Search, QrCode, SearchX, ExternalLink, Filter, ChevronDown, X, BadgeCheck } from "lucide-react"; 
+import { Search, QrCode, SearchX, ExternalLink, Filter, ChevronDown, X, BadgeCheck, MoreHorizontal } from "lucide-react"; 
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
@@ -83,6 +83,29 @@ export default function ClassPage() {
 
   const StudentPages = Math.ceil(filteredClasses.length / itemsPerPage);
   const paginatedClasses = filteredClasses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // 🔥 FIX: Logika Sliding Window Pagination
+  const generatePagination = () => {
+    if (StudentPages <= 4) {
+      // Jika halaman 4 atau kurang, tampilkan semua (1, 2, 3, 4)
+      return Array.from({ length: StudentPages }, (_, i) => i + 1);
+    }
+    
+    if (currentPage <= 2) {
+      // Jika di awal: 1, 2, 3, ..., Terakhir
+      return [1, 2, 3, '...', StudentPages];
+    }
+    
+    if (currentPage >= StudentPages - 1) {
+      // Jika di akhir: 1, ..., Terakhir-2, Terakhir-1, Terakhir
+      return [1, '...', StudentPages - 2, StudentPages - 1, StudentPages];
+    }
+    
+    // Jika di tengah: 1, ..., (Current-1), Current, (Current+1), ..., Terakhir
+    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', StudentPages];
+  };
+
+  const visiblePages = generatePagination();
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-white/20">
@@ -177,10 +200,10 @@ export default function ClassPage() {
             {paginatedClasses.map((kelas) => (
               <div
                 key={kelas.id}
-                className="group relative w-[254px] h-[364px] bg-card border border-border rounded-[24px] flex flex-col transition-all duration-300 hover:border-white/20 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+                className="group relative w-63.5 h-91 bg-card border border-border rounded-3xl flex flex-col transition-all duration-300 hover:border-white/20 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
               >
                 {/* 1. Banner Section */}
-                <div className="relative w-full h-28 shrink-0 bg-muted overflow-hidden rounded-t-[24px]">
+                <div className="relative w-full h-28 shrink-0 bg-muted overflow-hidden rounded-t-3xl">
                   <Image
                     src="/bg-banner.jpeg"
                     alt="Class Banner"
@@ -190,7 +213,7 @@ export default function ClassPage() {
                   <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/80" />
 
                   {/* 🔥 FIX: Status Badge menjadi Nama Wali Kelas dengan background gelap agar jelas */}
-                  <div className="absolute top-4 right-4 flex items-center px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 z-10 shadow-sm max-w-[160px]">
+                  <div className="absolute top-4 right-4 flex items-center px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 z-10 shadow-sm max-w-40">
                     <span className="font-inter text-[10px] font-semibold text-white tracking-wide truncate">
                       {kelas.wali}
                     </span>
@@ -198,7 +221,7 @@ export default function ClassPage() {
                 </div>
 
                 {/* 🔥 FIX: Avatar Profile dengan efek Kaca Pucat (Frosted Glass) yang lebih terang */}
-                <div className="absolute top-[84px] left-5 z-20">
+                <div className="absolute top-21 left-5 z-20">
                   {/* Dasar bg-card (hitam pekat) untuk memblokir garis spanduk agar tidak bocor */}
                   <div className="relative size-14 rounded-full border-[3px] border-card bg-card flex items-center justify-center shadow-lg overflow-hidden">
 
@@ -219,7 +242,7 @@ export default function ClassPage() {
                     <h3 className="font-jakarta font-bold text-[18px] text-foreground tracking-tight leading-none truncate">
                       {kelas.name}
                     </h3>
-                    <BadgeCheck className="size-[16px] text-blue-500 shrink-0" />
+                    <BadgeCheck className="size-4 text-blue-500 shrink-0" />
                   </div>
 
                   {/* 🔥 FIX: Username menjadi @namakelas huruf kecil */}
@@ -254,18 +277,20 @@ export default function ClassPage() {
                   {/* 5. Links / Action Buttons */}
                   <div className="flex items-center gap-2">
                     <Button
-                      className="flex-1 h-9 rounded-full bg-primary text-black hover:bg-primary/90 font-bold text-[12px] transition-all active:scale-95 shadow-md"
+                      /* 🔥 FIX: bg-primary/70 agar perbedaan warnanya kentara, dan tambah efek hover melayang sedikit */
+                      className="group/view flex-1 h-9 rounded-full bg-primary text-black hover:bg-primary/70 hover:-translate-y-0.5 font-bold text-[12px] transition-all active:scale-95 shadow-md"
                     >
-                      <ExternalLink className="mr-1.5 size-3.5" />
+                      <ExternalLink className="mr-1.5 size-3.5 group-hover/view:ar-bounce-x" />
                       View
                     </Button>
+
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-9 w-9 rounded-full border-border bg-card hover:bg-accent hover:border-white/20 hover:text-foreground transition-all active:scale-95 shadow-sm"
+                      className="group/qr h-9 w-9 rounded-full border-border bg-card hover:bg-accent hover:border-white/20 hover:text-foreground transition-all active:scale-95 shadow-sm"
                       onClick={() => setIsQRModalOpen(true)}
                     >
-                      <QrCode className="size-4" />
+                      <QrCode className="size-4 transition-colors group-hover/qr:text-primary group-hover/qr:ar-shake-loop" />
                     </Button>
                   </div>
                 </div>
@@ -280,12 +305,14 @@ export default function ClassPage() {
           </div>
         )}
 
-        {/* --- PAGINATION --- */}
+        {/* --- PAGINATION (Premium Rounded Square & Subtle Active) --- */}
         {StudentPages > 1 && (
-          <div className="mt-16 flex justify-center pb-10">
+          <div className="mt-12 flex justify-center pb-12">
             <Pagination className="mx-0 w-auto">
-              <PaginationContent className="bg-card border border-border rounded-full p-1 shadow-sm">
+              {/* Jarak antar elemen utama dibuat lega (gap-2) */}
+              <PaginationContent className="flex items-center gap-2 sm:gap-3">
 
+                {/* Tombol Previous */}
                 <PaginationItem>
                   <PaginationPrevious
                     href="#"
@@ -294,40 +321,57 @@ export default function ClassPage() {
                       if (currentPage > 1) setCurrentPage(currentPage - 1);
                     }}
                     className={cn(
-                      "h-9 w-9 md:w-auto md:px-4 rounded-full border-none transition-colors",
+                      // 🔥 Bentuk rounded-lg untuk kesan kotak melengkung elegan
+                      "h-8 px-2 sm:px-3 rounded-lg border border-transparent transition-all duration-300 flex items-center gap-1 font-bold text-[11px] uppercase tracking-wider",
                       currentPage === 1
-                        ? "pointer-events-none opacity-20"
-                        : "hover:bg-accent hover:text-accent-foreground"
+                        ? "pointer-events-none text-muted-foreground/30"
+                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
                     )}
                   />
                 </PaginationItem>
 
-                <div className="flex items-center gap-1 px-1">
-                  {[...Array(StudentPages)].map((_, i) => {
-                    const pageNumber = i + 1;
+                {/* Area Angka - Jarak antar angka (gap-1) */}
+                <div className="flex items-center gap-1.5">
+                  {visiblePages.map((page, index) => {
+                    // Render Titik-titik (Ellipsis)
+                    if (page === '...') {
+                      return (
+                        <PaginationItem key={`ellipsis-${index}`}>
+                          <div className="h-8 w-8 flex items-center justify-center text-muted-foreground/40">
+                            <MoreHorizontal className="size-4" />
+                          </div>
+                        </PaginationItem>
+                      );
+                    }
+
+                    // Render Angka Halaman
                     return (
-                      <PaginationItem key={pageNumber}>
+                      <PaginationItem key={page}>
                         <PaginationLink
                           href="#"
-                          isActive={currentPage === pageNumber}
+                          isActive={currentPage === page}
                           onClick={(e) => {
                             e.preventDefault();
-                            setCurrentPage(pageNumber);
+                            setCurrentPage(Number(page));
                           }}
                           className={cn(
-                            "h-9 w-9 font-bold text-xs rounded-full border-none transition-all",
-                            currentPage === pageNumber
-                              ? "bg-primary text-black hover:bg-primary/90 shadow-md scale-105"
-                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                            // 🔥 FIX KUNCI: rounded-lg (kotak melengkung), h-8 w-8 (proporsi ramping)
+                            "h-8 w-8 p-0 flex items-center justify-center font-bold text-xs rounded-lg transition-all duration-300",
+                            currentPage === page
+                              // 🔥 AKTIF: Background redup transparan (15%), ada border tipis bercahaya, text putih
+                              ? "bg-foreground/15 text-foreground border border-foreground/20 shadow-sm" 
+                              // 🔥 TIDAK AKTIF: Tanpa border, hover menyala elegan
+                              : "bg-transparent text-muted-foreground border border-transparent hover:bg-accent/50 hover:text-foreground" 
                           )}
                         >
-                          {pageNumber}
+                          {page}
                         </PaginationLink>
                       </PaginationItem>
                     );
                   })}
                 </div>
 
+                {/* Tombol Next */}
                 <PaginationItem>
                   <PaginationNext
                     href="#"
@@ -336,10 +380,10 @@ export default function ClassPage() {
                       if (currentPage < StudentPages) setCurrentPage(currentPage + 1);
                     }}
                     className={cn(
-                      "h-9 w-9 md:w-auto md:px-4 rounded-full border-none transition-colors",
+                      "h-8 px-2 sm:px-3 rounded-lg border border-transparent transition-all duration-300 flex items-center gap-1 font-bold text-[11px] uppercase tracking-wider",
                       currentPage === StudentPages
-                        ? "pointer-events-none opacity-20"
-                        : "hover:bg-accent hover:text-accent-foreground"
+                        ? "pointer-events-none text-muted-foreground/30"
+                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
                     )}
                   />
                 </PaginationItem>

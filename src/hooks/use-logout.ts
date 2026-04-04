@@ -14,17 +14,18 @@ export function useLogout() {
       })
       localStorage.clear()
 
-      // 🔥 FIX: Beri jeda 200ms agar Shadcn/Radix UI sempat menghapus "Layar Hitam Bening" 
-      // dan mengembalikan `pointer-events` pada tag <body>.
-      setTimeout(() => {
-        router.push("/login")
-        router.refresh()
-      }, 200)
+      // 🔥 FIX: Hapus paksa atribut pengunci layar milik Shadcn/Radix UI
+      document.body.style.pointerEvents = "";
+      document.body.removeAttribute("data-scroll-locked");
+
+      // Gunakan window.location.href untuk Hard Reload (Paling Ampuh!)
+      // Ini akan menyapu bersih sisa-sisa state React dan DOM yang nyangkut
+      window.location.href = "/login"
 
     } catch (error) {
-      setTimeout(() => {
-        router.push("/login")
-      }, 200)
+      document.body.style.pointerEvents = "";
+      document.body.removeAttribute("data-scroll-locked");
+      window.location.href = "/login"
     }
   }
 

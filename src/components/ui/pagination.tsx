@@ -6,7 +6,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { buttonVariants, type Button } from "@/components/ui/button"
+// 🔥 FIX: Kita tidak butuh buttonVariants lagi, hapus import-nya!
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -27,7 +27,8 @@ function PaginationContent({
   return (
     <ul
       data-slot="pagination-content"
-      className={cn("flex flex-row items-center gap-1", className)}
+      // 🔥 FIX: Hapus gap-1 bawaan agar gap bisa diatur 100% dari page.tsx
+      className={cn("flex flex-row items-center", className)}
       {...props}
     />
   )
@@ -39,13 +40,11 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 
 type PaginationLinkProps = {
   isActive?: boolean
-} & Pick<React.ComponentProps<typeof Button>, "size"> &
-  React.ComponentProps<"a">
+} & React.ComponentProps<"a">
 
 function PaginationLink({
   className,
   isActive,
-  size = "icon",
   ...props
 }: PaginationLinkProps) {
   return (
@@ -53,11 +52,9 @@ function PaginationLink({
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}
+      // 🔥 FIX 1: Hapus buttonVariants! Gunakan base class murni tanpa warna/border
       className={cn(
-        buttonVariants({
-          variant: isActive ? "outline" : "ghost",
-          size,
-        }),
+        "inline-flex cursor-pointer items-center justify-center whitespace-nowrap focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
         className
       )}
       {...props}
@@ -72,11 +69,11 @@ function PaginationPrevious({
   return (
     <PaginationLink
       aria-label="Go to previous page"
-      size="default"
-      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
+      // 🔥 FIX 2: Hapus size="default" dan px-2.5 bawaan yang bikin tombol jadi "gendut"
+      className={cn("gap-1.5", className)}
       {...props}
     >
-      <ChevronLeftIcon />
+      <ChevronLeftIcon className="size-4" />
       <span className="hidden sm:block">Previous</span>
     </PaginationLink>
   )
@@ -89,12 +86,12 @@ function PaginationNext({
   return (
     <PaginationLink
       aria-label="Go to next page"
-      size="default"
-      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
+      // 🔥 FIX 2: Hapus size="default" dan px-2.5 bawaan yang bikin tombol jadi "gendut"
+      className={cn("gap-1.5", className)}
       {...props}
     >
       <span className="hidden sm:block">Next</span>
-      <ChevronRightIcon />
+      <ChevronRightIcon className="size-4" />
     </PaginationLink>
   )
 }
@@ -107,7 +104,8 @@ function PaginationEllipsis({
     <span
       aria-hidden
       data-slot="pagination-ellipsis"
-      className={cn("flex size-9 items-center justify-center", className)}
+      // 🔥 FIX 3: Hapus ukuran size-9 yang di-hardcode
+      className={cn("flex items-center justify-center", className)}
       {...props}
     >
       <MoreHorizontalIcon className="size-4" />
