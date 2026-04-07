@@ -1,40 +1,32 @@
-import type { Metadata } from "next";
-import { Toaster } from 'sonner'; // 1. Import Toaster
+'use client';
+import { useState, useEffect } from "react";
+import { Toaster } from 'sonner';
+import { Loader2 } from 'lucide-react'; 
 
-export const metadata: Metadata = {
-  title: "ARDEN Mobile",
-  description: "Absensi Siswi Mobile",
-};
+export default function MobileLayout({ children }: { children: React.ReactNode }) {
+  const [loading, setLoading] = useState(true);
 
-export default function MobileLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
-    // Wrapper luar (Background gelap besar di desktop)
-    <div className="min-h-dvh w-full flex items-center justify-center bg-black/90 lg:bg-zinc-900 overflow-hidden">
-      
-      {/* Container HP (Lebar 350px) */}
-      <div className="w-full max-w-87.5 h-dvh lg:h-[95vh] bg-[#151419] text-white relative shadow-xl lg:rounded-3xl lg:border-2 lg:border-zinc-800 overflow-hidden flex flex-col">
+    <div className="min-h-dvh w-full flex items-center justify-center bg-black/90 lg:bg-zinc-950 overflow-hidden font-sans">
+      {/* 🔥 FIX: Set max-width, max-height, min-height, & aspect-ratio untuk layar desktop */}
+      <div className="w-full h-[100dvh] lg:h-auto lg:min-h-[700px] lg:max-h-[850px] lg:aspect-[9/19] max-w-[380px] bg-[#151419] text-white relative shadow-2xl lg:rounded-[2.5rem] lg:border-[8px] lg:border-zinc-900 overflow-hidden flex flex-col">
+        <Toaster position="top-center" theme="dark" richColors closeButton className="absolute mt-4" />
         
-        {/* 2. PASANG TOASTER DISINI */}
-        {/* theme="dark" -> Agar text putih & background hitam */}
-        {/* position="top-center" -> Agar muncul di atas layar HP */}
-        {/* richColors -> Agar sukses warna hijau, error warna merah */}
-        <Toaster 
-          position="top-center" 
-          theme="dark" 
-          richColors 
-          closeButton
-          // Trik agar notifikasi tidak tertutup oleh header/elemen lain
-          className="absolute mt-4" 
-        />
-
-        <main className="flex-1 w-full h-full relative overflow-hidden">
-            {children}
-        </main>
-        
+        {loading ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-[#151419]">
+            <Loader2 className="w-10 h-10 text-white/50 animate-spin mb-3" />
+            <p className="text-xs font-mono text-white/50 tracking-widest">LOADING ARDEN...</p>
+          </div>
+        ) : (
+          <main className="flex-1 w-full h-full relative overflow-hidden animate-in fade-in duration-500">
+              {children}
+          </main>
+        )}
       </div>
     </div>
   );

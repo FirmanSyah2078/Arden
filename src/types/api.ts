@@ -8,7 +8,7 @@
 export type Role = 'Admin' | 'Pemantau' | 'Pelaksana';
 
 // Status API standar
-export type Status = 'success' | 'fail';
+export type Status = 'success' | 'fail' | 'idle' | 'loading' | 'error';
 
 export interface LoginData {
     token: string;
@@ -95,21 +95,21 @@ export interface Class {
 // ==========================================
 
 // Jadwal Sholat (Slot waktu yang didukung sistem absensi ARDEN saat ini)
-export type PrayerTimeSlot = 'zhuhur' | 'ashar'; // 🔥 FIX: Typo 'dzuhur' diperbaiki menjadi 'zhuhur'
+export type PrayerTimeSlot = 'Dhuhr' | 'Asr';
 
 // Daftar Sholat Lima Waktu
-export type DailyPrayer = 'Subuh' | 'Zhuhur' | 'Ashar' | 'Maghrib' | 'Isya'; // 🔥 FIX: Menggunakan nama lokal & perbaikan typo
+export type DailyPrayer = 'Fajr' | 'Dhuhr' | 'Asr' | 'Maghrib' | 'Isha'; 
 
 export interface PrayerTimes {
-  Subuh: string;
-  Zhuhur: string;
-  Ashar: string;
+  Fajr: string;
+  Dhuhr: string;
+  Asr: string;
   Maghrib: string;
-  Isya: string;
+  Isha: string;
 }
 
 // Status Khusus Absensi
-export type AttendanceType = 'Haid' | 'Suci'; 
+export type AttendanceType = 'Haid' | 'Suci';
 
 // [INTEGRASI] Student versi Mobile (Sederhana)
 export interface StudentMobile { 
@@ -128,6 +128,8 @@ export interface AttendanceStatusResponse {
   class_name: string;
   status: Status; 
   message: string;
+  icode?: string;
+  remarks?: string;
 }
 
 // Payload untuk Input Absensi Baru (Mobile)
@@ -143,7 +145,7 @@ export interface NewAttendancePayload {
 }
 
 // Data Absensi yang ditampilkan di History Mobile
-export interface AttendanceDataMobile { 
+export interface AttendanceDataMobile {
   id_attendance: number;
   date: Date | string;
   time: PrayerTimeSlot | string;

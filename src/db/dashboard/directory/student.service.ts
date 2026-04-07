@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma"
 import { randomUUID } from "crypto"
 
 export class StudentService {
-  // Helpers
   private static toTitleCase = (str: string) => {
     if (!str) return "";
     return str.toLowerCase().replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());
@@ -21,63 +20,54 @@ export class StudentService {
   // --- 1. AMBIL SEMUA DATA (DASHBOARD) ---
   static async getAllStudents() {
     const students = await prisma.tbl_students.findMany({
-      include: {
-        tbl_classes: { select: { class_name: true } } // 🔥 FIX: Relasi Inggris
-      },
-      orderBy: [
-        { id_class: 'asc' },
-        { full_name: 'asc' }
-      ]
+      include: { tbl_classes: { select: { class_name: true } } },
+      orderBy: [ { id_class: 'asc' }, { full_name: 'asc' } ]
     });
-
-    // Prisma BigInt harus diubah ke Number
-    return students.map(s => ({
-      ...s,
-      id_student: Number(s.id_student),
-      id_class: s.id_class ? Number(s.id_class) : null,
-    }));
+    return students.map(s => ({ ...s, id_student: Number(s.id_student), id_class: s.id_class ? Number(s.id_class) : null }));
   }
 
-  // --- 2. AMBIL 1 DATA BERDASARKAN ICODE/NIS (MOBILE SCANNER) ---
+  // --- 2. AMBIL 1 DATA BY ICODE/NIS (MOBILE SCANNER) ---
   static async getStudentByCode(code: string) {
     const student = await prisma.tbl_students.findFirst({
-      where: {
-        OR: [ { icode: code }, { nis: code } ]
-      },
-      include: {
-        tbl_classes: { select: { class_name: true } }
-      }
+      where: { OR: [ { icode: code }, { nis: code } ] },
+      include: { tbl_classes: { select: { class_name: true } } }
     });
-
     if (!student) throw new Error("Data student tidak ditemukan");
-
-    return {
-      ...student,
-      id_student: Number(student.id_student),
-      id_class: student.id_class ? Number(student.id_class) : null,
-    };
+    return { ...student, id_student: Number(student.id_student), id_class: student.id_class ? Number(student.id_class) : null };
   }
 
-  // --- 3. CREATE DATA MANUAL ---
+  // 🔥 3. (BARU) PENCARIAN MANUAL MOBILE (NAMA / NIS) 🔥
+  static async searchStudents(prm: string, limit: number) {
+    const students = await prisma.tbl_students.findMany({
+      where: {
+        OR: [
+          { full_name: { contains: prm, mode: 'insensitive' } }, // Cari berdasarkan nama
+          { nis: { contains: prm } } // Atau cari berdasarkan NIS
+        ]
+      },
+      take: limit,
+      include: { tbl_classes: { select: { class_name: true } } },
+      orderBy: { full_name: 'asc' }
+    });
+
+    return students.map(s => ({ ...s, id_student: Number(s.id_student), id_class: s.id_class ? Number(s.id_class) : null }));
+  }
+
+  // --- 4. CREATE DATA MANUAL ---
   static async createStudent(data: { full_name: string; nis: string; id_class?: number | string }) {
     const newStudent = await prisma.tbl_students.create({
       data: {
         icode: this.generateIcode(),
-        full_name: this.toTitleCase(data.full_name), // 🔥 FIX
+        full_name: this.toTitleCase(data.full_name), 
         nis: data.nis,
-        id_class: data.id_class ? Number(data.id_class) : null, // 🔥 FIX
-        period_status: 'Suci', // 🔥 FIX: gender dan status_aktif dihapus karena schema baru
+        id_class: data.id_class ? Number(data.id_class) : null, 
+        period_status: 'Suci', 
       }
     });
-    
-    return { 
-      ...newStudent, 
-      id_student: Number(newStudent.id_student),
-      id_class: newStudent.id_class ? Number(newStudent.id_class) : null 
-    };
+    return { ...newStudent, id_student: Number(newStudent.id_student), id_class: newStudent.id_class ? Number(newStudent.id_class) : null };
   }
 
-  // --- 4. UPDATE DATA ---
+  // --- 5. UPDATE DATA ---
   static async updateStudent(id: number, data: any) {
     const payload: any = {};
     if (data.full_name) payload.full_name = this.toTitleCase(data.full_name);
@@ -89,44 +79,30 @@ export class StudentService {
       where: { id_student: id },
       data: payload
     });
-    
-    return { 
-      ...updated, 
-      id_student: Number(updated.id_student),
-      id_class: updated.id_class ? Number(updated.id_class) : null 
-    };
+    return { ...updated, id_student: Number(updated.id_student), id_class: updated.id_class ? Number(updated.id_class) : null };
   }
 
-  // --- 5. DELETE DATA ---
+  // --- 6. DELETE DATA ---
   static async deleteStudent(id: number) {
     await prisma.tbl_students.delete({ where: { id_student: id } });
     return true;
   }
 
-  // --- 6. IMPORT BULK EXCEL ---
+  // --- 7. IMPORT BULK EXCEL ---
   static async importStudents(dataArray: any[]) {
-    const classes = await prisma.tbl_classes.findMany({
-      select: { id_class: true, class_name: true }
-    });
-
+    const classes = await prisma.tbl_classes.findMany({ select: { id_class: true, class_name: true } });
     const classMap = new Map<string, number>();
     const validClassIds = new Set<number>();
 
     classes.forEach(cls => {
       const classIdNum = Number(cls.id_class);
       validClassIds.add(classIdNum);
-      if (cls.class_name) {
-        classMap.set(this.toCanonicalKey(cls.class_name), classIdNum);
-      }
+      if (cls.class_name) classMap.set(this.toCanonicalKey(cls.class_name), classIdNum);
     });
 
-    // Susun data yang mau di-insert
     const studentsToInsert = dataArray.map((item, index) => {
       const rowNum = index + 1;
-      // Kolom Excel dibiarkan bahasa Indonesia jika template excel-nya masih bahasa Indo
-      if (!item['Nama Lengkap'] || !item['NIS']) {
-        throw new Error(`Baris ke-${rowNum}: Nama Lengkap dan NIS wajib diisi.`);
-      }
+      if (!item['Nama Lengkap'] || !item['NIS']) throw new Error(`Baris ke-${rowNum}: Nama Lengkap dan NIS wajib diisi.`);
 
       let finalClassId: number | null = null;
       const rawInput = item['Nama Kelas'] ? item['Nama Kelas'].toString() : "";
@@ -135,28 +111,19 @@ export class StudentService {
         const parsedId = parseInt(rawInput);
         if (validClassIds.has(parsedId)) finalClassId = parsedId;
       } 
-      if (!finalClassId && rawInput) {
-        finalClassId = classMap.get(this.toCanonicalKey(rawInput)) || null;
-      }
-
-      if (!finalClassId) {
-        throw new Error(`Gagal pada Baris ${rowNum}: Kelas '${item['Nama Kelas']}' tidak terdaftar di sistem.`);
-      }
+      if (!finalClassId && rawInput) finalClassId = classMap.get(this.toCanonicalKey(rawInput)) || null;
+      if (!finalClassId) throw new Error(`Gagal pada Baris ${rowNum}: Kelas '${item['Nama Kelas']}' tidak terdaftar.`);
 
       return {
         icode: this.generateIcode(),
-        full_name: this.toTitleCase(item['Nama Lengkap']), // 🔥 FIX
+        full_name: this.toTitleCase(item['Nama Lengkap']),
         nis: item['NIS'].toString(),
-        id_class: finalClassId, // 🔥 FIX
-        period_status: 'Suci' // 🔥 FIX
+        id_class: finalClassId, 
+        period_status: 'Suci' 
       };
     });
 
-    const result = await prisma.tbl_students.createMany({
-      data: studentsToInsert,
-      skipDuplicates: true 
-    });
-
+    const result = await prisma.tbl_students.createMany({ data: studentsToInsert, skipDuplicates: true });
     return result.count;
   }
 }
