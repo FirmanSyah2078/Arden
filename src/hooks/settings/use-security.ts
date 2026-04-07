@@ -61,7 +61,7 @@ export function useSecurity() {
       setPasswords({ new: "", confirm: "" });
       setShowPasswords({ new: false, confirm: false });
     } catch (error: any) {
-      alert("Terjadi kesalahan sistem saat memperbarui kata sandi.");
+      alert("System error occurred while updating password.");
     } finally {
       setIsSubmitting(false);
     }

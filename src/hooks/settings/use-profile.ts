@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import imageCompression from 'browser-image-compression';
-import { useRouter } from "next/navigation"; // 🔥 Tambahkan useRouter
-import { getInitials } from "@/lib/utils";   // 🔥 Gunakan fungsi Inisial Global
+import { useRouter } from "next/navigation"; 
+import { getInitials } from "@/lib/utils";   
 
 export interface UserProfileData {
   avatarUrl: string | null;
@@ -14,7 +14,7 @@ export interface UserProfileData {
 }
 
 export function useProfile() {
-  const router = useRouter(); // 🔥 Panggil Router
+  const router = useRouter(); 
   const [originalData, setOriginalData] = useState<UserProfileData | null>(null)
   const [formData, setFormData] = useState<UserProfileData>({
     avatarUrl: null,
@@ -36,8 +36,21 @@ export function useProfile() {
     fileInputRef.current?.click();
   };
 
+  // 🔥 FIX: Tambahkan logika pemaksaan huruf kecil untuk username dan huruf kapital awal untuk nama
   const handleChange = <K extends keyof UserProfileData>(field: K, value: UserProfileData[K]) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    let finalValue = value;
+
+    if (typeof value === "string") {
+      if (field === "username") {
+        // Paksa huruf kecil dan hapus semua spasi
+        finalValue = (value.toLowerCase().replace(/\s+/g, '') as unknown) as UserProfileData[K];
+      } else if (field === "name") {
+        // Otomatis Title Case (Kapital di awal kata)
+        finalValue = (value.toLowerCase().replace(/(?:^|\s)\w/g, (match) => match.toUpperCase()) as unknown) as UserProfileData[K];
+      }
+    }
+
+    setFormData(prev => ({ ...prev, [field]: finalValue }));
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +58,7 @@ export function useProfile() {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Ukuran file terlalu besar! Maksimal 5MB sebelum dikompresi.");
+      alert("File size is too large! Maximum 5MB allowed.");
       return;
     }
 
@@ -62,8 +75,8 @@ export function useProfile() {
       handleChange("avatarUrl", previewUrl);
       setSelectedFile(compressedFile); 
     } catch (error) {
-      console.error("Gagal mengkompresi gambar:", error);
-      alert("Terjadi kesalahan saat memproses gambar.");
+      console.error("Image compression failed:", error);
+      alert("An error occurred while processing the image.");
     }
   }
 
@@ -83,6 +96,12 @@ export function useProfile() {
     const fetchMyProfile = async () => {
       try {
         const res = await fetch('/api/user/me');
+        
+        if (res.status === 401) {
+          window.location.href = '/login';
+          return;
+        }
+
         const json = await res.json();
         
         if (json.status === 'success' && json.data) {
@@ -91,7 +110,7 @@ export function useProfile() {
           let lastLoginStr = '-';
           if (dbData.last_login) {
             const ll = new Date(dbData.last_login);
-            if (!isNaN(ll.getTime())) lastLoginStr = ll.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+            if (!isNaN(ll.getTime())) lastLoginStr = ll.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
           }
             
           let createdAtStr = '-';
@@ -101,7 +120,7 @@ export function useProfile() {
           }
 
           const initialData: UserProfileData = {
-            avatarUrl: dbData.foto_url || null,
+            avatarUrl: dbData.photo_url || null, 
             name: dbData.name, 
             username: dbData.username,
             email: "", 
@@ -114,7 +133,7 @@ export function useProfile() {
           setFormData(initialData);     
         }
       } catch (error) {
-        console.error("Gagal mengambil profil:", error);
+        console.error("Failed to fetch profile:", error);
       } finally {
         setIsLoading(false);
       }
@@ -132,8 +151,13 @@ export function useProfile() {
         fileFormData.append("file", selectedFile);
 
         const uploadRes = await fetch('/api/upload', { method: 'POST', body: fileFormData });
-        const uploadJson = await uploadRes.json();
         
+        if (uploadRes.status === 401) {
+          window.location.href = '/login';
+          return;
+        }
+
+        const uploadJson = await uploadRes.json();
         if (!uploadRes.ok) throw new Error(uploadJson.message);
         finalAvatarUrl = uploadJson.data.url; 
       }
@@ -144,12 +168,17 @@ export function useProfile() {
         });
       }
 
-      const payload = { ...formData, avatarUrl: finalAvatarUrl };
+      const payload = { ...formData, photo_url: finalAvatarUrl }; 
       const res = await fetch('/api/user/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+
+      if (res.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       
       const json = await res.json();
       
@@ -157,24 +186,21 @@ export function useProfile() {
         const updatedData = {
           ...formData,
           avatarUrl: finalAvatarUrl,
-          lastUpdated: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+          lastUpdated: new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
         };
         
         setOriginalData(updatedData); 
         setFormData(updatedData);     
         setSelectedFile(null);        
         
-        // 🔥 FIX 1: Refresh halaman Server Components (Tabel, dsb) secara instan tanpa layar putih
         router.refresh();
-
-        // 🔥 FIX 2: Tembakkan Custom Event agar Sidebar membaca cookie baru
         window.dispatchEvent(new Event('profile-updated'));
 
       } else {
-        alert(`Gagal: ${json.message}`);
+        alert(`Failed: ${json.message}`);
       }
     } catch (error: any) {
-      alert(error.message || "Terjadi kesalahan jaringan.");
+      alert(error.message || "Network error occurred.");
     } finally {
       setIsSubmitting(false)
     }
@@ -194,7 +220,7 @@ export function useProfile() {
   return {
     formData, originalData, isLoading, isSubmitting, isSaveDisabled, isDirty,
     isAvatarRemoved, hasOriginalAvatar,
-    getInitials, // 🔥 Fungsi ini dikembalikan agar bisa tetap dipakai oleh form profil
+    getInitials, 
     handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
     handleFileChange,
     fileInputRef,       

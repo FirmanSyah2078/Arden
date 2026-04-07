@@ -1,13 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { systemRoles } from "../config/nav-dashboard"; 
+import { usePathname } from "next/navigation"; // 🔥 1. IMPORT INI
+import { systemRoles } from "../config/nav-dashboard";
 
 export type RoleType = {
   name: string;
   plan: string;
   level: number;
-  logo?: React.ElementType; 
+  logo?: React.ElementType;
 };
 
 export const defaultRole: RoleType = { name: "Pemantau", plan: "Read-Only", level: 50 };
@@ -16,15 +17,29 @@ interface DashboardContextType {
   realRole: RoleType;
   activeRole: RoleType;
   setActiveRole: (role: RoleType) => void;
-  isReady: boolean; // 🔥 TAMBAHAN: Sinyal bahwa Context sudah selesai membaca memori
+  isReady: boolean;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname(); // 🔥 2. PANGGIL PATHNAME
+
   const [mounted, setMounted] = useState(false);
   const [realRole, setRealRole] = useState<RoleType>(defaultRole);
   const [activeRole, setActiveRole] = useState<RoleType>(defaultRole);
+
+  // 🔥 3. PENAWAR BRUTAL: PEMBERSIH KUTUKAN RADIX UI
+  useEffect(() => {
+    // Paksa hilangkan lock pointer & scroll yang tertinggal dari halaman Login
+    document.body.style.pointerEvents = "auto";
+    document.body.style.overflow = "auto";
+    document.body.removeAttribute("data-scroll-locked");
+
+    // Sapu bersih elemen pelindung gaib (focus-guard) jika ada yang nyangkut
+    const lingeringBackdrops = document.querySelectorAll('[data-radix-focus-guard]');
+    lingeringBackdrops.forEach((el) => el.remove());
+  }, [pathname]); // Akan bereaksi setiap kali rute URL berubah
 
   useEffect(() => {
     const savedReal = localStorage.getItem("arden_real_role");
@@ -48,7 +63,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     setRealRole(initialReal);
     setActiveRole(initialActive);
     
-    setMounted(true); // Sinyal siap!
+    setMounted(true); 
   }, []);
 
   useEffect(() => {
@@ -57,7 +72,6 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeRole.name, mounted]);
 
-  // 🔥 PERBAIKAN: TIDAK ADA LAGI LAYAR LOADING PENUH! LANGSUNG RENDER CHILDREN!
   return (
     <DashboardContext.Provider value={{ realRole, activeRole, setActiveRole, isReady: mounted }}>
       {children}

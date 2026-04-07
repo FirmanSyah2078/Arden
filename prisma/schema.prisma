@@ -6,133 +6,116 @@ datasource db {
   provider = "postgresql"
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_absensi {
-  id_absen    BigInt     @id @default(autoincrement())
-  id_siswi    BigInt?
-  tanggal     DateTime   @db.Date
-  waktu       String?    @db.VarChar(10)
-  status      String?    @db.VarChar(20)
-  keterangan  String?
-  waktu_input DateTime?  @default(now()) @db.Timestamptz(6)
-  metode      String?    @db.VarChar(10)
-  tbl_siswi   tbl_siswi? @relation(fields: [id_siswi], references: [id_siswi], onDelete: Cascade, onUpdate: NoAction)
+model tbl_attendance {
+  id_attendance BigInt        @id @default(autoincrement())
+  id_student    BigInt?
+  date          DateTime      @db.Date
+  time          String?       @db.VarChar(10)
+  status        String?       @db.VarChar(20)
+  remarks       String?
+  created_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  method        String?       @db.VarChar(10)
+  tbl_students  tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_grafik_data {
-  id_data           BigInt     @id @default(autoincrement())
-  bulan             Int?
-  tahun             Int?
-  id_kelas          BigInt?
-  jumlah_hadir      Int?       @default(0)
-  jumlah_haid       Int?       @default(0)
-  jumlah_peringatan Int?       @default(0)
-  tbl_kelas         tbl_kelas? @relation(fields: [id_kelas], references: [id_kelas], onDelete: NoAction, onUpdate: NoAction)
+model tbl_chart_data {
+  id_data            BigInt       @id @default(autoincrement())
+  month              Int?
+  year               Int?
+  id_class           BigInt?
+  total_present      Int?         @default(0)
+  total_menstruation Int?         @default(0)
+  total_warnings     Int?         @default(0)
+  tbl_classes        tbl_classes? @relation(fields: [id_class], references: [id_class], onDelete: NoAction, onUpdate: NoAction)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_kelas {
-  id_kelas        BigInt            @id @default(autoincrement())
-  nama_kelas      String            @db.VarChar(50)
-  wali_kelas      String?           @db.VarChar(100)
-  tbl_grafik_data tbl_grafik_data[]
-  tbl_siswi       tbl_siswi[]
+model tbl_activity_logs {
+  id_log    BigInt    @id @default(autoincrement())
+  id_user   BigInt?
+  activity  String?   @db.VarChar(255)
+  timestamp DateTime? @default(now()) @db.Timestamptz(6)
+  remarks   String?
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_log_aktivitas {
-  id_log        BigInt    @id @default(autoincrement())
-  id_user       BigInt?
-  aktivitas     String?   @db.VarChar(255)
-  tanggal_waktu DateTime? @default(now()) @db.Timestamptz(6)
-  keterangan    String?
+model tbl_notifications {
+  id_notification BigInt        @id @default(autoincrement())
+  id_student      BigInt?
+  message         String?
+  read_status     String?       @db.VarChar(10)
+  sent_at         DateTime?     @default(now()) @db.Timestamptz(6)
+  tbl_students    tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_notifikasi {
-  id_notif      BigInt     @id @default(autoincrement())
-  id_siswi      BigInt?
-  pesan         String?
-  status_baca   String?    @db.VarChar(10)
-  tanggal_kirim DateTime?  @default(now()) @db.Timestamptz(6)
-  tbl_siswi     tbl_siswi? @relation(fields: [id_siswi], references: [id_siswi], onDelete: Cascade, onUpdate: NoAction)
+model tbl_menstruation_settings {
+  id_setting              BigInt   @id @default(autoincrement())
+  min_normal_duration     Int?     @default(5)
+  max_normal_duration     Int?     @default(7)
+  auto_purification_limit Int?     @default(8)
+  is_notification_active  Boolean? @default(true)
+  warning_message         String?  @db.VarChar(255)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_pengaturan_haid {
-  id_setting          BigInt   @id @default(autoincrement())
-  durasi_normal_min   Int?     @default(5)
-  durasi_normal_max   Int?     @default(7)
-  batas_suci_otomatis Int?     @default(8)
-  notifikasi_aktif    Boolean? @default(true)
-  pesan_peringatan    String?  @db.VarChar(255)
+model tbl_warnings {
+  id_warning   BigInt        @id @default(autoincrement())
+  id_student   BigInt?
+  warning_date DateTime?     @db.Date
+  warning_type String?       @db.VarChar(50)
+  read_status  String?       @db.VarChar(10)
+  admin_action String?
+  tbl_students tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_peringatan {
-  id_peringatan      BigInt     @id @default(autoincrement())
-  id_siswi           BigInt?
-  tanggal_peringatan DateTime?  @db.Date
-  jenis_peringatan   String?    @db.VarChar(50)
-  status_baca        String?    @db.VarChar(10)
-  tindakan_admin     String?
-  tbl_siswi          tbl_siswi? @relation(fields: [id_siswi], references: [id_siswi], onDelete: Cascade, onUpdate: NoAction)
+model tbl_menstruation_periods {
+  id_period         BigInt        @id @default(autoincrement())
+  id_student        BigInt?
+  start_date        DateTime?     @db.Date
+  end_date          DateTime?     @db.Date
+  duration          Int?
+  completion_status String?       @db.VarChar(10)
+  remarks           String?       @db.VarChar(50)
+  tbl_students      tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_periode_haid {
-  id_periode      BigInt     @id @default(autoincrement())
-  id_siswi        BigInt?
-  tanggal_mulai   DateTime?  @db.Date
-  tanggal_selesai DateTime?  @db.Date
-  durasi          Int?
-  status_selesai  String?    @db.VarChar(10)
-  keterangan      String?    @db.VarChar(50)
-  tbl_siswi       tbl_siswi? @relation(fields: [id_siswi], references: [id_siswi], onDelete: Cascade, onUpdate: NoAction)
+model tbl_monthly_recaps {
+  id_recap           BigInt        @id @default(autoincrement())
+  id_student         BigInt?
+  month              Int?
+  year               Int?
+  total_prayers      Int?          @default(0)
+  total_menstruation Int?          @default(0)
+  total_present      Int?          @default(0)
+  total_excused      Int?          @default(0)
+  total_absent       Int?          @default(0)
+  total_warnings     Int?          @default(0)
+  tbl_students       tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_rekap_bulanan {
-  id_rekap         BigInt     @id @default(autoincrement())
-  id_siswi         BigInt?
-  bulan            Int?
-  tahun            Int?
-  total_sholat     Int?       @default(0)
-  total_haid       Int?       @default(0)
-  total_hadir      Int?       @default(0)
-  total_izin       Int?       @default(0)
-  total_alfa       Int?       @default(0)
-  total_peringatan Int?       @default(0)
-  tbl_siswi        tbl_siswi? @relation(fields: [id_siswi], references: [id_siswi], onDelete: Cascade, onUpdate: NoAction)
+model tbl_classes {
+  id_class       BigInt           @id @default(autoincrement())
+  class_name     String           @db.VarChar(50)
+  advisor        String?          @db.VarChar(100)
+  description    String?
+  tbl_chart_data tbl_chart_data[]
+  tbl_students   tbl_students[]
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model tbl_siswi {
-  id_siswi          BigInt              @id @default(autoincrement())
-  nis               String              @db.VarChar
-  nama_lengkap      String              @db.VarChar
-  id_kelas          BigInt?
-  gender            String?             @default("Perempuan") @db.VarChar
-  tanggal_lahir     DateTime?           @db.Date
-  status_aktif      String?             @db.VarChar
-  catatan           String?
-  icode             String              @unique @db.VarChar(50)
-  tbl_absensi       tbl_absensi[]
-  tbl_notifikasi    tbl_notifikasi[]
-  tbl_peringatan    tbl_peringatan[]
-  tbl_periode_haid  tbl_periode_haid[]
-  tbl_rekap_bulanan tbl_rekap_bulanan[]
-  tbl_kelas         tbl_kelas?          @relation(fields: [id_kelas], references: [id_kelas], onDelete: NoAction, onUpdate: NoAction)
+model tbl_students {
+  id_student               BigInt                     @id @default(autoincrement())
+  nis                      String                     @db.VarChar
+  full_name                String                     @db.VarChar
+  id_class                 BigInt?
+  period_status            String?                    @db.VarChar
+  notes                    String?
+  icode                    String                     @unique @db.VarChar(50)
+  pancingan     String?
+  tbl_attendance           tbl_attendance[]
+  tbl_notifications        tbl_notifications[]
+  tbl_warnings             tbl_warnings[]
+  tbl_menstruation_periods tbl_menstruation_periods[]
+  tbl_monthly_recaps       tbl_monthly_recaps[]
+  tbl_classes              tbl_classes?               @relation(fields: [id_class], references: [id_class], onDelete: NoAction, onUpdate: NoAction)
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model tbl_users {
   id_user    BigInt    @id @default(autoincrement())
   name       String    @db.VarChar(100)
@@ -140,7 +123,7 @@ model tbl_users {
   password   String    @db.VarChar(255)
   role       String?   @db.VarChar(20)
   last_login DateTime? @db.Timestamptz(6)
-  foto_url   String?
+  photo_url  String?
   is_active  Boolean   @default(true)
   is_online  Boolean   @default(false)
   created_at DateTime? @default(now()) @db.Timestamptz(6)
@@ -156,5 +139,5 @@ model tbl_connections {
   provider_id   String?   @db.VarChar(255)
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
 
-  tbl_users     tbl_users @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
+  tbl_users tbl_users @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
 }

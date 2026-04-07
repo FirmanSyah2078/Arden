@@ -33,8 +33,8 @@ export async function POST(req: Request) {
     cookieStore.set('user_name', user.name, cookieOptions) 
 
     cookieStore.set('user_username', user.username, cookieOptions)
-    if (user.foto_url) {
-      cookieStore.set('user_photo', user.foto_url, cookieOptions)
+    if (user.photo_url) { // FIX: Sesuai dengan field "photo_url" di schema baru
+      cookieStore.set('user_photo', user.photo_url, cookieOptions)
     }
 
     return NextResponse.json({

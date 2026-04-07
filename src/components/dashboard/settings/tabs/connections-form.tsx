@@ -10,7 +10,7 @@ export default function ConnectionsForm() {
       <div className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/5 p-4 text-[13px] text-white/70">
         <LinkIcon className="size-4 shrink-0 mt-0.5 text-white/50" />
         <p className="leading-relaxed">
-          Tautkan identitas pihak ketiga untuk mengaktifkan fitur masuk tunggal (SSO). Ini mempercepat proses login Anda tanpa perlu mengingat kata sandi.
+          Link third-party identities to enable Single Sign-On (SSO). This accelerates your login process securely without requiring a password.
         </p>
       </div>
 
@@ -26,14 +26,14 @@ export default function ConnectionsForm() {
                 <h4 className="text-[13px] font-medium text-white/90">Google Workspace</h4>
                 <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[9px] font-medium text-emerald-400">
                   <CheckCircle2 className="size-2.5" />
-                  Aktif
+                  Active
                 </span>
               </div>
               <p className="text-[11px] text-white/50">admin@mankotablitar.sch.id</p>
             </div>
           </div>
-          <button className="rounded-md border border-white/10 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-all hover:bg-white/10 hover:text-white shrink-0 w-full sm:w-auto">
-            Putuskan
+          <button className="group rounded-md border border-white/10 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-all hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 shrink-0 w-full sm:w-auto">
+            Disconnect
           </button>
         </div>
 
@@ -48,14 +48,14 @@ export default function ConnectionsForm() {
                 <h4 className="text-[13px] font-medium text-white/90">GitHub</h4>
                 <span className="flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-1.5 py-0.5 text-[9px] font-medium text-white/40">
                   <Link2Off className="size-2.5" />
-                  Terputus
+                  Disconnected
                 </span>
               </div>
-              <p className="text-[11px] text-white/50">Tautkan akun untuk repositori ARDEN.</p>
+              <p className="text-[11px] text-white/50">Link your account for ARDEN repositories.</p>
             </div>
           </div>
-          <button className="rounded-md bg-white px-3 py-1.5 text-xs font-medium text-black transition-all hover:bg-white/90 shrink-0 w-full sm:w-auto">
-            Tautkan
+          <button className="group rounded-md bg-white px-3 py-1.5 text-xs font-medium text-black transition-all hover:bg-gray-200 shrink-0 w-full sm:w-auto">
+            <span className="inline-block group-hover:ar-bounce-x">Connect</span>
           </button>
         </div>
       </div>

@@ -15,7 +15,8 @@ export function useLogout() {
       localStorage.clear()
 
       // 🔥 FIX: Hapus paksa atribut pengunci layar milik Shadcn/Radix UI
-      document.body.style.pointerEvents = "";
+      document.body.style.pointerEvents = "auto";
+      document.body.style.overflow = "auto";
       document.body.removeAttribute("data-scroll-locked");
 
       // Gunakan window.location.href untuk Hard Reload (Paling Ampuh!)
@@ -23,7 +24,8 @@ export function useLogout() {
       window.location.href = "/login"
 
     } catch (error) {
-      document.body.style.pointerEvents = "";
+      document.body.style.pointerEvents = "auto";
+      document.body.style.overflow = "auto";
       document.body.removeAttribute("data-scroll-locked");
       window.location.href = "/login"
     }

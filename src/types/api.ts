@@ -14,7 +14,7 @@ export interface LoginData {
     token: string;
     name: string;
     role: Role;
-    foto_url: string | null;
+    photo_url: string | null;
     last_login: string; 
 }
 
@@ -55,19 +55,17 @@ export class ApiFail<T> implements ApiResponse<T> {
     }
 }
 
-// Tipe Data Siswi untuk Dashboard (Lengkap)
-export interface Siswi {
-  id_siswi: number;
+// Tipe Data Student untuk Dashboard (Lengkap - Sesuai Schema Baru)
+export interface Student {
+  id_student: number;
   icode: string;
   nis: string;
-  nama_lengkap: string;
-  id_kelas: number | null;
-  gender: 'Perempuan';
-  tanggal_lahir: string | null;
-  status_aktif: 'Aktif' | 'Lulus';
-  catatan: string | null;
-  tbl_kelas?: {
-    nama_kelas: string;
+  full_name: string;
+  id_class: number | null;
+  period_status: string | null;
+  notes: string | null;
+  tbl_classes?: {
+    class_name: string;
   };
 }
 
@@ -77,7 +75,7 @@ export interface User {
   username: string;
   role: Role;
   last_login: string | null;
-  foto_url: string | null;
+  photo_url: string | null;
   is_active: boolean;
   is_online: boolean;
   created_at?: string | null;
@@ -85,9 +83,10 @@ export interface User {
 }
 
 export interface Class {
-  id_kelas: number;
-  nama_kelas: string;
-  wali_kelas: string | null;
+  id_class: number;
+  class_name: string;
+  advisor: string | null;
+  description: string | null;
 }
 
 
@@ -95,64 +94,65 @@ export interface Class {
 // 2. TYPE DEFINITIONS INTEGRASI MOBILE
 // ==========================================
 
-// Jadwal Sholat
-export type SholatTimes = 'dzuhur' | 'ashar';
-export type Sholat = 'Asr' | 'Dhuhr' | 'Isya' | 'Maghrib' | 'Fajr';
+// Jadwal Sholat (Slot waktu yang didukung sistem absensi ARDEN saat ini)
+export type PrayerTimeSlot = 'zhuhur' | 'ashar'; // 🔥 FIX: Typo 'dzuhur' diperbaiki menjadi 'zhuhur'
+
+// Daftar Sholat Lima Waktu
+export type DailyPrayer = 'Subuh' | 'Zhuhur' | 'Ashar' | 'Maghrib' | 'Isya'; // 🔥 FIX: Menggunakan nama lokal & perbaikan typo
 
 export interface PrayerTimes {
-  Asr: string;
-  Dhuhr: string;
-  Isha: string;
+  Subuh: string;
+  Zhuhur: string;
+  Ashar: string;
   Maghrib: string;
-  Fajr: string;
+  Isya: string;
 }
 
-// [FIX] Status Khusus Absensi (Sesuai Logika Baru)
-export type StatusPlayer = 'Haid' | 'Sholat';
+// Status Khusus Absensi
+export type AttendanceType = 'Haid' | 'Suci'; 
 
-// [INTEGRASI] Siswi versi Mobile (Sederhana)
-export interface SiswiMobile {
-  id: string | number;
+// [INTEGRASI] Student versi Mobile (Sederhana)
+export interface StudentMobile { 
+  id_student: string | number;
   icode: string;
-  nama_lengkap: string;
+  full_name: string;
   nis: string;
-  kelas: string;
+  class_name: string;
 }
 
 // Struktur Data untuk QR Code / Status Absensi
-export interface AbsensiStatus {
+export interface AttendanceStatusResponse { 
   id: string;
-  nama_lengkap: string;
+  full_name: string;
   nis: string;
-  kelas: string;
+  class_name: string;
   status: Status; 
   message: string;
 }
 
 // Payload untuk Input Absensi Baru (Mobile)
-export interface NewAbsensiPayload {
-  id_siswi?: number;
+export interface NewAttendancePayload { 
+  id_student?: number;
   nis?: string;
-  tanggal: Date | string;
-  waktu: string;
-  status: StatusPlayer;
-  // [FIX] Tambahkan metode agar tidak error di AbsensiForm
-  metode?: 'SCAN' | 'MANUAL'; 
-  keterangan: string;
-  waktu_input: Date | string;
+  date: Date | string;
+  time: string;
+  status: AttendanceType; 
+  method?: 'SCAN' | 'MANUAL'; 
+  remarks: string;
+  created_at: Date | string;
 }
 
 // Data Absensi yang ditampilkan di History Mobile
-export interface DataAbsensiMobile {
-  id: number;
-  tanggal: Date | string;
-  waktu: SholatTimes;
-  status: Status;
-  keterangan: string | null;
-  waktu_input: string;
-  tbl_siswi: {
-      nama_lengkap: string;
-      kelas: string;
+export interface AttendanceDataMobile { 
+  id_attendance: number;
+  date: Date | string;
+  time: PrayerTimeSlot | string;
+  status: Status | string;
+  remarks: string | null;
+  created_at: string;
+  tbl_students: {
+      full_name: string;
+      class_name: string;
       nis: string;
   };
 }

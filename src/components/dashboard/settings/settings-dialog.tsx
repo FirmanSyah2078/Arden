@@ -28,11 +28,9 @@ import {
 } from "@/components/ui/breadcrumb"
 import { cn } from "@/lib/utils"
 
-// Import form tabs
 import ProfileForm from "./tabs/profile-form"
 import SecurityForm from "./tabs/security-form"
 import ConnectionsForm from "./tabs/connections-form"
-// Import ornamen kustom
 import { Ornament } from "@/components/ornament"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
@@ -49,6 +47,15 @@ interface SettingsDialogProps {
 
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const [activeTab, setActiveTab] = React.useState("profile")
+
+  // 🔥 VAKSIN LAYAR HITAM: Jaga-jaga kalau sesi expired dan route maksa pindah
+  React.useEffect(() => {
+    return () => {
+      document.body.style.pointerEvents = "auto"
+      document.body.style.overflow = "auto"
+      document.body.removeAttribute("data-scroll-locked")
+    }
+  }, [])
 
   const renderContent = () => {
     switch (activeTab) {
@@ -111,7 +118,6 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               </SidebarGroup>
             </SidebarContent>
 
-            {/* ORNAMEN DI POJOK BAWAH SIDEBAR */}
             <div className="absolute inset-0 pointer-events-none z-0">
               <Ornament className="w-full h-full" />
             </div>
@@ -137,9 +143,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               </Breadcrumb>
             </header>
 
-            {/* 🔥 FIX: Tambahkan min-h-0 di ScrollArea agar tidak kebablasan memotong bawah */}
             <ScrollArea className="flex-1 min-h-0 w-full z-20">
-              {/* 🔥 FIX: pb-20 agar mentoknya konten punya ruang lega dari batas bawah */}
               <div className="max-w-xl mx-auto w-full p-6 pb-10">
                 {renderContent()}
               </div>

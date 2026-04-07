@@ -2,36 +2,32 @@ import { prisma } from "@/lib/prisma"
 
 export class ProfileService {
   // --- UPDATE MY PROFILE ---
-  // 🔥 FIX: Ubah parameter menjadi id: number (bukan exactUsername: string lagi)
-  static async updateMyProfile(id: number, data: { name?: string; username?: string; foto_url?: string }) {
+  static async updateMyProfile(id: number, data: { name?: string; username?: string; photo_url?: string }) { // 🔥 FIX: foto_url -> photo_url
     try {
-      // 1. Cari user berdasarkan ID (Pasti Ketemu & Super Aman!)
       const currentUser = await prisma.tbl_users.findUnique({
-        where: { id_user: id }, // Sekarang 'id'-nya sudah dikenali!
+        where: { id_user: id }, 
         select: { id_user: true, username: true }
       });
 
-      if (!currentUser) throw new Error("User tidak ditemukan");
+      if (!currentUser) throw new Error("User not found");
 
-      // 2. Jika user mencoba ganti username, cek apakah bentrok dengan orang lain
       if (data.username && data.username !== currentUser.username) {
         const existing = await prisma.tbl_users.findUnique({ where: { username: data.username } });
-        if (existing) throw new Error("Username sudah dipakai oleh pengguna lain!");
+        if (existing) throw new Error("Username is already taken!");
       }
 
-      // 3. Update data
       const updatedUser = await prisma.tbl_users.update({
         where: { id_user: currentUser.id_user },
         data: {
           name: data.name, 
           username: data.username,
-          foto_url: data.foto_url
+          photo_url: data.photo_url // 🔥 FIX
         },
         select: {
           id_user: true,
           name: true, 
           username: true,
-          foto_url: true,
+          photo_url: true, // 🔥 FIX
           role: true,
           last_login: true,
           created_at: true 

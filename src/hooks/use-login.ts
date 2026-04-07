@@ -52,6 +52,12 @@ export function useLogin() {
         throw new Error("Fitur Manajemen wajib dibuka lewat Laptop/PC.")
       }
 
+      // 🔥 VAKSIN LAYAR HITAM: 
+      // Bersihkan semua kuncian Radix UI SEBELUM pindah halaman
+      document.body.style.pointerEvents = "auto";
+      document.body.style.overflow = "auto";
+      document.body.removeAttribute("data-scroll-locked");
+
       // 4. Redirect (Cookies sudah diurus Server!)
       router.push(role === 'Pelaksana' ? '/go' : '/dashboard')
 

@@ -177,14 +177,35 @@ export default function ClassPage() {
               )}
             </div>
 
-            <div className="relative group w-full sm:w-56 sm:focus-within:w-72 transition-all duration-500 ease-out">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors duration-300 size-4" />
+            {/* 🔥 FIX: Search Input yang Lebih Ramping, Anti-Spellcheck, & Ada Tombol Clear */}
+            <div className="relative group w-full sm:w-56 sm:focus-within:w-64 transition-all duration-500 ease-out">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 size-4" />
+
               <Input
                 placeholder="Search class or teacher..."
-                className="pl-9 h-9 bg-muted/30 border-border hover:border-foreground/30 focus-visible:border-white focus-visible:ring-0 focus-visible:bg-transparent transition-all text-[13px] rounded-md text-foreground placeholder:text-muted-foreground shadow-sm"
+                // 🔥 FIX: Matikan pemeriksa ejaan browser agar tidak ada garis merah di bawah teks
+                spellCheck={false}
+                autoComplete="off"
+                // 🔥 FIX: Hapus focus-visible:border-white, tambah pr-9 untuk ruang tombol X
+                className="pl-9 pr-9 h-9 bg-muted/30 border-border hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:ring-0 focus-visible:bg-transparent transition-all text-[13px] rounded-md text-foreground placeholder:text-muted-foreground shadow-sm"
                 value={keyword}
                 onChange={handleSearchChange}
               />
+
+              {/* 🔥 FIX: Tombol X muncul otomatis HANYA jika ada teks yang diketik */}
+              {keyword && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setKeyword("");
+                    setCurrentPage(1); // Reset halaman ke 1 saat pencarian dihapus
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground hover:bg-destructive/10 rounded-full transition-all animate-in fade-in zoom-in-75 duration-200 outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
+                  aria-label="Clear search"
+                >
+                  <X className="size-3.5" />
+                </button>
+              )}
             </div>
 
           </div>

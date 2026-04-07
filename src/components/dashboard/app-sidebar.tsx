@@ -2,11 +2,11 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
-import { usePathname } from "next/navigation" // 🔥 Otak Pembaca URL
+import { usePathname } from "next/navigation" 
 
-import { NavGroup } from "@/components/dashboard/nav-group" 
+import { NavGroup } from "@/components/dashboard/nav-group"
 import { NavUser } from "@/components/dashboard/nav-user"
-import { NavRole } from "@/components/dashboard/nav-role" 
+import { NavRole } from "@/components/dashboard/nav-role"
 
 import {
   Sidebar,
@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/sidebar"
 
 import { useDashboard } from "@/contexts/cont-dashboard"
-import { systemRoles, roleMenus } from "@/config/nav-dashboard"
+// 🔥 IMPORT FUNGSI SAKTI
+import { systemRoles, getDynamicMenus } from "@/config/nav-dashboard"
 
 const getCookie = (name: string) => {
   if (typeof document === "undefined") return "";
@@ -36,49 +37,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { activeRole, isReady } = useDashboard();
   const pathname = usePathname(); 
 
-  // 1. Tarik menu mentah sesuai role
-  const rawMenus = roleMenus[activeRole.name] || roleMenus["Pemantau"];
-
-  // 2. 🔥 OTAK PENDETEKSI AKTIF (Smart Routing Logic)
-  const currentMenus = rawMenus.map((group) => ({
-    ...group,
-    items: group.items.map((item) => {
-      const variant = item.variant || "default";
-
-      // LOGIKA A: Untuk Menu Bertipe COLLAPSIBLE (Punya Sub-menu)
-      if (variant === "collapsible" && item.items) {
-        // Cek apakah ada *salah satu anak* yang URL-nya cocok dengan halaman saat ini
-        const isAnyChildActive = item.items.some(
-          (sub) => pathname === sub.url || pathname.startsWith(`${sub.url}/`)
-        );
-
-        return {
-          ...item,
-          isActive: isAnyChildActive, // Induk ikut aktif jika ada anak yang aktif
-          items: item.items.map((sub) => ({
-            ...sub,
-            isActive: pathname === sub.url || pathname.startsWith(`${sub.url}/`) // Anak mana yang spesifik aktif
-          }))
-        };
-      }
-
-      // LOGIKA B: Untuk Menu Bertipe DEFAULT & ACTION (Link Polos / Titik Tiga)
-      const isMainActive = item.url === "/dashboard" 
-        ? pathname === "/dashboard" // Kalau Home, harus persis sama (strict)
-        : pathname.startsWith(item.url); // Kalau halaman lain, toleransi sub-path
-
-      return {
-        ...item,
-        isActive: isMainActive
-      };
-    })
-  }));
+  // 🔥 FIX: PANGGIL OTAK PENDETEKSI AKTIF DARI FILE CONFIG (Sangat Bersih!)
+  const currentMenus = getDynamicMenus(pathname, activeRole.name);
 
   const [userData, setUserData] = useState({ name: "Loading...", username: "...", avatar: "" })
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // 🔥 FUNGSI PEMBACA COOKIE (Bisa dipanggil berulang kali)
+    // 🔥 FUNGSI PEMBACA COOKIE
     const loadUserData = () => {
       const savedUsername = getCookie("user_username");
       setUserData({
@@ -88,14 +54,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       });
     };
 
-    // 1. Panggil pertama kali saat layar dimuat
     loadUserData();
     setMounted(true);
 
-    // 2. 🔥 PASANG TELINGA: Dengarkan teriakan dari 'use-profile.ts'
     window.addEventListener('profile-updated', loadUserData);
-
-    // 3. Bersihkan telinga saat keluar agar tidak terjadi memory leak
     return () => {
       window.removeEventListener('profile-updated', loadUserData);
     };
@@ -105,7 +67,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         {!isReady ? (
-          // 🔥 FIX SKELETON ROLE: Pakai komponen resmi agar patuh saat sidebar tertutup
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" className="opacity-50 cursor-default hover:bg-transparent">
@@ -124,7 +85,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         {!isReady ? (
-          // 🔥 FIX SKELETON MENU: Pakai komponen resmi agar teks otomatis hilang saat tertutup
           <SidebarGroup>
             <SidebarGroupLabel>
               <div className="h-2 w-20 bg-white/10 rounded animate-pulse" />
@@ -141,7 +101,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenu>
           </SidebarGroup>
         ) : (
-          // Render menu yang sudah dicerdaskan oleh logika di atas
           currentMenus.map((group) => (
             <NavGroup key={group.label} label={group.label} items={group.items} />
           ))

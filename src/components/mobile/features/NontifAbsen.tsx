@@ -191,7 +191,7 @@ export function NotifAbsen({
                     >
                         {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Memproses Data...</> : 'Proses Absensi'}
                     </Button>
-                    
+
                     {!loading && (
                         <button 
                             className="w-full py-3 text-xs text-white/40 hover:text-white transition-colors"

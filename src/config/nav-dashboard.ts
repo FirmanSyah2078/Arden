@@ -1,6 +1,6 @@
 import {
   LayoutDashboard,
-  Database,
+  BookUser,
   School,
   FileText,
   Settings2,
@@ -24,11 +24,21 @@ export const systemRoles = [
 export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]> = {
   Admin: [
     {
-      label: "Management",
+      label: "Workspace",
       items: [
         { title: "Home", url: "/dashboard", icon: LayoutDashboard, variant: "default" },
         { title: "Classes", url: "/dashboard/class", icon: School, variant: "default" },
-        { title: "Database", url: "/dashboard/database", icon: Database, variant: "default" },
+        {
+          title: "Directory",
+          url: "#",
+          icon: BookUser,
+          variant: "collapsible",
+          items: [
+            { title: "Students", url: "/dashboard/directory/students" },
+            { title: "Classes", url: "/dashboard/directory/classes" },
+            { title: "Users", url: "/dashboard/directory/users" },
+          ]
+        },
         { title: "Recapitulation", url: "/dashboard/rekapitulasi", icon: FileText, variant: "default" },
       ],
     },
@@ -52,7 +62,43 @@ export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]
 };
 
 // ============================================================================
-// 3. FUNGSI PINTAR PENCARI BREADCRUMB OTOMATIS
+// 3. FUNGSI PINTAR: INJEKSI STATUS AKTIF (Dynamic Hydration)
+// Fungsi ini dipanggil oleh AppSidebar. Dia akan mengecek URL saat ini (pathname)
+// lalu membuat Ayah & Anak menyala secara otomatis.
+// ============================================================================
+export function getDynamicMenus(pathname: string, roleName: string) {
+  const menus = roleMenus[roleName] || roleMenus["Pemantau"];
+
+  return menus.map((group) => ({
+    ...group,
+    items: group.items.map((item) => {
+
+      // LOGIKA UNTUK VARIANT 1 (COLLAPSIBLE / PUNYA ANAK)
+      if (item.variant === "collapsible" && item.items) {
+        // Cek apakah ada SALAH SATU anak yang URL-nya cocok dengan pathname sekarang
+        const isParentActive = item.items.some((sub) => pathname.includes(sub.url));
+
+        return {
+          ...item,
+          isActive: isParentActive, // 🔥 Ayah otomatis NYALA & TERBUKA jika anak aktif
+          items: item.items.map((sub) => ({
+            ...sub,
+            isActive: pathname === sub.url, // 🔥 Anak nyala jika URL-nya persis sama
+          })),
+        };
+      }
+
+      // LOGIKA UNTUK VARIANT DEFAULT / ACTION (TIDAK PUNYA ANAK)
+      return {
+        ...item,
+        isActive: pathname === item.url, // Nyala jika URL pas
+      };
+    }),
+  }));
+}
+
+// ============================================================================
+// 4. FUNGSI PINTAR PENCARI BREADCRUMB OTOMATIS
 // ============================================================================
 export function getActiveBreadcrumb(pathname: string, roleName: string) {
   const menus = roleMenus[roleName] || roleMenus["Pemantau"];
