@@ -14,7 +14,7 @@ export interface ManualProps {
     handleSelect: (s: StudentMobile) => void;
     setPick: (status: AttendanceStatusResponse) => void;
     setOpenForm: (value: boolean) => void;
-    onScrollDirectionChange: (visible: boolean) => void;
+    onScrollDirectionChange?: (visible: boolean) => void;
 }
 
 // --- KOMPONEN 1: SEARCH BAR ---
@@ -53,7 +53,7 @@ export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: 
 );
 
 // --- KOMPONEN 2: HASIL PENCARIAN ---
-export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused, onScrollDirectionChange }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean, onScrollDirectionChange: (visible: boolean) => void }) => {
+export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused, onScrollDirectionChange }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean, onScrollDirectionChange?: (visible: boolean) => void }) => {
     const MAX_RESULTS = 15;
     const lastScrollY = useRef(0);
 
@@ -61,8 +61,8 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
         const currentScrollY = e.currentTarget.scrollTop;
         const delta = currentScrollY - lastScrollY.current;
         if (Math.abs(delta) > 10) {
-            if (delta > 0) onScrollDirectionChange(false);
-            else onScrollDirectionChange(true);
+            if (delta > 0) onScrollDirectionChange?.(false);
+            else onScrollDirectionChange?.(true);
             lastScrollY.current = currentScrollY;
         }
     };
