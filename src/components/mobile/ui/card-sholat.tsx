@@ -10,7 +10,7 @@ export const CardSholat = ({ className = '' }: { className?: string }) => {
   const labels: Record<string, string> = { Fajr: 'Shubuh', Sunrise: 'Dhuha', Dhuhr: 'Zhuhur', Asr: 'Ashar', Maghrib: 'Maghrib', Isha: 'Isya' };
 
   return (
-    <div className={`relative w-full bg-white/[0.02] backdrop-blur-xl border-y border-white/5 rounded-3xl py-4 px-6 flex items-center justify-between gap-6 transition-all duration-500 ${className}`}>
+    <div className={`relative w-full bg-white/2 backdrop-blur-xl border-y border-white/5 rounded-3xl py-4 px-6 flex items-center justify-between gap-6 transition-all duration-500 ${className}`}>
 
       {/* LEFT SECTION: Identity & Status */}
       <div className="flex items-center gap-4 flex-1">
@@ -27,7 +27,7 @@ export const CardSholat = ({ className = '' }: { className?: string }) => {
       </div>
 
       {/* SYMMETRY DIVIDER: Garis tipis pemisah */}
-      <div className="w-[1px] h-8 bg-white/10" />
+      <div className="w-px h-8 bg-white/10" />
 
       {/* RIGHT SECTION: Time & Range */}
       <div className="flex flex-col items-end justify-center flex-1">

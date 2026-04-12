@@ -1,18 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Search, User, Loader2, ChevronRight, AlertCircle, Info, X } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { AttendanceStatusResponse, StudentMobile } from '@/types/api';
 
 export interface ManualProps {
+    search: string;
+    setSearch: (s: string) => void;
+    data: StudentMobile[];
+    isLoading: boolean;
+    onFocus: () => void;
+    onBlur: () => void;
+    handleSelect: (s: StudentMobile) => void;
     setPick: (status: AttendanceStatusResponse) => void;
     setOpenForm: (value: boolean) => void;
+    onScrollDirectionChange: (visible: boolean) => void;
 }
 
-// --- KOMPONEN 1: SEARCH BAR (Sleek & Focus-Aware) ---
+// --- KOMPONEN 1: SEARCH BAR ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
-    <div className="relative mb-4 flex-none z-20 px-1">
+    <div className="relative mb-6 flex-none z-20 px-1">
         <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-indigo-500/50 ring-2 ring-indigo-500/20' : 'border-white/5'
             }`}>
             <Search size={18} className={`${search ? 'text-indigo-400' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
@@ -45,15 +52,25 @@ export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: 
     </div>
 );
 
-// --- KOMPONEN 2: HASIL PENCARIAN (Symmetry & Space Optimized) ---
-export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean }) => {
+// --- KOMPONEN 2: HASIL PENCARIAN ---
+export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused, onScrollDirectionChange }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean, onScrollDirectionChange: (visible: boolean) => void }) => {
     const MAX_RESULTS = 15;
+    const lastScrollY = useRef(0);
+
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const currentScrollY = e.currentTarget.scrollTop;
+        const delta = currentScrollY - lastScrollY.current;
+        if (Math.abs(delta) > 10) {
+            if (delta > 0) onScrollDirectionChange(false);
+            else onScrollDirectionChange(true);
+            lastScrollY.current = currentScrollY;
+        }
+    };
+
     return (
         <div className="h-full w-full relative overflow-hidden">
-            {/* Bottom Fade Overlay untuk kesan depth */}
             <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-[#151419] to-transparent pointer-events-none z-10" />
 
-            {/* IDLE STATE: Hanya muncul kalau tidak sedang mencari & tidak sedang fokus */}
             {!search && !isFocused && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-20 animate-in fade-in duration-500">
                     <div className="relative mb-6">
@@ -71,33 +88,37 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                         </div>
                     </div>
                     <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">Manual Search</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Ketikkan Nama atau NIS untuk mencari data siswi secara manual.</p>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Ketikkan nama atau NIS untuk mencari data santri secara manual.</p>
                 </div>
             )}
 
             {search && data.length > 0 && (
-                <ScrollArea className="h-full w-full pr-3">
-                    {/* Result Counter: Sembunyi otomatis saat keyboard aktif (isFocused) */}
-                    <div className={`py-2 px-1 flex justify-between items-center transition-all duration-300 ${isFocused ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+                <div onScroll={handleScroll} className="h-full w-full pr-3 overflow-y-auto scrollbar-hide">
+                    <div className="py-2 px-1 flex justify-between items-center opacity-100 transition-all duration-300">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Search Results</span>
                         <span className="text-[10px] font-medium text-indigo-400">{data.length} Students found</span>
                     </div>
 
-                    <ul className="flex flex-col gap-3 pb-32 pt-1">
-                        {data.map((item) => (
-                            <li key={item.id_student} className="animate-in slide-in-from-bottom-2 duration-300">
+                    {/* MODIFIED: pb-32 dihapus! Ganti jadi pb-8 aja biar cuma kasih jarak dikit antar item terakhir dan batas wadahnya nya! ฅ^•ﻌ•^ฅ */}
+                    <ul className="flex flex-col gap-3 pb-8 pt-1">
+                        {data.map((item, index) => (
+                            <li
+                                key={item.id_student}
+                                className="animate-in slide-in-from-bottom-2 duration-300"
+                                style={{ animationDelay: `${index * 60}ms` }}
+                            >
                                 <button
                                     onClick={() => handleSelect(item)}
-                                    className="w-full text-left bg-white/3 hover:bg-white/[0.08] border border-white/5 rounded-2xl p-4 flex items-center gap-4 transition-all active:scale-[0.98] group shadow-sm"
+                                    className="w-full text-left bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl p-4 flex items-center gap-4 transition-all active:scale-[0.98] group shadow-sm"
                                 >
                                     <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-300 font-bold text-sm flex items-center justify-center border border-indigo-500/20 group-hover:border-indigo-500/40 transition-all shrink-0 shadow-inner">
                                         {item.full_name.charAt(0)}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-semibold text-white truncate group-hover:text-indigo-300 transition-colors"> {item.full_name} </p>
-                                        <div className="flex items-center gap-2 text-[11px] text-white/40 mt-0.5">
-                                            <span className="bg-white/5 px-1.5 py-0.5 rounded-md uppercase tracking-wider font-medium"> {item.class_name} </span>
-                                            <span className="opacity-30">•</span>
+                                        <div className="flex items-center gap-2 text-[10px] text-white/30 mt-0.5">
+                                            <span className="bg-white/5 px-1.5 py-0.5 rounded-md uppercase tracking-wider font-medium text-white/50"> {item.class_name} </span>
+                                            <span className="opacity-20">•</span>
                                             <span className="font-mono tracking-wide">{item.nis}</span>
                                         </div>
                                     </div>
@@ -108,13 +129,13 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                             </li>
                         ))}
                         {data.length === MAX_RESULTS && (
-                            <div className="py-4 flex items-center justify-center gap-2 text-white/30 bg-white/[0.02] border border-white/5 rounded-2xl mt-2">
+                            <div className="py-4 flex items-center justify-center gap-2 text-white/30 bg-white/2 border border-white/5 rounded-2xl mt-2">
                                 <Info size={14} />
                                 <span className="text-[10px] font-medium tracking-wide uppercase">Limit results. Please be more specific.</span>
                             </div>
                         )}
                     </ul>
-                </ScrollArea>
+                </div>
             )}
 
             {search && !isLoading && data.length === 0 && (
@@ -130,38 +151,11 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
     );
 };
 
-export const Manual = ({ setPick, setOpenForm }: ManualProps) => {
-    const [search, setSearch] = useState('');
-    const [data, setData] = useState<StudentMobile[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isFocused, setIsFocused] = useState(false); // STATE KUNCI UNTUK KEYBOARD
-
-    useEffect(() => {
-        if (!search.trim()) { setData([]); setIsLoading(false); return; }
-        setIsLoading(true);
-        const timer = setTimeout(async () => {
-            try {
-                const res = await fetch(`/api/student?prm=${encodeURIComponent(search)}&limit=15`);
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const json = await res.json();
-                if (json.status === 'success' && Array.isArray(json.data)) {
-                    const mappedData: StudentMobile[] = json.data.map((s: any) => ({
-                        id_student: s.id_student, full_name: s.full_name, nis: s.nis, class_name: s.tbl_classes?.class_name || s.class_name || 'Unknown', icode: s.icode || ''
-                    }));
-                    setData(mappedData);
-                } else { setData([]); }
-            } catch (error) {
-                console.error("Search Error:", error);
-                setData([]);
-            } finally {
-                setIsLoading(false);
-            }
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [search]);
+export const Manual = ({ setPick, setOpenForm, search, setSearch, data, isLoading, onFocus, onBlur, handleSelect, onScrollDirectionChange }: ManualProps) => {
+    const [isFocused, setIsFocused] = useState(false);
 
     return (
-        <div className="w-full h-full flex flex-col pb-5">
+        <div className="w-full h-full flex flex-col">
             <ManualSearch
                 search={search}
                 setSearch={setSearch}
@@ -169,13 +163,15 @@ export const Manual = ({ setPick, setOpenForm }: ManualProps) => {
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
             />
-            <div className="flex-1 min-h-0 relative w-full overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] shadow-inner">
+            {/* MODIFIED: pb-32 ditaruh di sini! Jadi wadah results-nya yang berhenti di atas dock, bukan isi list-nya yang dipaksa panjang nya! ฅ^•ﻌ•^ฅ */}
+            <div className="flex-1 min-h-0 relative w-full overflow-hidden pb-20">
                 <ManualResults
                     search={search}
                     data={data}
                     isLoading={isLoading}
                     isFocused={isFocused}
-                    handleSelect={(s) => { setPick({ id: String(s.id_student), full_name: s.full_name, nis: s.nis, class_name: s.class_name, status: 'idle', message: 'Manual Entry' }); setOpenForm(true); }}
+                    handleSelect={handleSelect}
+                    onScrollDirectionChange={onScrollDirectionChange}
                 />
             </div>
         </div>
