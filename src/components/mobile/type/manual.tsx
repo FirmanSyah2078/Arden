@@ -71,7 +71,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                         </div>
                     </div>
                     <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">Manual Search</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Ketikkan nama atau NIS untuk mencari data santri secara manual.</p>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Ketikkan Nama atau NIS untuk mencari data siswi secara manual.</p>
                 </div>
             )}
 
