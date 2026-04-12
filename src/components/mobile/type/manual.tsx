@@ -93,7 +93,10 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
             )}
 
             {search && data.length > 0 && (
-                <div onScroll={handleScroll} className="h-full w-full pr-3 overflow-y-auto scrollbar-hide">
+                <div
+                    onScroll={handleScroll}
+                    className="h-full w-full pr-3 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                >
                     <div className="py-2 px-1 flex justify-between items-center opacity-100 transition-all duration-300">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Search Results</span>
                         <span className="text-[10px] font-medium text-indigo-400">{data.length} Students found</span>
