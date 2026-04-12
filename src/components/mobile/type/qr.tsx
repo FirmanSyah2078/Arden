@@ -30,13 +30,8 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
 
   useImperativeHandle(ref, () => ({
     start: async () => {
-      if (!cameraId) {
-        toast.error("Kamera belum siap, nya!");
-        return;
-      }
-
+      if (!cameraId) return;
       try {
-        // Inisialisasi instance baru
         const scanner = new Html5Qrcode('reader');
         html5QrCodeRef.current = scanner;
 
@@ -47,19 +42,21 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
           () => { }
         );
 
-        setScanning(true);
-        if (onCamActive) onCamActive(true);
+        // 🔥 STEP 1: Pasang style video INSTAN (jangan pakai timeout lama), nya!
+        // Biar layout-nya langsung pas dan nggak ada yang kegeser/kepotong.
+        const v = document.querySelector('#reader video') as HTMLVideoElement;
+        if (v) {
+          v.style.objectFit = 'cover';
+          v.style.width = '100%';
+          v.style.height = '100%';
+          v.style.transform = 'scale(1.05)';
+        }
 
-        // Set video style agar cover seluruh area, nya!
+        // 🔥 STEP 2: Baru kasih "Warm-up" buat UI-nya saja, nya!
         setTimeout(() => {
-          const v = document.querySelector('#reader video') as HTMLVideoElement;
-          if (v) {
-            v.style.objectFit = 'cover';
-            v.style.width = '100%';
-            v.style.height = '100%';
-            v.style.transform = 'scale(1.05)';
-          }
-        }, 300);
+          setScanning(true);
+          if (onCamActive) onCamActive(true);
+        }, 800);
 
       } catch (e) {
         console.error(e);
@@ -129,7 +126,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   };
 
   return (
-    <div className="w-full h-full relative bg-white/2 border border-white/5 shadow-inner rounded-3xl overflow-hidden">
+    <div className="w-full h-full relative overflow-hidden">
       {/* CAMERA VIEWER */}
       <div id="reader" className="w-full h-full absolute inset-0" />
 

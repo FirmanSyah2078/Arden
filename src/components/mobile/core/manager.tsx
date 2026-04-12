@@ -84,7 +84,7 @@ export const Manager = ({
   return (
     <div className={`relative w-full h-full bg-[#151419] overflow-hidden ${className}`}>
 
-      <div className="relative w-full h-full flex flex-col transition-all duration-500 ease-in-out">
+      <div className="relative w-full h-full">
         {mode === 'scan' ? (
           <div className="w-full h-full animate-in fade-in zoom-in-95 duration-700 ease-out">
             <Qr ref={qrRef} sholat={activeScanner} onCamActive={setIsCamActive} />
