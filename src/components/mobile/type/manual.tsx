@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, User, Loader2, ChevronRight, AlertCircle, Info } from 'lucide-react';
+import { Search, User, Loader2, ChevronRight, AlertCircle, Info, X } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AttendanceStatusResponse, StudentMobile } from '@/types/api';
 
@@ -10,75 +10,108 @@ export interface ManualProps {
     setOpenForm: (value: boolean) => void;
 }
 
-export const ManualSearch = ({ search, setSearch, isLoading }: { search: string, setSearch: (s: string) => void, isLoading: boolean }) => (
-    <div className="relative mb-2 flex-none z-20 w-full">
-        <div className={`relative h-11 w-full bg-[#1F1E23] rounded-xl border flex items-center p-1 pl-3 transition-all group shadow-sm ${search ? 'border-white/20' : 'border-white/5'}`}>
-            <Search size={16} className={`${search ? 'text-white' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
+// --- KOMPONEN 1: SEARCH BAR (Sleek & Focus-Aware) ---
+export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
+    <div className="relative mb-4 flex-none z-20 px-1">
+        <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-indigo-500/50 ring-2 ring-indigo-500/20' : 'border-white/5'
+            }`}>
+            <Search size={18} className={`${search ? 'text-indigo-400' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
             <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onFocus={onFocus}
+                onBlur={onBlur}
                 placeholder="Search by Name or NIS..."
                 spellCheck="false"
                 autoComplete="off"
-                className="flex-1 min-w-0 bg-transparent border-none outline-none text-white font-medium placeholder:text-white/20 text-[13px] h-full"
+                className="flex-1 min-w-0 bg-transparent border-none outline-none text-white font-medium placeholder:text-white/20 text-[14px] h-full"
             />
-            {isLoading && (
-                <div className="w-9 h-9 flex items-center justify-center shrink-0 rounded-lg bg-white/5 ml-2">
-                    <Loader2 size={16} className="text-green-500 animate-spin shrink-0" />
-                </div>
-            )}
+            <div className="flex items-center gap-2 mr-2">
+                {search && (
+                    <button
+                        onClick={() => setSearch('')}
+                        className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all active:scale-90"
+                    >
+                        <X size={14} />
+                    </button>
+                )}
+                {isLoading && (
+                    <div className="w-8 h-8 flex items-center justify-center shrink-0 rounded-lg bg-indigo-500/10 ml-1">
+                        <Loader2 size={16} className="text-indigo-400 animate-spin shrink-0" />
+                    </div>
+                )}
+            </div>
         </div>
     </div>
 );
 
-export const ManualResults = ({ search, data, isLoading, handleSelect }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void }) => {
+// --- KOMPONEN 2: HASIL PENCARIAN (Symmetry & Space Optimized) ---
+export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean }) => {
     const MAX_RESULTS = 15;
     return (
         <div className="h-full w-full relative overflow-hidden">
-            {/* Bayangan atas sudah dihapus, nya! */}
-            <div className="absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-[#151419] to-transparent pointer-events-none z-10" />
+            {/* Bottom Fade Overlay untuk kesan depth */}
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-[#151419] to-transparent pointer-events-none z-10" />
 
-            {!search && (
+            {/* IDLE STATE: Hanya muncul kalau tidak sedang mencari & tidak sedang fokus */}
+            {!search && !isFocused && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-20 animate-in fade-in duration-500">
-                    <div className="flex items-center justify-center -space-x-3 mb-5">
-                        <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0s' }}>
-                            <User size={16} className="text-white/20" />
-                        </div>
-                        <div className="w-12 h-12 rounded-full border-2 border-[#151419] bg-[#27272A] flex items-center justify-center z-20 scale-110 shadow-xl ar-float-loop" style={{ animationDelay: '0.2s' }}>
-                            <Search size={20} className="text-white/60" />
-                        </div>
-                        <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0.4s' }}>
-                            <User size={16} className="text-white/20" />
+                    <div className="relative mb-6">
+                        <div className="absolute inset-0 blur-2xl bg-indigo-500/20 rounded-full" />
+                        <div className="relative flex items-center justify-center -space-x-3">
+                            <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0s' }}>
+                                <User size={16} className="text-white/20" />
+                            </div>
+                            <div className="w-12 h-12 rounded-full border-2 border-[#151419] bg-[#27272A] flex items-center justify-center z-20 scale-110 shadow-xl ar-float-loop" style={{ animationDelay: '0.2s' }}>
+                                <Search size={20} className="text-white/60" />
+                            </div>
+                            <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0.4s' }}>
+                                <User size={16} className="text-white/20" />
+                            </div>
                         </div>
                     </div>
-                    <h3 className="text-white font-medium text-base mb-1 tracking-tight"> Manual Search </h3>
-                    <p className="text-white/30 text-xs max-w-55 leading-relaxed"> Enter a student's name or NIS to begin the search without a scanner. </p>
+                    <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">Manual Search</h3>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Ketikkan nama atau NIS untuk mencari data santri secara manual.</p>
                 </div>
             )}
 
             {search && data.length > 0 && (
                 <ScrollArea className="h-full w-full pr-3">
-                    <ul className="flex flex-col gap-2 pb-16 pt-2">
+                    {/* Result Counter: Sembunyi otomatis saat keyboard aktif (isFocused) */}
+                    <div className={`py-2 px-1 flex justify-between items-center transition-all duration-300 ${isFocused ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Search Results</span>
+                        <span className="text-[10px] font-medium text-indigo-400">{data.length} Students found</span>
+                    </div>
+
+                    <ul className="flex flex-col gap-3 pb-32 pt-1">
                         {data.map((item) => (
                             <li key={item.id_student} className="animate-in slide-in-from-bottom-2 duration-300">
-                                <button onClick={() => handleSelect(item)} className="w-full text-left bg-[#1F1E23] hover:bg-[#27272A] border border-white/5 rounded-2xl p-3.5 flex items-center gap-3.5 transition-all active:scale-[0.98] group shadow-sm">
-                                    <div className="w-9 h-9 rounded-full bg-white/5 text-white/70 font-bold text-xs flex items-center justify-center border border-white/5 group-hover:border-white/20 transition-colors shrink-0"> {item.full_name.charAt(0)} </div>
+                                <button
+                                    onClick={() => handleSelect(item)}
+                                    className="w-full text-left bg-white/3 hover:bg-white/[0.08] border border-white/5 rounded-2xl p-4 flex items-center gap-4 transition-all active:scale-[0.98] group shadow-sm"
+                                >
+                                    <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-300 font-bold text-sm flex items-center justify-center border border-indigo-500/20 group-hover:border-indigo-500/40 transition-all shrink-0 shadow-inner">
+                                        {item.full_name.charAt(0)}
+                                    </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-white truncate group-hover:text-green-400 transition-colors"> {item.full_name} </p>
-                                        <div className="flex items-center gap-2 text-[10px] text-white/40 mt-0.5">
-                                            <span className="bg-white/5 px-1.5 py-0.5 rounded uppercase tracking-wider"> {item.class_name} </span>
-                                            <span>•</span><span className="font-mono tracking-wide">{item.nis}</span>
+                                        <p className="text-sm font-semibold text-white truncate group-hover:text-indigo-300 transition-colors"> {item.full_name} </p>
+                                        <div className="flex items-center gap-2 text-[11px] text-white/40 mt-0.5">
+                                            <span className="bg-white/5 px-1.5 py-0.5 rounded-md uppercase tracking-wider font-medium"> {item.class_name} </span>
+                                            <span className="opacity-30">•</span>
+                                            <span className="font-mono tracking-wide">{item.nis}</span>
                                         </div>
                                     </div>
-                                    <div className="text-white/10 group-hover:text-white/60 group-hover:translate-x-1 transition-all shrink-0"> <ChevronRight size={16} /> </div>
+                                    <div className="text-white/10 group-hover:text-indigo-400 transition-all shrink-0 transform group-hover:translate-x-1">
+                                        <ChevronRight size={18} />
+                                    </div>
                                 </button>
                             </li>
                         ))}
                         {data.length === MAX_RESULTS && (
-                            <li className="py-4 flex items-center justify-center gap-2 text-white/40 bg-[#1F1E23] border border-white/5 rounded-2xl mt-2">
+                            <div className="py-4 flex items-center justify-center gap-2 text-white/30 bg-white/[0.02] border border-white/5 rounded-2xl mt-2">
                                 <Info size={14} />
-                                <span className="text-[10px] font-medium tracking-wide uppercase">Results limited. Please be more specific.</span>
-                            </li>
+                                <span className="text-[10px] font-medium tracking-wide uppercase">Limit results. Please be more specific.</span>
+                            </div>
                         )}
                     </ul>
                 </ScrollArea>
@@ -90,7 +123,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect }: { searc
                         <AlertCircle size={28} />
                     </div>
                     <h3 className="text-white font-semibold text-base mb-1">No Results Found</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">We couldn't find any student matching your query in the database.</p>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Siswa dengan nama atau NIS tersebut tidak ditemukan.</p>
                 </div>
             )}
         </div>
@@ -101,30 +134,49 @@ export const Manual = ({ setPick, setOpenForm }: ManualProps) => {
     const [search, setSearch] = useState('');
     const [data, setData] = useState<StudentMobile[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isFocused, setIsFocused] = useState(false); // STATE KUNCI UNTUK KEYBOARD
 
     useEffect(() => {
         if (!search.trim()) { setData([]); setIsLoading(false); return; }
         setIsLoading(true);
         const timer = setTimeout(async () => {
             try {
-                const res = await fetch(`/api/student?prm=${search}&limit=15`);
+                const res = await fetch(`/api/student?prm=${encodeURIComponent(search)}&limit=15`);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const json = await res.json();
-                if (json.status === 'success' && json.data) {
+                if (json.status === 'success' && Array.isArray(json.data)) {
                     const mappedData: StudentMobile[] = json.data.map((s: any) => ({
-                        id_student: s.id_student, full_name: s.full_name, nis: s.nis, class_name: s.tbl_classes?.class_name || 'Unknown', icode: ''
+                        id_student: s.id_student, full_name: s.full_name, nis: s.nis, class_name: s.tbl_classes?.class_name || s.class_name || 'Unknown', icode: s.icode || ''
                     }));
                     setData(mappedData);
                 } else { setData([]); }
-            } catch (error) { console.error(error); } finally { setIsLoading(false); }
+            } catch (error) {
+                console.error("Search Error:", error);
+                setData([]);
+            } finally {
+                setIsLoading(false);
+            }
         }, 500);
         return () => clearTimeout(timer);
     }, [search]);
 
     return (
         <div className="w-full h-full flex flex-col pb-5">
-            <ManualSearch search={search} setSearch={setSearch} isLoading={isLoading} />
-            <div className="flex-1 min-h-0 relative w-full overflow-hidden rounded-3xl border border-[#27272A] bg-[#1F1E23]/30 shadow-2xl">
-                <ManualResults search={search} data={data} isLoading={isLoading} handleSelect={(s) => { setPick({ id: String(s.id_student), full_name: s.full_name, nis: s.nis, class_name: s.class_name, status: 'idle', message: 'Manual Entry' }); setOpenForm(true); }} />
+            <ManualSearch
+                search={search}
+                setSearch={setSearch}
+                isLoading={isLoading}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+            />
+            <div className="flex-1 min-h-0 relative w-full overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] shadow-inner">
+                <ManualResults
+                    search={search}
+                    data={data}
+                    isLoading={isLoading}
+                    isFocused={isFocused}
+                    handleSelect={(s) => { setPick({ id: String(s.id_student), full_name: s.full_name, nis: s.nis, class_name: s.class_name, status: 'idle', message: 'Manual Entry' }); setOpenForm(true); }}
+                />
             </div>
         </div>
     );

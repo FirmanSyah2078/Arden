@@ -1,18 +1,24 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
 import { Scan, Loader2, Maximize2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
-import { Alert } from '../popups/alert'; 
+import { Alert } from '../popups/alert';
 
 interface QrProps {
   sholat: DailyPrayer;
   onCamActive?: (isActive: boolean) => void;
 }
 
-export default function Qr({ sholat, onCamActive }: QrProps) {
+export interface QrHandle {
+  start: () => Promise<void>;
+  stop: () => Promise<void>;
+  isScanning: boolean;
+}
+
+const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   const qrRef = useRef<Html5Qrcode | null>(null);
   const [cameraId, setCameraId] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
@@ -20,6 +26,49 @@ export default function Qr({ sholat, onCamActive }: QrProps) {
   const [permissionError, setPermissionError] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [scanResult, setScanResult] = useState<AttendanceStatusResponse | undefined>(undefined);
+
+  // EXPOSE CONTROL TO MANAGER (Symmetry & Control)
+  useImperativeHandle(ref, () => ({
+    start: async () => {
+      if (!cameraId) return;
+      if (qrRef.current) { try { await qrRef.current.stop(); qrRef.current.clear(); } catch { } }
+
+      const html5QrCode = new Html5Qrcode('reader');
+      qrRef.current = html5QrCode;
+
+      try {
+        await html5QrCode.start({ deviceId: { exact: cameraId } }, { fps: 20 }, onScan, () => { });
+        setScanning(true);
+        setPermissionError(false);
+        if (onCamActive) onCamActive(true);
+
+        // Force video to cover screen perfectly
+        setTimeout(() => {
+          const v = document.querySelector('#reader video') as HTMLVideoElement;
+          if (v) {
+            v.style.objectFit = 'cover';
+            v.style.width = '100%';
+            v.style.height = '100%';
+            v.style.transform = 'scale(1.05)'; // Slight scale to remove black edges
+          }
+        }, 300);
+      } catch {
+        setPermissionError(true);
+        toast.error("Gagal membuka kamera");
+      }
+    },
+    stop: async () => {
+      try {
+        if (qrRef.current?.isScanning) {
+          await qrRef.current.stop();
+          qrRef.current.clear();
+        }
+      } catch { }
+      setScanning(false);
+      if (onCamActive) onCamActive(false);
+    },
+    get isScanning() { return scanning; }
+  }));
 
   useEffect(() => {
     let isMounted = true;
@@ -56,7 +105,6 @@ export default function Qr({ sholat, onCamActive }: QrProps) {
         const lastPart = parts[parts.length - 1];
         if (lastPart) icode = lastPart;
       }
-
       try {
         const json = JSON.parse(decodedText);
         icode = json.i || json.icode || json.nis || icode;
@@ -66,7 +114,6 @@ export default function Qr({ sholat, onCamActive }: QrProps) {
       const jsonRes = await res.json();
 
       if (jsonRes.status !== 'success' || !jsonRes.data) throw new Error("Data siswi tidak ditemukan.");
-
       const student = jsonRes.data;
       setScanResult({
         id: student.id_student.toString(),
@@ -76,12 +123,11 @@ export default function Qr({ sholat, onCamActive }: QrProps) {
         status: 'success',
         message: 'Menunggu konfirmasi',
       });
-
       setValidating(false);
       setShowPopup(true);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "QR Gagal";
-      toast.error("Gagal", { description: msg }); 
+      toast.error("Gagal", { description: msg });
       setValidating(false);
       setTimeout(() => {
         try { if (qrRef.current?.getState() === Html5QrcodeScannerState.PAUSED) qrRef.current.resume(); } catch { }
@@ -96,60 +142,46 @@ export default function Qr({ sholat, onCamActive }: QrProps) {
     }, 300);
   };
 
-  const start = async () => {
-    if (!cameraId) return;
-    if (qrRef.current) { try { await qrRef.current.stop(); qrRef.current.clear(); } catch { } }
-    const html5QrCode = new Html5Qrcode('reader');
-    qrRef.current = html5QrCode;
-    try {
-      await html5QrCode.start({ deviceId: { exact: cameraId } }, { fps: 20 }, onScan, () => { });
-      setScanning(true);
-      setPermissionError(false);
-      if (onCamActive) onCamActive(true);
-      setTimeout(() => {
-        const v = document.querySelector('#reader video') as HTMLVideoElement;
-        if (v) { v.style.objectFit = 'cover'; v.style.width = '100%'; v.style.height = '100%'; v.style.transform = 'scale(1.02)'; }
-      }, 300);
-    } catch {
-      setPermissionError(true);
-      toast.error("Gagal membuka kamera");
-    }
-  };
-
-  const stop = async () => {
-    try { if (qrRef.current?.isScanning) { await qrRef.current.stop(); qrRef.current.clear(); } } catch { }
-    setScanning(false);
-    if (onCamActive) onCamActive(false);
-  };
-
   return (
-    <div className="w-full h-full relative">
-      <div id="reader" className="w-full h-full" />
+    <div className="w-full h-full relative bg-black">
+      {/* CAMERA VIEWER - Pure Full Screen */}
+      <div id="reader" className="w-full h-full absolute inset-0" />
+
+      {/* SCAN FRAME - Luxe & Minimalist */}
       {scanning && !validating && !showPopup && (
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
           <div className="w-64 h-64 relative">
-            <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-white/90 rounded-tl-3xl"></div>
-            <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-white/90 rounded-tr-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-white/90 rounded-bl-3xl"></div>
-            <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-white/90 rounded-br-3xl"></div>
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/60 rounded-tl-2xl"></div>
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/60 rounded-tr-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/60 rounded-bl-2xl"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/60 rounded-br-2xl"></div>
+            {/* Subtle center glow */}
+            <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,0.5)] rounded-3xl" />
           </div>
         </div>
       )}
+
+      {/* STANDBY STATE - Luxury Minimalist */}
       {!scanning && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40">
-          <div className="relative mb-6"><div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-2xl"></div><Maximize2 size={64} strokeWidth={1} className="text-white/80 relative z-10" /></div>
-          <p className="text-xs text-white/40 mt-2">Scanner standby</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-black/40 backdrop-blur-sm transition-all duration-500">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
+            <Maximize2 size={60} strokeWidth={1} className="text-white/60 relative z-10" />
+          </div>
+          <p className="text-xs font-medium text-white/40 tracking-widest uppercase">Scanner Standby</p>
+          <p className="text-[10px] text-white/20 mt-1">Ready to capture QR code</p>
         </div>
       )}
-      {validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-50"><Loader2 size={48} className="animate-spin text-green-500" /><p className="text-xs mt-2 text-white font-mono">MEMERIKSA...</p></div>
-      )}
-      <div className="absolute bottom-8 w-full flex justify-center z-50">
-        <button onClick={scanning ? stop : start} disabled={validating || showPopup} className={`w-14 h-14 rounded-full backdrop-blur-md border-2 transition-all duration-300 flex items-center justify-center ${permissionError ? 'border-red-500 text-red-500 bg-red-500/10' : scanning ? 'border-green-500 text-white' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}>
-          {permissionError ? <AlertCircle /> : <Scan />}
-        </button>
-      </div>
 
+      {/* VALIDATING STATE */}
+      {validating && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-black/60 backdrop-blur-md">
+          <Loader2 size={48} className="animate-spin text-indigo-400" />
+          <p className="text-xs mt-4 text-white font-mono tracking-widest uppercase opacity-80">Validating Data...</p>
+        </div>
+      )}
+
+      {/* RESULT POPUP */}
       <Alert
         isOpen={showPopup}
         absensiStatus={scanResult}
@@ -160,4 +192,7 @@ export default function Qr({ sholat, onCamActive }: QrProps) {
       />
     </div>
   );
-}
+});
+
+Qr.displayName = 'Qr';
+export default Qr;
