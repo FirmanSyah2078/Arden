@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
-import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
-import { Scan, Loader2, Maximize2, AlertCircle, QrCode, User } from 'lucide-react';
+import { Html5Qrcode } from 'html5-qrcode';
+import { Scan, Loader2, QrCode, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
 import { Alert } from '../popups/alert';
@@ -18,71 +18,6 @@ export interface QrHandle {
   isScanning: boolean;
 }
 
-// --- KOMPONEN: QR VIEWER (The Camera Engine) ---
-const QrViewer = forwardRef<any, { scanning: boolean, validating: boolean, showPopup: boolean }>(({ scanning, validating, showPopup }, ref) => {
-  const qrRef = useRef<Html5Qrcode | null>(null);
-
-  useImperativeHandle(ref, () => ({
-    start: async (cameraId: string) => {
-      const html5QrCode = new Html5Qrcode('reader');
-      qrRef.current = html5QrCode;
-      try {
-        await html5QrCode.start({ deviceId: { exact: cameraId } }, { fps: 20 }, (text: string) => {
-          // Success callback is handled by the parent coordinator
-        }, () => { });
-      } catch (e) { console.error(e); }
-    },
-    stop: async () => {
-      if (qrRef.current?.isScanning) {
-        await qrRef.current.stop();
-        qrRef.current.clear();
-      }
-    },
-    pause: async () => await qrRef.current?.pause(true),
-    resume: async () => {
-      try { if (qrRef.current?.getState() === Html5QrcodeScannerState.PAUSED) qrRef.current.resume(); } catch { }
-    },
-    clear: () => qrRef.current?.clear(),
-    setVideoStyle: () => {
-      setTimeout(() => {
-        const v = document.querySelector('#reader video') as HTMLVideoElement;
-        if (v) {
-          v.style.objectFit = 'cover';
-          v.style.width = '100%';
-          v.style.height = '100%';
-          v.style.transform = 'scale(1.05)';
-        }
-      }, 300);
-    }
-  }));
-
-  return (
-    <div className="h-full w-full relative overflow-hidden">
-      <div id="reader" className="w-full h-full absolute inset-0" />
-
-      {scanning && !validating && !showPopup && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-          <div className="w-64 h-64 relative">
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/60 rounded-tl-2xl"></div>
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/60 rounded-tr-2xl"></div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/60 rounded-bl-2xl"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/60 rounded-br-2xl"></div>
-            <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,0.5)] rounded-3xl" />
-          </div>
-        </div>
-      )}
-
-      {validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-black/60 backdrop-blur-md">
-          <Loader2 size={48} className="animate-spin text-indigo-400" />
-          <p className="text-xs mt-4 text-white font-mono tracking-widest uppercase opacity-80">Validating Data...</p>
-        </div>
-      )}
-    </div>
-  );
-});
-
-// --- MAIN COMPONENT: QR (The Wrapper) ---
 const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   const [cameraId, setCameraId] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
@@ -90,29 +25,59 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   const [showPopup, setShowPopup] = useState(false);
   const [scanResult, setScanResult] = useState<AttendanceStatusResponse | undefined>(undefined);
 
-  const viewerRef = useRef<any>(null);
+  // 🔥 PENTING: Simpan instance kamera di Ref supaya bisa diakses kapan aja, nya!
+  const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
   useImperativeHandle(ref, () => ({
     start: async () => {
-      if (!cameraId) return;
+      if (!cameraId) {
+        toast.error("Kamera belum siap, nya!");
+        return;
+      }
+
       try {
-        const html5QrCode = new Html5Qrcode('reader');
-        viewerRef.current?.setQrInstance(html5QrCode);
-        await html5QrCode.start(
+        // Inisialisasi instance baru
+        const scanner = new Html5Qrcode('reader');
+        html5QrCodeRef.current = scanner;
+
+        await scanner.start(
           { deviceId: { exact: cameraId } },
           { fps: 20 },
           (text: string) => handleScanSuccess(text),
           () => { }
         );
+
         setScanning(true);
         if (onCamActive) onCamActive(true);
-        viewerRef.current?.setVideoStyle();
-      } catch (e) { toast.error("Gagal membuka kamera"); }
+
+        // Set video style agar cover seluruh area, nya!
+        setTimeout(() => {
+          const v = document.querySelector('#reader video') as HTMLVideoElement;
+          if (v) {
+            v.style.objectFit = 'cover';
+            v.style.width = '100%';
+            v.style.height = '100%';
+            v.style.transform = 'scale(1.05)';
+          }
+        }, 300);
+
+      } catch (e) {
+        console.error(e);
+        toast.error("Gagal membuka kamera, nya!");
+      }
     },
     stop: async () => {
-      await viewerRef.current?.stop();
-      setScanning(false);
-      if (onCamActive) onCamActive(false);
+      try {
+        if (html5QrCodeRef.current) {
+          await html5QrCodeRef.current.stop();
+          html5QrCodeRef.current.clear();
+          html5QrCodeRef.current = null; // Reset ref-nya, nya!
+        }
+        setScanning(false);
+        if (onCamActive) onCamActive(false);
+      } catch (e) {
+        console.error("Error stopping camera:", e);
+      }
     },
     get isScanning() { return scanning; }
   }));
@@ -132,7 +97,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   const handleScanSuccess = async (decodedText: string) => {
     if (validating || showPopup) return;
     try {
-      await viewerRef.current?.pause();
       setValidating(true);
       let icode = decodedText;
       if (decodedText.startsWith('http') || decodedText.includes('://')) {
@@ -143,9 +107,11 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         const json = JSON.parse(decodedText);
         icode = json.i || json.icode || json.nis || icode;
       } catch { }
+
       const res = await fetch(`/api/student?icode=${icode}`);
       const jsonRes = await res.json();
       if (jsonRes.status !== 'success' || !jsonRes.data) throw new Error("Data siswi tidak ditemukan.");
+
       setScanResult({
         id: jsonRes.data.id_student.toString(),
         full_name: jsonRes.data.full_name,
@@ -159,7 +125,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
     } catch (err: any) {
       toast.error("Gagal", { description: err.message || "QR Gagal" });
       setValidating(false);
-      setTimeout(() => viewerRef.current?.resume(), 1500);
     }
   };
 
@@ -181,10 +146,9 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         </div>
       )}
 
-      {/* STANDBY STATE - Exact mirror of ManualResults Idle nya! */}
-      {!scanning && (
+      {/* STANDBY STATE */}
+      {!scanning && !validating && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500">
-
           <div className="flex flex-col items-center text-center">
             <div className="relative flex items-center justify-center mb-6">
               <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
@@ -202,13 +166,11 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
             </div>
 
             <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">QR Scanner</h3>
-            <p className="text-white/40 text-xs max-w-55 leading-relaxed">
+            <p className="text-white/40 text-xs max-w-55 leading-relaxed text-center">
               Arahkan kamera ke Code QR. <br />
               Tekan <span className="text-indigo-400 font-bold">Start Cam</span> untuk memulai.
             </p>
           </div>
-
-          <div className="absolute bottom-20 w-full" />
         </div>
       )}
 
@@ -226,7 +188,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         sholatTime={sholat as unknown as string}
         onScanUlang={() => {
           setShowPopup(false);
-          setTimeout(() => viewerRef.current?.resume(), 300);
         }}
         initialStatus="idle"
       />
