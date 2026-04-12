@@ -34,33 +34,18 @@ export default function MobilePage() {
     <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col p-5 font-sans overflow-hidden">
       <div className="flex-none">
         <Header>
-          <DropdownMenu>
-              <DropdownMenuTrigger className="outline-none">
-                  <div className="p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer">
-                      <Menu className="w-6 h-6 text-white" />
-                  </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-[#1f1e23] border-[#27272A] text-white">
-                  <DropdownMenuItem onClick={() => setShowHistory(true)} className="cursor-pointer hover:bg-[#27272A]">
-                      <HistoryIcon className="mr-2 h-4 w-4" /> <span>History</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info("Fitur Setting belum tersedia")} className="cursor-pointer hover:bg-[#27272A]">
-                      <Settings className="mr-2 h-4 w-4" /> <span>Settings</span>
-                  </DropdownMenuItem>
-                  
-                  {/* 🔥 FIX: Panggil fungsi onLogoutClick yang menggunakan hook */}
-                  <DropdownMenuItem onClick={onLogoutClick} className="cursor-pointer text-red-500 hover:bg-[#27272A]">
-                      <LogOut className="mr-2 h-4 w-4" /> <span>Logout</span>
-                  </DropdownMenuItem>
-              </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Hamburger menu moved to Manager for Thumb Principle symmetry, nya! */}
         </Header>
         <div className="mb-4 mt-2">
             <CardSholat />
         </div>
       </div>
       <div className="flex-1 min-h-0 relative w-full">
-         <Manager className="h-full w-full" />
+         <Manager 
+            className="h-full w-full\" 
+            onOpenHistory={() => setShowHistory(true)} 
+            onLogout={onLogoutClick} 
+         />
       </div>
       <History isOpen={showHistory} setIsOpen={setShowHistory} sholat={activeScanner} />
     </div>
