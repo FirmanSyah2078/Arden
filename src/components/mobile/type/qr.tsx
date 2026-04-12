@@ -20,12 +20,12 @@ export interface QrHandle {
 
 const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   const [cameraId, setCameraId] = useState<string | null>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [validating, setValidating] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [scanResult, setScanResult] = useState<AttendanceStatusResponse | undefined>(undefined);
 
-  // 🔥 PENTING: Simpan instance kamera di Ref supaya bisa diakses kapan aja, nya!
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
   useImperativeHandle(ref, () => ({
@@ -42,20 +42,19 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
           () => { }
         );
 
-        // 🔥 STEP 1: Pasang style video INSTAN (jangan pakai timeout lama), nya!
-        // Biar layout-nya langsung pas dan nggak ada yang kegeser/kepotong.
         const v = document.querySelector('#reader video') as HTMLVideoElement;
         if (v) {
           v.style.objectFit = 'cover';
           v.style.width = '100%';
           v.style.height = '100%';
-          v.style.transform = 'scale(1.05)';
+          // scale(1.05) dihapus biar nggak terlalu zoom, nya!
         }
 
-        // 🔥 STEP 2: Baru kasih "Warm-up" buat UI-nya saja, nya!
+        setIsCameraActive(true);
+        if (onCamActive) onCamActive(true);
+
         setTimeout(() => {
           setScanning(true);
-          if (onCamActive) onCamActive(true);
         }, 800);
 
       } catch (e) {
@@ -68,8 +67,9 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         if (html5QrCodeRef.current) {
           await html5QrCodeRef.current.stop();
           html5QrCodeRef.current.clear();
-          html5QrCodeRef.current = null; // Reset ref-nya, nya!
+          html5QrCodeRef.current = null;
         }
+        setIsCameraActive(false);
         setScanning(false);
         if (onCamActive) onCamActive(false);
       } catch (e) {
@@ -126,25 +126,45 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   };
 
   return (
-    <div className="w-full h-full relative overflow-hidden">
-      {/* CAMERA VIEWER */}
+    <div className="w-full h-full relative bg-white/2 border border-white/5 shadow-inner rounded-3xl overflow-hidden">
+      {/* CSS Animasi Laser - Ditaruh di sini biar nggak perlu edit globals.css, nya! */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @keyframes scan-laser {
+          0%, 100% { top: 0%; opacity: 0.4; }
+          50% { top: 100%; opacity: 1; }
+        }
+        .animate-scan-laser {
+          animation: scan-laser 3s ease-in-out infinite;
+        }
+      `}} />
+
       <div id="reader" className="w-full h-full absolute inset-0" />
 
-      {/* SCAN FRAME overlay */}
+      {/* REDESIGN: SCAN FRAME - Luxury & Modern, nya! ฅ^•ﻌ•^ฅ */}
       {scanning && !validating && !showPopup && (
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
           <div className="w-64 h-64 relative">
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/60 rounded-tl-2xl"></div>
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/60 rounded-tr-2xl"></div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/60 rounded-bl-2xl"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/60 rounded-br-2xl"></div>
-            <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,0.5)] rounded-3xl" />
+
+            {/* 1. Soft Breathing Glow di Tengah, nya! */}
+            <div className="absolute inset-0 bg-indigo-500/10 rounded-3xl animate-pulse" />
+
+            {/* 2. Neon Laser Line - Gerak naik turun, nya! */}
+            <div className="absolute left-0 right-0 top-0 h-1 bg-linear-to-r from-transparent via-indigo-400 to-transparent shadow-[0_0_15px_rgba(129,140,248,0.8)] z-30 animate-scan-laser" />
+
+            {/* 3. Refined Neon Corners - Lebih tebal dan bercahaya, nya! */}
+            <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-indigo-400 rounded-tl-3xl z-20 shadow-[0_0_15px_rgba(129,140,248,0.5)]" />
+            <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-indigo-400 rounded-tr-3xl z-20 shadow-[0_0_15px_rgba(129,140,248,0.5)]" />
+            <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-indigo-400 rounded-bl-3xl z-20 shadow-[0_0_15px_rgba(129,140,248,0.5)]" />
+            <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-indigo-400 rounded-br-3xl z-20 shadow-[0_0_15px_rgba(129,140,248,0.5)]" />
+
+            {/* 4. Deep Vignette - Biar fokus ke tengah, nya! */}
+            <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.8)] rounded-3xl z-10" />
           </div>
         </div>
       )}
 
-      {/* STANDBY STATE */}
-      {!scanning && !validating && (
+      {!isCameraActive && !validating && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500">
           <div className="flex flex-col items-center text-center">
             <div className="relative flex items-center justify-center mb-6">
@@ -161,7 +181,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
                 </div>
               </div>
             </div>
-
             <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">QR Scanner</h3>
             <p className="text-white/40 text-xs max-w-55 leading-relaxed text-center">
               Arahkan kamera ke Code QR. <br />
