@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { UserSearch, ScanLine, Menu, X, History as HistoryIcon, Settings, LogOut, RotateCcw } from 'lucide-react';
+import { UserSearch, ScanLine, Menu, X, History as HistoryIcon, Settings, LogOut, RotateCcw, Camera } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -110,33 +110,33 @@ export const Manager = ({ className = '', onOpenHistory, onLogout }: ManagerProp
       <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-in-out ${isCamActive ? 'opacity-60' : 'opacity-100'}`}>
         <div className="flex items-center bg-white/5 backdrop-blur-2xl border border-white/10 p-1.5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] gap-1.5">
 
-          {/* Mode Switcher */}
+          {/* Mode Switcher - Icon Only nya! */}
           <Button
             variant="secondary"
             onClick={handleToggleMode}
-            className="h-10 px-4 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all active:scale-95 group flex items-center gap-2 border border-white/5 shrink-0"
+            className="h-10 w-10 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all active:scale-95 group flex items-center justify-center border border-white/5 shrink-0"
           >
             {mode === 'scan' ? (
-              <><UserSearch size={16} className="text-white/40 group-hover:text-indigo-400 transition-colors" /><span className="text-[11px] font-bold uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">Manual</span></>
+              <UserSearch size={16} className="text-white/40 group-hover:text-indigo-400 transition-colors" />
             ) : (
-              <><ScanLine size={16} className="text-white/40 group-hover:text-indigo-400 transition-colors" /><span className="text-[11px] font-bold uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">Scan QR</span></>
+              <ScanLine size={16} className="text-white/40 group-hover:text-indigo-400 transition-colors" />
             )}
           </Button>
 
-          {/* Primary Action */}
+          {/* Primary Action - Icon Only nya! */}
           <Button
             variant="secondary"
             onClick={mode === 'scan' ? handleCamAction : () => setSearch('')}
-            className={`h-10 px-5 rounded-full transition-all active:scale-95 group flex items-center gap-2 shadow-inner shrink-0 ${mode === 'scan' ? 'bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/20' : 'bg-white/10 hover:bg-white/20 text-white border border-white/5'}`}
+            className={`h-10 w-10 rounded-full transition-all active:scale-95 group flex items-center justify-center shadow-inner shrink-0 ${mode === 'scan' ? 'bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/20' : 'bg-white/10 hover:bg-white/20 text-white border border-white/5'}`}
           >
             {mode === 'scan' ? (
-              <><ScanLine size={16} className="group-hover:animate-pulse" /><span className="text-[11px] font-bold uppercase tracking-wider">{qrRef.current?.isScanning ? 'Stop Cam' : 'Start Cam'}</span></>
+              <Camera size={16} className="group-hover:animate-pulse" />
             ) : (
-              <><RotateCcw size={16} className="text-white/60 group-hover:text-white transition-colors" /><span className="text-[11px] font-bold uppercase tracking-wider">Reset</span></>
+              <RotateCcw size={16} className="text-white/60 group-hover:text-white transition-colors" />
             )}
           </Button>
 
-          {/* LUXE HAMBURGER TRIGGER - Morphing to Red X, nya! */}
+          {/* LUXE HAMBURGER TRIGGER */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="h-10 w-10 rounded-full bg-white/[0.03] hover:bg-white/10 text-white transition-all active:scale-95 group outline-none flex items-center justify-center border border-white/10 shrink-0 shadow-sm">
