@@ -48,19 +48,21 @@ export default function MobilePage() {
 
       {/* MENU PANEL: Slide up dari bawah, nya! (=^･ω･^=) */}
       {isMenuOpen && (
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 w-60 animate-in slide-in-from-bottom-8 duration-300">
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 w-52 animate-in slide-in-from-bottom-8 duration-300">
           <div className="bg-[#1A191E] border border-white/10 rounded-3xl p-2 shadow-2xl">
             <div className="flex flex-col gap-1">
               {/* ITEM: History */}
               <button
                 onClick={() => { setShowHistory(true); setIsMenuOpen(false); }}
-                className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-white/5 transition-all active:scale-[0.98] group"
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-white/5 transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-white/5 text-white/40 flex items-center justify-center border border-white/10 group-hover:bg-white/10 group-hover:text-white transition-all shrink-0 shadow-inner">
-                    <HistoryIcon size={16} />
+                  {/* Icon: w-8 h-8 biar lebih compact */}
+                  <div className="w-8 h-8 rounded-lg bg-white/5 text-white/40 flex items-center justify-center border border-white/10 group-hover:bg-white/10 group-hover:text-white transition-all shrink-0 shadow-inner">
+                    <HistoryIcon size={14} />
                   </div>
                   <div className="flex flex-col items-start">
+                    {/* Typography: Konsisten text-sm & text-[10px] */}
                     <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">History</span>
                     <span className="text-[10px] text-white/30 leading-tight">Riwayat absensi siswi</span>
                   </div>
@@ -70,11 +72,11 @@ export default function MobilePage() {
               {/* ITEM: Settings */}
               <button
                 onClick={() => { toast.info("Fitur Setting belum tersedia"); setIsMenuOpen(false); }}
-                className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-white/5 transition-all active:scale-[0.98] group"
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-white/5 transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-white/5 text-white/40 flex items-center justify-center border border-white/10 group-hover:bg-white/10 group-hover:text-white transition-all shrink-0 shadow-inner">
-                    <Settings size={16} />
+                  <div className="w-8 h-8 rounded-lg bg-white/5 text-white/40 flex items-center justify-center border border-white/10 group-hover:bg-white/10 group-hover:text-white transition-all shrink-0 shadow-inner">
+                    <Settings size={14} />
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Settings</span>
@@ -88,11 +90,11 @@ export default function MobilePage() {
               {/* ITEM: Logout */}
               <button
                 onClick={() => { onLogoutClick(); setIsMenuOpen(false); }}
-                className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-red-500/10 transition-all active:scale-[0.98] group"
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-red-500/10 transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center border border-red-500/20 group-hover:bg-red-500/20 group-hover:text-red-300 transition-all shrink-0 shadow-inner">
-                    <LogOut size={16} />
+                  <div className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center border border-red-500/20 group-hover:bg-red-500/20 group-hover:text-red-300 transition-all shrink-0 shadow-inner">
+                    <LogOut size={14} />
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-semibold text-white group-hover:text-red-400 transition-colors">Logout</span>

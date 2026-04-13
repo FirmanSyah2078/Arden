@@ -114,7 +114,7 @@ export const Manager = ({
           <Button
             variant="secondary"
             onClick={handleToggleMode}
-            className="h-10 w-10 rounded-full bg-white/[0.03] hover:bg-white/[0.08] text-white/40 hover:text-white transition-all duration-300 active:scale-90 group flex items-center justify-center border border-white/[0.05] shrink-0"
+            className="h-10 w-10 rounded-full bg-white/3 hover:bg-white/8 text-white/40 hover:text-white transition-all duration-300 active:scale-90 group flex items-center justify-center border border-white/5 shrink-0"
           >
             {mode === 'scan' ? (
               <UserSearch size={16} className="text-white/40 group-hover:text-indigo-400 transition-colors" />
