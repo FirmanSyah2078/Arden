@@ -110,11 +110,11 @@ export const Manager = ({
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-in-out">
-        <div className="flex items-center bg-white/5 backdrop-blur-2xl border border-white/10 p-1.5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] gap-1.5">
+        <div className="flex items-center bg-[#1A191E]/90 backdrop-blur-xl border border-white/10 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.7)] gap-1.5">
           <Button
             variant="secondary"
             onClick={handleToggleMode}
-            className="h-10 w-10 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all active:scale-95 group flex items-center justify-center border border-white/5 shrink-0"
+            className="h-10 w-10 rounded-full bg-white/[0.03] hover:bg-white/[0.08] text-white/40 hover:text-white transition-all duration-300 active:scale-90 group flex items-center justify-center border border-white/[0.05] shrink-0"
           >
             {mode === 'scan' ? (
               <UserSearch size={16} className="text-white/40 group-hover:text-indigo-400 transition-colors" />
@@ -126,7 +126,7 @@ export const Manager = ({
           <Button
             variant="secondary"
             onClick={mode === 'scan' ? handleCamAction : () => setSearch('')}
-            className={`h-10 w-10 rounded-full transition-all active:scale-95 group flex items-center justify-center shadow-inner shrink-0 ${mode === 'scan' ? 'bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/20' : 'bg-white/10 hover:bg-white/20 text-white border border-white/5'}`}
+            className={`h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shadow-inner shrink-0 ${mode === 'scan' ? 'bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30' : 'bg-white/3 hover:bg-white/8 text-white/40 hover:text-white border border-white/5'}`}
           >
             {mode === 'scan' ? (
               <Camera size={16} className="group-hover:animate-pulse" />
@@ -137,20 +137,23 @@ export const Manager = ({
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="h-10 w-10 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all active:scale-95 group outline-none flex items-center justify-center border border-white/10 shrink-0 shadow-sm hover:border-white/20"
+            className={`h-10 w-10 rounded-full bg-white/3 hover:bg-white/8 text-white/40 hover:text-white transition-all duration-300 active:scale-90 group outline-none flex items-center justify-center border border-white/5 shrink-0 shadow-sm hover:border-white/20 ${isMenuOpen ? 'text-red-500' : ''}`}
           >
             {isMenuOpen ? (
-              <X className="w-5 h-5 text-red-500 animate-in zoom-in duration-200" />
+              <X size={20} strokeWidth={1.5} className="w-5 h-5" />
             ) : (
-              <Menu className="w-5 h-5 text-white/40 group-hover:text-white transition-colors duration-300" />
+              <div className="flex flex-col items-center justify-center gap-1 w-5 h-5">
+                <span className="h-0.5 w-5 bg-current rounded-full" />
+                <span className="h-0.5 w-4 bg-current rounded-full" />
+                <span className="h-0.5 w-3 bg-current rounded-full" />
+              </div>
             )}
           </button>
         </div>
       </div>
 
       <Form isOpen={inputFormOpen} setIsOpen={setInputFormOpen} dataStudent={manualResult} setPick={setManualResult} sholat={activeScanner} setSuccessPopup={setNotifOpen} />
-      {/* 🔥 Prop setSuccessPopup sudah dihapus supaya nggak error, nya! ฅ^•ﻌ•^ฅ */}
-      <Alert isOpen={notifOpen} absensiStatus={manualResult} setOpen={setNotifOpen} sholatTime={activeScanner as unknown as string} />
+      {/* 🔥 Prop setSuccessPopup sudah dihapus supaya nggak error, nya! ฅ^•ﻌ•^ฅ */}\n      <Alert isOpen={notifOpen} absensiStatus={manualResult} setOpen={setNotifOpen} sholatTime={activeScanner as unknown as string} />
     </div>
   );
 };

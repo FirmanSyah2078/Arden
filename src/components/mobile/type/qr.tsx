@@ -127,42 +127,9 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
 
   return (
     <div className="w-full h-full relative bg-white/2 border border-white/5 shadow-inner rounded-3xl overflow-hidden">
-      {/* CSS Animasi Laser - Ditaruh di sini biar nggak perlu edit globals.css, nya! */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes scan-laser {
-          0%, 100% { top: 0%; opacity: 0.4; }
-          50% { top: 100%; opacity: 1; }
-        }
-        .animate-scan-laser {
-          animation: scan-laser 3s ease-in-out infinite;
-        }
-      `}} />
-
       <div id="reader" className="w-full h-full absolute inset-0" />
 
-      {/* REDESIGN: SCAN FRAME - Luxury & Modern, nya! ฅ^•ﻌ•^ฅ */}
-      {scanning && !validating && !showPopup && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-          <div className="w-64 h-64 relative">
 
-            {/* 1. Soft Breathing Glow di Tengah, nya! */}
-            <div className="absolute inset-0 bg-indigo-500/10 rounded-3xl animate-pulse" />
-
-            {/* 2. Neon Laser Line - Gerak naik turun, nya! */}
-            <div className="absolute left-0 right-0 top-0 h-1 bg-linear-to-r from-transparent via-indigo-400 to-transparent shadow-[0_0_15px_rgba(129,140,248,0.8)] z-30 animate-scan-laser" />
-
-            {/* 3. Refined Neon Corners - Lebih tebal dan bercahaya, nya! */}
-            <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-indigo-400 rounded-tl-3xl z-20 shadow-[0_0_15px_rgba(129,140,248,0.5)]" />
-            <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-indigo-400 rounded-tr-3xl z-20 shadow-[0_0_15px_rgba(129,140,248,0.5)]" />
-            <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-indigo-400 rounded-bl-3xl z-20 shadow-[0_0_15px_rgba(129,140,248,0.5)]" />
-            <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-indigo-400 rounded-br-3xl z-20 shadow-[0_0_15px_rgba(129,140,248,0.5)]" />
-
-            {/* 4. Deep Vignette - Biar fokus ke tengah, nya! */}
-            <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.8)] rounded-3xl z-10" />
-          </div>
-        </div>
-      )}
 
       {!isCameraActive && !validating && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500">
