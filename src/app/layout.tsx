@@ -60,7 +60,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         {children}
-        <Toaster />
       </body>
     </html>
   );

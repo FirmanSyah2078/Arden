@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Clock, Inbox, Loader2, X } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { DailyPrayer } from '@/types/api';
-import { useAttendance } from '@/hooks/mobile/use-attendance'; 
+import { useAttendance } from '@/hooks/mobile/use-attendance';
 
 import { formatTime } from '@/lib/date';
 
@@ -41,9 +41,9 @@ export default function History({ isOpen, setIsOpen, sholat }: HistoryProps) {
             </div>
           ) : historyData.length > 0 ? (
             historyData.map((item, idx) => (
-              <li 
-                key={idx} 
-                className="w-full bg-white/[0.02] border border-white/5 rounded-2xl p-3 flex items-center justify-between gap-3 transition-all active:scale-[0.98] group hover:border-white/10"
+              <li
+                key={idx}
+                className="w-full bg-white/2 border border-white/5 rounded-2xl p-3 flex items-center justify-between gap-3 transition-all active:scale-[0.98] group hover:border-white/10"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/40 shrink-0 group-hover:bg-indigo-500/10 group-hover:text-indigo-300 transition-colors">
@@ -75,11 +75,11 @@ export default function History({ isOpen, setIsOpen, sholat }: HistoryProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent 
+      <DialogContent
         showCloseButton={false}
         className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-white/10 text-white p-6 shadow-2xl"
       >
-        <button 
+        <button
           onClick={() => setIsOpen(false)}
           className="absolute top-4 right-4 p-2 rounded-full bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all active:scale-90 z-10"
         >
@@ -88,27 +88,25 @@ export default function History({ isOpen, setIsOpen, sholat }: HistoryProps) {
 
         <div className="flex items-center gap-2 mb-6">
           <Clock className="w-5 h-5 text-indigo-400" />
-          <h3 className="text-lg font-bold tracking-tight">Riwayat Kehadiran</h3>
+          <DialogTitle className="text-lg font-bold tracking-tight">Riwayat Kehadiran</DialogTitle>
         </div>
 
         <div className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-1 h-12 flex items-center gap-1 mb-6 shadow-lg">
-          <button 
+          <button
             onClick={() => setActiveTab('Dhuhr')}
-            className={`flex-1 h-full rounded-xl text-xs font-bold transition-all duration-300 ${
-              activeTab === 'Dhuhr' 
-                ? 'bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 shadow-inner' 
+            className={`flex-1 h-full rounded-xl text-xs font-bold transition-all duration-300 ${activeTab === 'Dhuhr'
+                ? 'bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 shadow-inner'
                 : 'text-white/40 hover:text-white/60'
-            }`}
+              }`}
           >
             Dzuhur
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('Asr')}
-            className={`flex-1 h-full rounded-xl text-xs font-bold transition-all duration-300 ${
-              activeTab === 'Asr' 
-                ? 'bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 shadow-inner' 
+            className={`flex-1 h-full rounded-xl text-xs font-bold transition-all duration-300 ${activeTab === 'Asr'
+                ? 'bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 shadow-inner'
                 : 'text-white/40 hover:text-white/60'
-            }`}
+              }`}
           >
             Ashar
           </button>
