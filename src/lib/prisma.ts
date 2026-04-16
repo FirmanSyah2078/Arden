@@ -2,6 +2,12 @@ import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+// 🔥 FIX: Solve "Do not know how to serialize a BigInt" error
+// Mengonversi BigInt menjadi string saat proses JSON.stringify (API Response)
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 // Mencegah multiple instance Prisma Client saat hot-reload di mode development
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
