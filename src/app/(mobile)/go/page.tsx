@@ -47,18 +47,18 @@ export default function MobilePage() {
         />
       )}
 
-      {/* MENU PANEL */}
+      {/* MENU PANEL (SOLID MATERIAL VERSION) */}
       {isMenuOpen && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 w-52 animate-in slide-in-from-bottom-8 duration-300">
-          <div className="bg-[#1A191E] border border-white/10 rounded-3xl p-2 shadow-2xl">
+          <div className="bg-[#1F1E23] border border-white/5 rounded-3xl p-2 shadow-2xl">
             <div className="flex flex-col gap-1">
               {/* ITEM: History */}
               <button
                 onClick={() => { setShowHistory(true); setIsMenuOpen(false); }}
-                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-white/5 transition-all active:scale-[0.98] group"
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/5 text-white/40 flex items-center justify-center border border-white/10 group-hover:bg-white/10 group-hover:text-white transition-all shrink-0 shadow-inner">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white/40 flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
                     <HistoryIcon size={14} />
                   </div>
                   <div className="flex flex-col items-start">
@@ -71,10 +71,10 @@ export default function MobilePage() {
               {/* ITEM: Settings */}
               <button
                 onClick={() => { setIsSettingsOpen(true); setIsMenuOpen(false); }}
-                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-white/5 transition-all active:scale-[0.98] group"
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/5 text-white/40 flex items-center justify-center border border-white/10 group-hover:bg-white/10 group-hover:text-white transition-all shrink-0 shadow-inner">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white/40 flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
                     <Settings size={14} />
                   </div>
                   <div className="flex flex-col items-start">
@@ -84,19 +84,19 @@ export default function MobilePage() {
                 </div>
               </button>
 
-              <div className="h-px bg-white/5 my-1 mx-2" />
+              <div className="h-px bg-white/10 my-1 mx-2" />
 
-              {/* ITEM: Logout */}
+              {/* ITEM: Logout - Now Monochromatic Solid */}
               <button
                 onClick={() => { onLogoutClick(); setIsMenuOpen(false); }}
-                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-red-500/10 transition-all active:scale-[0.98] group"
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center border border-red-500/20 group-hover:bg-red-500/20 group-hover:text-red-300 transition-all shrink-0 shadow-inner">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white/40 flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
                     <LogOut size={14} />
                   </div>
                   <div className="flex flex-col items-start">
-                    <span className="text-sm font-semibold text-white group-hover:text-red-400 transition-colors">Logout</span>
+                    <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Logout</span>
                     <span className="text-[10px] text-white/30 leading-tight">Keluar dari sistem Arden</span>
                   </div>
                 </div>

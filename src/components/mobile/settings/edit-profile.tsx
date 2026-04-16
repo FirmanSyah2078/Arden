@@ -33,15 +33,18 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent 
         showCloseButton={false}
-        className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-white/10 text-white p-6 shadow-2xl"
+        className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
       >
         <div className="flex flex-col items-center gap-4 mb-8">
           <div className="relative group">
-            <div className="w-24 h-24 rounded-full bg-white/5 border-2 border-white/10 flex items-center justify-center overflow-hidden transition-all group-hover:border-white/20">
-              {formData.avatarUrl ? (
+            <div className="w-24 h-24 rounded-full bg-[#1F1E23] border-2 border-white/5 flex items-center justify-center overflow-hidden transition-all group-hover:border-white/10">
+              {/* Placeholder icon when loading or no image */}
+              <User className={`w-12 h-12 text-white/10 transition-opacity duration-300 ${formData.avatarUrl && !imageLoading ? 'opacity-0' : 'opacity-100'}`} />
+              
+              {formData.avatarUrl && (
                 <>
                   {imageLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/5 animate-pulse">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#1F1E23]/60 backdrop-blur-[2px] animate-pulse">
                       <div className="w-6 h-6 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
                     </div>
                   )}
@@ -52,8 +55,6 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
                     onLoad={() => setImageLoading(false)}
                   />
                 </>
-              ) : (
-                <User className="w-12 h-12 text-white/20" />
               )}
             </div>
             <button 
@@ -87,7 +88,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
             <Input 
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="bg-white/[0.03] border-white/10 text-white rounded-xl h-11 focus:ring-white/20"
+              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
               disabled={isLoading || isSubmitting}
             />
           </div>
@@ -96,7 +97,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
             <Input 
               value={formData.username}
               onChange={(e) => handleChange('username', e.target.value)}
-              className="bg-white/[0.03] border-white/10 text-white rounded-xl h-11 focus:ring-white/20"
+              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
               disabled={isLoading || isSubmitting}
             />
           </div>
@@ -109,11 +110,11 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
               setIsOpen(false);
             }}
             disabled={isSaveDisabled}
-            className="w-full h-12 rounded-2xl bg-white text-black hover:bg-white/90 font-bold transition-all active:scale-[0.98] shadow-lg"
+            className="w-full h-12 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 font-bold transition-all active:scale-[0.98] shadow-lg border-none"
           >
             <div className="flex items-center justify-center gap-2">
               {isSubmitting ? (
-                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : null}
               <span>{isSubmitting ? 'Memproses...' : 'Konfirmasi'}</span>
             </div>
@@ -122,7 +123,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
           <Button 
             onClick={() => setIsOpen(false)}
             variant="outline"
-            className="w-full h-12 rounded-2xl bg-white/5 text-white border-white/10 hover:bg-white/10 font-semibold transition-all active:scale-[0.98]"
+            className="w-full h-12 rounded-2xl bg-[#1F1E23] text-white border-white/5 hover:bg-[#2A292F] font-semibold transition-all active:scale-[0.98]"
           >
             Kembali
           </Button>

@@ -36,9 +36,9 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent 
           showCloseButton={false}
-          className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-white/10 text-white p-6 shadow-2xl"
+          className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
         >
-          <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/10">
+          <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
             <DialogTitle className="text-xl font-bold tracking-tight text-white">
               Pengaturan Sistem
             </DialogTitle>
@@ -52,10 +52,10 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
               <button
                 key={item.id}
                 onClick={item.action}
-                className="w-full p-4 rounded-2xl bg-white/3 border border-white/5 flex items-center justify-between group transition-all active:scale-[0.98] hover:bg-white/5 hover:border-white/10"
+                className="w-full p-4 rounded-2xl bg-[#1F1E23] border border-white/5 flex items-center justify-between group transition-all active:scale-[0.98] hover:bg-[#2A292F] hover:border-white/10"
               >
                 <div className="flex items-center gap-4">
-                  <div className="p-2.5 rounded-xl bg-white/10 text-white/80 group-hover:bg-white/20 transition-colors">
+                  <div className="p-2.5 rounded-xl bg-[#2A292F] text-white/60 group-hover:bg-[#35343B] group-hover:text-white transition-colors">
                     {item.icon}
                   </div>
                   <div className="flex flex-col items-start text-left">
