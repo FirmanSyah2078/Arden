@@ -6,17 +6,6 @@ datasource db {
   provider = "postgresql"
 }
 
-model tbl_attendance {
-  id_attendance BigInt        @id @default(autoincrement())
-  id_student    BigInt?
-  date          DateTime      @db.Date
-  time          String?       @db.VarChar(10)
-  status        String?       @db.VarChar(20)
-  remarks       String?
-  created_at    DateTime?     @default(now()) @db.Timestamptz(6)
-  method        String?       @db.VarChar(10)
-  tbl_students  tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
-}
 
 model tbl_chart_data {
   id_data            BigInt       @id @default(autoincrement())
@@ -44,15 +33,6 @@ model tbl_notifications {
   read_status     String?       @db.VarChar(10)
   sent_at         DateTime?     @default(now()) @db.Timestamptz(6)
   tbl_students    tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model tbl_menstruation_settings {
-  id_setting              BigInt   @id @default(autoincrement())
-  min_normal_duration     Int?     @default(5)
-  max_normal_duration     Int?     @default(7)
-  auto_purification_limit Int?     @default(8)
-  is_notification_active  Boolean? @default(true)
-  warning_message         String?  @db.VarChar(255)
 }
 
 model tbl_warnings {
@@ -90,6 +70,73 @@ model tbl_monthly_recaps {
   tbl_students       tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
 }
 
+model tbl_connections {
+  id_connection BigInt    @id @default(autoincrement())
+  id_user       BigInt
+  email         String?   @db.VarChar(150)
+  provider      String?   @db.VarChar(50)
+  provider_id   String?   @db.VarChar(255)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+
+  tbl_users tbl_users @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
+}
+
+
+
+// sudah update
+
+model tbl_attendance {
+  id_attendance BigInt        @id @default(autoincrement())
+  id_student    BigInt?
+  date          DateTime      @db.Date
+  time          String?       @db.VarChar(10)
+  status        String?       @db.VarChar(20)
+  remarks       String?
+  created_at    DateTime?     @default(now()) @db.Timestamptz(6)
+  method        String?       @db.VarChar(10)
+  tbl_students  tbl_students? @relation(fields: [id_student], references: [id_student], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model tbl_menstruation_settings {
+  id_setting              BigInt   @id @default(autoincrement())
+  min_duration            Int?     @default(5)
+  standard_duration       Int?     @default(7)
+  max_duration            Int?     @default(10)
+  over_limit              Int?     @default(30)
+}
+
+model tbl_prayers {
+  id_cache   BigInt    @id @default(autoincrement())
+  date       DateTime  @unique @db.Date
+  fajr       String    @db.VarChar(5)
+  dhuhr      String    @db.VarChar(5)
+  asr        String    @db.VarChar(5)
+  maghrib    String    @db.VarChar(5)
+  isha       String    @db.VarChar(5)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model tbl_geographic {
+  id_setting    Int      @id @default(1)
+  country       String   @default("Indonesia") @db.VarChar(50)
+  city          String   @default("Kota Blitar / Jawa Timur") @db.VarChar(100)
+  timezone      String   @default("Asia/Jakarta") @db.VarChar(50)
+  method        String   @default("20") @db.VarChar(10)
+  is_api_active Boolean  @default(true)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+model tbl_routine {
+  day_name      String   @id @db.VarChar(15)
+  is_active     Boolean  @default(true)
+  track_fajr    Boolean  @default(false)
+  track_dhuhr   Boolean  @default(true)
+  track_asr     Boolean  @default(true)
+  track_maghrib Boolean  @default(false)
+  track_isha    Boolean  @default(false)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
 model tbl_classes {
   id_class       BigInt           @id @default(autoincrement())
   class_name     String           @db.VarChar(50)
@@ -107,7 +154,6 @@ model tbl_students {
   period_status            String?                    @db.VarChar
   notes                    String?
   icode                    String                     @unique @db.VarChar(50)
-  pancingan     String?
   tbl_attendance           tbl_attendance[]
   tbl_notifications        tbl_notifications[]
   tbl_warnings             tbl_warnings[]
@@ -129,15 +175,4 @@ model tbl_users {
   created_at DateTime? @default(now()) @db.Timestamptz(6)
 
   tbl_connections tbl_connections[]
-}
-
-model tbl_connections {
-  id_connection BigInt    @id @default(autoincrement())
-  id_user       BigInt
-  email         String?   @db.VarChar(150)
-  provider      String?   @db.VarChar(50)
-  provider_id   String?   @db.VarChar(255)
-  created_at    DateTime? @default(now()) @db.Timestamptz(6)
-
-  tbl_users tbl_users @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
 }

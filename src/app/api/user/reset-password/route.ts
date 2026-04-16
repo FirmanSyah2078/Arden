@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { UserService } from "@/db/dashboard/directory/user.service"
+import { UserService } from "@/db/directory/user.service"
 
 export async function POST(req: Request) {
   try {

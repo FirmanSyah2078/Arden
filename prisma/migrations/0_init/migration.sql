@@ -1,4 +1,4 @@
-[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
@@ -123,7 +123,6 @@ CREATE TABLE "tbl_students" (
     "period_status" VARCHAR,
     "notes" TEXT,
     "icode" VARCHAR(50) NOT NULL,
-    "pancingan" TEXT,
 
     CONSTRAINT "tbl_students_pkey" PRIMARY KEY ("id_student")
 );

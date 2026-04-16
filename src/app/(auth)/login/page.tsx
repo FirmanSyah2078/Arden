@@ -10,7 +10,7 @@ import {
   ArrowLeft, Lock, User, Monitor, Smartphone, Eye, EyeOff, ArrowRight, AlertTriangle, Loader2
 } from "lucide-react"
 import { Logo } from "@/components/logo"
-import { useLogin } from "@/hooks/use-login"
+import { useLogin } from "@/hooks/auth/use-login"
 
 const VantaBackground = dynamic(() => import("@/components/vanta-background"), { ssr: false })
 const ParticlesBackground = dynamic(() => import("@/components/particles"), { ssr: false })

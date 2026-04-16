@@ -6,7 +6,14 @@ import {
   Settings2,
   BookOpen,
   ShieldAlert,
-  Eye
+  Eye,
+  Activity, // Icon untuk Period Rules
+  Clock,    // Icon untuk Prayer Schedules
+  Terminal,  // Icon untuk Logs
+  CalendarDays,
+  MessageSquareWarning,
+  Wifi,
+  Globe,
 } from "lucide-react";
 import { type NavItemType } from "@/components/dashboard/nav-group";
 
@@ -43,10 +50,45 @@ export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]
       ],
     },
     {
-      label: "System",
+      label: "System Architecture", // Menggantikan Configuration
       items: [
-        { title: "Settings", url: "/dashboard/settings", icon: Settings2, variant: "default" },
+        {
+          title: "Academic Schedules", // Jadwal mingguan, kalender, libur
+          url: "/dashboard/schedules",
+          icon: CalendarDays,
+          variant: "default"
+        },
+        {
+          title: "Menstrual Logic", // Khusus 4-Phase biologi
+          url: "/dashboard/menstrual",
+          icon: Activity,
+          variant: "default"
+        },
+        {
+          title: "Communication Hub", // Khusus template notifikasi/SP
+          url: "/dashboard/communications",
+          icon: MessageSquareWarning,
+          variant: "default"
+        },
+        {
+          title: "Data Integrations", // Khusus API luar (Aladhan, WA, dll)
+          url: "/dashboard/integrations",
+          icon: Wifi,
+          variant: "default"
+        },
+        {
+          title: "Global Preferences", // Khusus Geografis, Zona Waktu, Profil
+          url: "/dashboard/preferences",
+          icon: Globe,
+          variant: "default"
+        },
+      ],
+    },
+    {
+      label: "Support & Resources", // Area Dokumentasi & Log
+      items: [
         { title: "Documentation", url: "/dashboard/docs", icon: BookOpen, variant: "default" },
+        { title: "System Logs", url: "/dashboard/logs", icon: Terminal, variant: "default" },
       ],
     },
   ],

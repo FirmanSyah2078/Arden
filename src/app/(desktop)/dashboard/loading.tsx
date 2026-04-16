@@ -9,7 +9,7 @@ export default function DashboardLoading() {
         
         {/* Satu kalimat, elegan, dan redup */}
         <span className="text-[11px] font-medium tracking-widest text-white/40 uppercase animate-pulse">
-          Memuat data...
+          Loading Data...
         </span>
       </div>
     </div>

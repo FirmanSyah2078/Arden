@@ -1,6 +1,6 @@
 // src/app/api/student/import/route.ts
 import { NextResponse } from 'next/server';
-import { StudentService } from '@/db/dashboard/directory/student.service'
+import { StudentService } from '@/db/directory/student.service'
 
 export async function POST(req: Request) {
   try {

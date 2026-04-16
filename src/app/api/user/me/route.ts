@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
-import { UserService } from "@/db/dashboard/directory/user.service"
-import { ProfileService } from "@/db/dashboard/settings/profile.service"
+import { UserService } from "@/db/directory/user.service"
+import { ProfileService } from "@/db/settings/profile.service"
 import { jwtVerify } from "jose"
 
 const SECRET_KEY = process.env.JWT_SECRET || 'rahasia-kita'

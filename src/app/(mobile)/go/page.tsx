@@ -13,7 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useSholat } from '@/hooks/mobile/use-sholat';
 
 // 🔥 FIX: Import hook sakti milikmu
-import { useLogout } from '@/hooks/use-logout';
+import { useLogout } from '@/hooks/auth/use-logout';
 
 export default function MobilePage() {
   const [showHistory, setShowHistory] = useState(false);
