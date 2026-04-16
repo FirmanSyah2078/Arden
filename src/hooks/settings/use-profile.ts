@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import imageCompression from 'browser-image-compression';
 import { useRouter } from "next/navigation"; 
 import { getInitials } from "@/lib/utils";   
+import { toast } from "sonner";
 
 export interface UserProfileData {
   avatarUrl: string | null;
@@ -36,16 +37,13 @@ export function useProfile() {
     fileInputRef.current?.click();
   };
 
-  // 🔥 FIX: Tambahkan logika pemaksaan huruf kecil untuk username dan huruf kapital awal untuk nama
   const handleChange = <K extends keyof UserProfileData>(field: K, value: UserProfileData[K]) => {
     let finalValue = value;
 
     if (typeof value === "string") {
       if (field === "username") {
-        // Paksa huruf kecil dan hapus semua spasi
         finalValue = (value.toLowerCase().replace(/\s+/g, '') as unknown) as UserProfileData[K];
       } else if (field === "name") {
-        // Otomatis Title Case (Kapital di awal kata)
         finalValue = (value.toLowerCase().replace(/(?:^|\s)\w/g, (match) => match.toUpperCase()) as unknown) as UserProfileData[K];
       }
     }
@@ -58,7 +56,7 @@ export function useProfile() {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("File size is too large! Maximum 5MB allowed.");
+      toast.error("File size is too large!", { description: "Maximum 5MB allowed.", position: 'top-center' });
       return;
     }
 
@@ -76,7 +74,7 @@ export function useProfile() {
       setSelectedFile(compressedFile); 
     } catch (error) {
       console.error("Image compression failed:", error);
-      alert("An error occurred while processing the image.");
+      toast.error("Image compression failed", { position: 'top-center' });
     }
   }
 
@@ -195,12 +193,13 @@ export function useProfile() {
         
         router.refresh();
         window.dispatchEvent(new Event('profile-updated'));
+        toast.success("Profil berhasil diperbarui", { description: "Data akun Anda telah tersinkronisasi.", position: 'top-center' });
 
       } else {
-        alert(`Failed: ${json.message}`);
+        toast.error("Gagal memperbarui profil", { description: json.message, position: 'top-center' });
       }
     } catch (error: any) {
-      alert(error.message || "Network error occurred.");
+      toast.error("Gagal memperbarui profil", { description: error.message || "Terjadi kesalahan jaringan.", position: 'top-center' });
     } finally {
       setIsSubmitting(false)
     }

@@ -38,19 +38,12 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
           showCloseButton={false}
           className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-white/10 text-white p-6 shadow-2xl"
         >
-          <button 
-            onClick={() => setIsOpen(false)}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all active:scale-90 z-10"
-          >
-            <X size={16} />
-          </button>
-
           <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/10">
             <DialogTitle className="text-xl font-bold tracking-tight text-white">
-              Pengaturan Akun
+              Pengaturan Sistem
             </DialogTitle>
             <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
-              Account Management
+              System Configuration
             </DialogDescription>
           </div>
 
