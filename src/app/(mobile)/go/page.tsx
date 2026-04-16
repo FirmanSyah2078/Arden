@@ -6,13 +6,15 @@ import { toast } from 'sonner';
 import { UnifiedHeader } from '@/components/mobile/ui/unified-header';
 import { Manager } from '@/components/mobile/core/manager';
 import History from '@/components/mobile/popups/history';
+import SettingsHub from '@/components/mobile/settings/settings-hub';
 import { useLogout } from '@/hooks/use-logout';
 import { useSholat } from '@/hooks/mobile/use-sholat';
 import { History as HistoryIcon, Settings, LogOut } from 'lucide-react';
 
 export default function MobilePage() {
   const [showHistory, setShowHistory] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State menu dipindah ke sini, nya!
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); 
   const { activeScanner } = useSholat();
   const { handleLogout } = useLogout();
 
@@ -32,13 +34,12 @@ export default function MobilePage() {
           className="h-full w-full"
           onOpenHistory={() => setShowHistory(true)}
           onLogout={onLogoutClick}
-          // Kirim state menu ke Manager biar tombol hamburger-nya bisa trigger, nya!
           isMenuOpen={isMenuOpen}
           setIsMenuOpen={setIsMenuOpen}
         />
       </div>
 
-      {/* OVERLAY: Sekarang di level Page, jadi bisa nutupin Header juga, nya! ฅ^•ﻌ•^ฅ */}
+      {/* OVERLAY */}
       {isMenuOpen && (
         <div
           className="absolute inset-0 z-40 bg-black/50 transition-opacity animate-in fade-in duration-300"
@@ -46,7 +47,7 @@ export default function MobilePage() {
         />
       )}
 
-      {/* MENU PANEL: Slide up dari bawah, nya! (=^･ω･^=) */}
+      {/* MENU PANEL */}
       {isMenuOpen && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 w-52 animate-in slide-in-from-bottom-8 duration-300">
           <div className="bg-[#1A191E] border border-white/10 rounded-3xl p-2 shadow-2xl">
@@ -57,12 +58,10 @@ export default function MobilePage() {
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-white/5 transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  {/* Icon: w-8 h-8 biar lebih compact */}
                   <div className="w-8 h-8 rounded-lg bg-white/5 text-white/40 flex items-center justify-center border border-white/10 group-hover:bg-white/10 group-hover:text-white transition-all shrink-0 shadow-inner">
                     <HistoryIcon size={14} />
                   </div>
                   <div className="flex flex-col items-start">
-                    {/* Typography: Konsisten text-sm & text-[10px] */}
                     <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">History</span>
                     <span className="text-[10px] text-white/30 leading-tight">Riwayat absensi siswi</span>
                   </div>
@@ -71,7 +70,7 @@ export default function MobilePage() {
 
               {/* ITEM: Settings */}
               <button
-                onClick={() => { toast.info("Fitur Setting belum tersedia"); setIsMenuOpen(false); }}
+                onClick={() => { setIsSettingsOpen(true); setIsMenuOpen(false); }}
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-white/5 transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
@@ -111,6 +110,11 @@ export default function MobilePage() {
         isOpen={showHistory}
         setIsOpen={setShowHistory}
         sholat={activeScanner}
+      />
+
+      <SettingsHub 
+        isOpen={isSettingsOpen} 
+        setIsOpen={setIsSettingsOpen} 
       />
     </div>
   );
