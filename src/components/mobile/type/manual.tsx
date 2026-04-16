@@ -17,12 +17,12 @@ export interface ManualProps {
     onScrollDirectionChange?: (visible: boolean) => void;
 }
 
-// --- KOMPONEN 1: SEARCH BAR ---
+// --- KOMPONEN 1: SEARCH BAR (ULTRA-SMOOTH MATERIAL VERSION) ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
     <div className="relative mb-6 flex-none z-20 px-1">
-        <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-indigo-500/50 ring-2 ring-indigo-500/20' : 'border-white/5'
+        <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-transparent shadow-[0_0_0_1px_rgba(255,255,255,0.4),0_0_12px_rgba(255,255,255,0.05)]' : 'border-[#2A292F]'
             }`}>
-            <Search size={18} className={`${search ? 'text-indigo-400' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
+            <Search size={18} className={`${search ? 'text-white/80' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
             <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -37,14 +37,14 @@ export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: 
                 {search && (
                     <button
                         onClick={() => setSearch('')}
-                        className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all active:scale-90"
+                        className="p-1.5 rounded-lg bg-[#2A292F] hover:bg-[#35343B] text-white/40 hover:text-white transition-all active:scale-90"
                     >
                         <X size={14} />
                     </button>
                 )}
                 {isLoading && (
-                    <div className="w-8 h-8 flex items-center justify-center shrink-0 rounded-lg bg-indigo-500/10 ml-1">
-                        <Loader2 size={16} className="text-indigo-400 animate-spin shrink-0" />
+                    <div className="w-8 h-8 flex items-center justify-center shrink-0 rounded-lg bg-white/10 ml-1">
+                        <Loader2 size={16} className="text-white/60 animate-spin shrink-0" />
                     </div>
                 )}
             </div>
@@ -102,7 +102,6 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                         <span className="text-[10px] font-medium text-indigo-400">{data.length} Students found</span>
                     </div>
 
-                    {/* MODIFIED: pb-32 dihapus! Ganti jadi pb-8 aja biar cuma kasih jarak dikit antar item terakhir dan batas wadahnya nya! ฅ^•ﻌ•^ฅ */}
                     <ul className="flex flex-col gap-3 pb-8 pt-1">
                         {data.map((item, index) => (
                             <li
@@ -166,7 +165,6 @@ export const Manual = ({ setPick, setOpenForm, search, setSearch, data, isLoadin
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
             />
-            {/* MODIFIED: pb-32 ditaruh di sini! Jadi wadah results-nya yang berhenti di atas dock, bukan isi list-nya yang dipaksa panjang nya! ฅ^•ﻌ•^ฅ */}
             <div className="flex-1 min-h-0 relative w-full overflow-hidden pb-20">
                 <ManualResults
                     search={search}

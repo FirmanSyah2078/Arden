@@ -110,16 +110,16 @@ export const Manager = ({
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-in-out">
-        <div className="flex items-center bg-[#1A191E]/90 backdrop-blur-xl border border-white/10 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.7)] gap-1.5">
+        <div className="flex items-center bg-[#1F1E23] p-1.5 rounded-full shadow-xl gap-1.5">
           <Button
             variant="secondary"
             onClick={handleToggleMode}
-            className="h-10 w-10 rounded-full bg-white/3 hover:bg-white/8 text-white/40 hover:text-white transition-all duration-300 active:scale-90 group flex items-center justify-center border border-white/5 shrink-0"
+            className="h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shrink-0 border-none bg-[#2A292F] text-white/40 hover:text-white hover:bg-[#35343B]"
           >
             {mode === 'scan' ? (
-              <UserSearch size={16} className="text-white/40 group-hover:text-indigo-400 transition-colors" />
+              <UserSearch size={16} className="text-current" />
             ) : (
-              <ScanLine size={16} className="text-white/60 group-hover:text-white transition-colors" />
+              <ScanLine size={16} className="text-current" />
             )}
           </Button>
 
@@ -127,7 +127,7 @@ export const Manager = ({
             <Button
               variant="secondary"
               onClick={handleCamAction}
-              className="h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shadow-inner shrink-0 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30"
+              className="h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shrink-0 border-none bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
             >
               <Camera size={16} className="group-hover:animate-pulse" />
             </Button>
@@ -135,7 +135,7 @@ export const Manager = ({
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`h-10 w-10 rounded-full bg-white/3 hover:bg-white/8 text-white/40 hover:text-white transition-all duration-300 active:scale-90 group outline-none flex items-center justify-center border border-white/5 shrink-0 shadow-sm hover:border-white/20 ${isMenuOpen ? 'text-red-500' : ''}`}
+            className={`h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group outline-none flex items-center justify-center shrink-0 border-none shadow-sm ${isMenuOpen ? 'bg-red-600 text-white' : 'bg-[#2A292F] text-white/40 hover:text-white hover:bg-[#35343B]'}`}
           >
             {isMenuOpen ? (
               <X size={20} strokeWidth={1.5} className="w-5 h-5" />

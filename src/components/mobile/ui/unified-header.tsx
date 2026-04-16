@@ -9,7 +9,7 @@ export const UnifiedHeader = () => {
     const labels: Record<string, string> = { Fajr: 'Shubuh', Sunrise: 'Dhuha', Dhuhr: 'Zhuhur', Asr: 'Ashar', Maghrib: 'Maghrib', Isha: 'Isya' };
 
     return (
-        <div className="w-full bg-white/3 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex flex-col gap-3 shadow-lg transition-all duration-500">
+        <div className="w-full bg-[#1F1E23] border border-white/5 rounded-2xl p-4 flex flex-col gap-3 shadow-sm transition-all duration-500">
 
             {/* TOP ROW: App Identity - Kept exactly as requested nya! */}
             <div className="flex items-center justify-between">
@@ -30,11 +30,11 @@ export const UnifiedHeader = () => {
 
             {/* BOTTOM ROW: Sholat Status & Time Range */}
             <div className="flex items-center justify-between gap-3 min-w-0 border-t border-white/5 pt-3">
-                {/* Prayer Name Badge */}
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 shrink-0">
-                    <div className="w-1 h-1 rounded-full bg-indigo-400 animate-pulse" />
-                    <span className="text-[10px] font-bold tracking-wider text-indigo-300 capitalize">
-                        Jadwal Sholat {labels[displayStatus] || '...'}
+                {/* Prayer Name Badge - Migrated to Solid Material */}
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-600 border-none shrink-0 shadow-sm">
+                    <div className="w-1 h-1 rounded-full bg-white animate-pulse" />
+                    <span className="text-[10px] font-bold tracking-wider text-white capitalize">
+                        Sholat {labels[displayStatus] || '...'}
                     </span>
                 </div>
 
