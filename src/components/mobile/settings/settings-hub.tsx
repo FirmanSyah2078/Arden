@@ -52,7 +52,7 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
               <button
                 key={item.id}
                 onClick={item.action}
-                className="w-full p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between group transition-all active:scale-[0.98] hover:bg-white/[0.05] hover:border-white/10"
+                className="w-full p-4 rounded-2xl bg-white/3 border border-white/5 flex items-center justify-between group transition-all active:scale-[0.98] hover:bg-white/5 hover:border-white/10"
               >
                 <div className="flex items-center gap-4">
                   <div className="p-2.5 rounded-xl bg-white/10 text-white/80 group-hover:bg-white/20 transition-colors">
@@ -73,13 +73,13 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
       {/* Sub-Popups */}
       <EditProfile 
         isOpen={activePopup === 'edit-profile'} 
-        setIsOpen={(val) => {
+        setIsOpen={(val: boolean) => {
           if (!val) setActivePopup('none');
         }} 
       />
       <HelpGuide 
         isOpen={activePopup === 'help'} 
-        setIsOpen={(val) => {
+        setIsOpen={(val: boolean) => {
           if (!val) setActivePopup('none');
         }} 
       />

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Clock, Inbox, Loader2, CheckCircle2, XCircle, ScanLine } from 'lucide-react';
+import { Clock, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -76,25 +76,19 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 return {
                     title: 'Data Tersimpan',
                     subtitle: 'Absensi berhasil dicatat.',
-                    icon: <CheckCircle2 size={40} className="text-emerald-400 animate-in zoom-in-75 duration-300" />,
-                    glow: 'bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_20px_rgba(52,211,153,0.1)]',
                     textCol: 'text-emerald-400'
                 };
             case 'error':
                 return {
                     title: 'Gagal Simpan',
                     subtitle: 'Terjadi kesalahan sistem.',
-                    icon: <XCircle size={40} className="text-red-400" />,
-                    glow: 'bg-red-500/10 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]',
                     textCol: 'text-red-400'
                 };
             default:
                 return {
                     title: 'Konfirmasi Data',
                     subtitle: 'Pastikan data sesuai.',
-                    icon: <ScanLine size={40} className="text-indigo-400" />,
-                    glow: 'bg-indigo-500/10 border-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.1)]',
-                    textCol: 'text-indigo-400'
+                    textCol: 'text-white'
                 };
         }
     };
@@ -114,13 +108,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                     {config.subtitle}
                 </DialogDescription>
 
-                <div className="flex flex-col items-center justify-center mb-8">
-                    <div className={`w-20 h-20 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${config.glow}`}>
-                        {config.icon}
-                    </div>
-                </div>
-
-                <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/10 text-center">
+                <div className="flex flex-col gap-1 mb-8 pb-4 border-b border-white/10">
                     <span className={`text-xl font-bold tracking-tight ${config.textCol}`}>
                         {config.title}
                     </span>
@@ -159,7 +147,8 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                     ) : (
                         <>
                             <Button className="w-full bg-white hover:bg-gray-200 text-black font-bold h-12 rounded-2xl" onClick={handleProcess} disabled={loading}>
-                                {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Memproses...</> : 'Proses Absensi'}\n                            </Button>
+                                {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Memproses...</> : 'Proses Absensi'}
+                            </Button>
                             {!loading && <Button variant="outline" className="w-full bg-white/5 text-white border-white/10 hover:bg-white/10 rounded-2xl h-12" onClick={handleCloseAndResume}>Batal & Scan Ulang</Button>}
                         </>
                     )}

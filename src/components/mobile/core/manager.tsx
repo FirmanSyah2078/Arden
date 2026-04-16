@@ -123,17 +123,15 @@ export const Manager = ({
             )}
           </Button>
 
-          <Button
-            variant="secondary"
-            onClick={mode === 'scan' ? handleCamAction : () => setSearch('')}
-            className={`h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shadow-inner shrink-0 ${mode === 'scan' ? 'bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30' : 'bg-white/3 hover:bg-white/8 text-white/40 hover:text-white border border-white/5'}`}
-          >
-            {mode === 'scan' ? (
+          {mode === 'scan' && (
+            <Button
+              variant="secondary"
+              onClick={handleCamAction}
+              className="h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shadow-inner shrink-0 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30"
+            >
               <Camera size={16} className="group-hover:animate-pulse" />
-            ) : (
-              <RotateCcw size={16} className="text-white/60 group-hover:text-white transition-colors" />
-            )}
-          </Button>
+            </Button>
+          )}
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -153,7 +151,7 @@ export const Manager = ({
       </div>
 
       <Form isOpen={inputFormOpen} setIsOpen={setInputFormOpen} dataStudent={manualResult} setPick={setManualResult} sholat={activeScanner} setSuccessPopup={setNotifOpen} />
-      {/* 🔥 Prop setSuccessPopup sudah dihapus supaya nggak error, nya! ฅ^•ﻌ•^ฅ */}\n      <Alert isOpen={notifOpen} absensiStatus={manualResult} setOpen={setNotifOpen} sholatTime={activeScanner as unknown as string} />
+      <Alert isOpen={notifOpen} absensiStatus={manualResult} setOpen={setNotifOpen} sholatTime={activeScanner as unknown as string} />
     </div>
   );
 };

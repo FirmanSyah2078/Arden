@@ -4,13 +4,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Droplet, Sparkles, Loader2, MessageSquare, Edit3, ChevronDown } from 'lucide-react';
+import { Droplet, Sparkles, Loader2, MessageSquare, Edit3 } from 'lucide-react';
 import { AlertDialog, AlertDialogContent, AlertDialogCancel, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
 import { Form as FormUI, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
 
 const formSchema = z.object({
@@ -24,9 +23,9 @@ const formSchema = z.object({
 interface FormProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  dataStudent: AttendanceStatusResponse | undefined; 
+  dataStudent: AttendanceStatusResponse | undefined;
   setPick: (data: AttendanceStatusResponse) => void;
-  setSuccessPopup: (value: boolean) => void; 
+  setSuccessPopup: (value: boolean) => void;
   sholat: DailyPrayer;
 }
 
@@ -51,13 +50,13 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
     if (!dataStudent) return;
     setPick({
       ...dataStudent,
-      status: 'idle', 
+      status: 'idle',
       message: 'Manual Entry',
-      icode: values.status, 
+      icode: values.status,
       remarks: values.status === 'Suci' ? 'Hadir Sholat' : values.remarks
     });
-    setSuccessPopup(true); 
-    setIsOpen(false);      
+    setSuccessPopup(true);
+    setIsOpen(false);
     form.reset();
   };
 
@@ -83,7 +82,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
 
             <FormUI {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 relative overflow-hidden">
+                <div className="bg-white/3 p-5 rounded-2xl border border-white/5 relative overflow-hidden">
                   <div className="relative z-10">
                     <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Nama Siswi</p>
                     <p className="text-white font-bold text-lg leading-tight mb-4">{dataStudent.full_name}</p>
@@ -111,7 +110,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                         <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-3">
                           <div className="relative flex items-center justify-center">
                             <RadioGroupItem value="Haid" id="r-haid" className="peer sr-only" />
-                            <label htmlFor="r-haid" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-white/[0.03] peer-data-[state=checked]:border-white/40 peer-data-[state=checked]:bg-white/10 transition-all cursor-pointer hover:bg-white/5 group">
+                            <label htmlFor="r-haid" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-white/3 peer-data-[state=checked]:border-white/40 peer-data-[state=checked]:bg-white/10 transition-all cursor-pointer hover:bg-white/5 group">
                               <Droplet className="w-5 h-5 mb-1 text-red-400 group-hover:scale-110 transition-transform" />
                               <span className="text-xs font-bold text-white">Haid</span>
                               <span className="text-[9px] text-white/30 mt-0.5 leading-none">Berhalangan</span>
@@ -119,9 +118,9 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                           </div>
                           <div className="relative flex items-center justify-center">
                             <RadioGroupItem value="Suci" id="r-suci" className="peer sr-only" />
-                            <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-white/[0.03] peer-data-[state=checked]:border-white/40 peer-data-[state=checked]:bg-white/10 transition-all cursor-pointer hover:bg-white/5 group">
+                            <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-white/3 peer-data-[state=checked]:border-white/40 peer-data-[state=checked]:bg-white/10 transition-all cursor-pointer hover:bg-white/5 group">
                               <Sparkles className="w-5 h-5 mb-1 text-green-400 group-hover:scale-110 transition-transform" />
-                              <span className="text-xs font-bold text-white">Suci</span>
+                              <span className="text-xs font-bold text-white">Sholat</span>
                               <span className="text-[9px] text-white/30 mt-0.5 leading-none">Kondisi Suci</span>
                             </label>
                           </div>
@@ -138,47 +137,39 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                     name="remarks"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <div className="bg-white/[0.03] border border-white/5 p-4 rounded-2xl space-y-4">
-                          <div className="flex items-center gap-2 mb-1">
-                            <MessageSquare className="w-4 h-4 text-indigo-400" />
-                            <FormLabel className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Keterangan / Alasan</FormLabel>
-                          </div>
-                          <FormControl>
-                            <div className="space-y-4">
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="bg-white/[0.05] border-white/10 text-white text-xs h-11 rounded-xl focus:ring-white/20 transition-all hover:bg-white/[0.08] px-4 flex items-center justify-between">
-                                  <SelectValue placeholder="Pilih alasan..." />
-                                </SelectTrigger>
-                                <SelectContent className="bg-[#1c1b22] border-white/10 text-white rounded-2xl p-1">
-                                  {REMARKS_OPTIONS.map((option) => (
-                                    <SelectItem 
-                                      key={option} 
-                                      value={option} 
-                                      className="rounded-xl text-xs focus:bg-white/10 focus:text-white cursor-pointer transition-colors"
-                                    >
-                                      {option}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              {watchRemarks === 'Lainnya' && (
-                                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                                  <div className="relative flex-1">
-                                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                                      <Edit3 className="w-3 h-3 text-indigo-400" />
-                                    </div>
-                                    <Input
-                                      placeholder="Sebutkan alasannya..."
-                                      className="pl-9 bg-white/[0.02] border-white/10 text-white text-xs h-11 rounded-xl focus-visible:ring-white/20 transition-all focus:bg-white/[0.05]"
-                                      value={field.value}
-                                      onChange={(e) => field.onChange(e.target.value)}
-                                    />
-                                  </div>
-                                </div>
-                              )}
+                        <FormLabel className="text-white/40 text-[10px] uppercase tracking-widest font-bold block">Keterangan / Alasan</FormLabel>
+                        <FormControl>
+                          <div className="space-y-3">
+                            <div className="flex flex-wrap gap-2">
+                              {REMARKS_OPTIONS.map((option) => (
+                                <button
+                                  key={option}
+                                  type="button"
+                                  onClick={() => field.onChange(option)}
+                                  className={`px-3 py-1.5 rounded-full text-[10px] font-medium transition-all border whitespace-nowrap ${watchRemarks === option
+                                    ? 'bg-white/10 border-white/40 text-white shadow-inner ring-1 ring-white/20'
+                                    : 'bg-white/3 border-white/10 text-white/40 hover:text-white/60'
+                                    }`}
+                                >
+                                  {option}
+                                </button>
+                              ))}
                             </div>
-                          </FormControl>
-                        </div>
+                            {watchRemarks === 'Lainnya' && (
+                              <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="relative flex-1">
+                                  <Edit3 className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30" />
+                                  <Input
+                                    placeholder="Tuliskan alasan..."
+                                    className="pl-8 bg-white/2 border-white/10 text-white text-xs h-11 rounded-xl focus-visible:ring-white/20"
+                                    value={field.value}
+                                    onChange={(e) => field.onChange(e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
