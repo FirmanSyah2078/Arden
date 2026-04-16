@@ -40,7 +40,8 @@ export default function MenstrualLogicPage() {
       </header>
 
       <main className="flex-1 w-full pb-8">
-        <div className="mx-auto max-w-3xl w-full">
+        {/* 🔥 FIX: Diubah dari max-w-3xl menjadi max-w-4xl agar seragam */}
+        <div className="mx-auto max-w-4xl w-full">
           <form onSubmit={handleSave} className="space-y-6">
             <Card className="rounded-3xl border border-border/60 bg-card shadow-lg overflow-hidden">
               <CardHeader className="border-b border-border/40 bg-muted/5 pb-4">
@@ -95,45 +96,32 @@ export default function MenstrualLogicPage() {
                   </div>
                 </div>
 
-                {/* --- VISUALISASI --- */}
                 <div className="p-5 rounded-xl">
                   <div className="flex items-center justify-between mb-4">
                     <div className="text-[13px] font-bold font-jakarta text-foreground flex items-center gap-2"><Activity className="size-4 text-primary animate-pulse" /> Algorithm Simulation</div>
                   </div>
-                  
                   <div className={cn("flex h-3 w-full gap-0.75 rounded-full p-0.5 bg-background/80 border border-border/50 shadow-inner overflow-hidden transition-all duration-500", isLoading && "animate-pulse grayscale opacity-50")}>
                     <div className="h-full rounded-full bg-minimal/40 transition-all duration-500 cursor-default" style={{ width: `${(min / totalScale) * 100}%` }} />
                     <div className="h-full rounded-full bg-standard/40 transition-all duration-500 cursor-default" style={{ width: `${((std - min) / totalScale) * 100}%` }} />
                     <div className="h-full rounded-full bg-maximal/40 transition-all duration-500 cursor-default" style={{ width: `${((max - std) / totalScale) * 100}%` }} />
                     <div className="h-full rounded-full bg-over/40 transition-all duration-500 cursor-default" style={{ width: `${((totalScale - max) / totalScale) * 100}%` }} />
                   </div>
-                  
                   <div className={cn("flex w-full mt-3 gap-1 transition-opacity duration-500", isLoading && "opacity-40")}>
                     <div style={{ width: `${(min / totalScale) * 100}%` }} className="flex flex-col items-center text-center justify-center min-w-max group cursor-default">
-                      <span className="font-bold text-minimal text-[12px] font-inter group-hover:brightness-125 transition-colors">Minimum</span>
-                      <span className="text-muted-foreground text-[11px] font-inter">{1 === min ? `Day ${min}` : `1-${min} Days`}</span>
+                      <span className="font-bold text-minimal text-[12px] font-inter group-hover:brightness-125 transition-colors">Minimum</span><span className="text-muted-foreground text-[11px] font-inter">{1 === min ? `Day ${min}` : `1-${min} Days`}</span>
                     </div>
                     <div style={{ width: `${((std - min) / totalScale) * 100}%` }} className="flex flex-col items-center text-center justify-center min-w-max group cursor-default">
-                      <span className="font-bold text-standard text-[12px] font-inter group-hover:brightness-125 transition-colors">Standard</span>
-                      <span className="text-muted-foreground text-[11px] font-inter">{min + 1 === std ? `Day ${std}` : `${min + 1}-${std} Days`}</span>
+                      <span className="font-bold text-standard text-[12px] font-inter group-hover:brightness-125 transition-colors">Standard</span><span className="text-muted-foreground text-[11px] font-inter">{min + 1 === std ? `Day ${std}` : `${min + 1}-${std} Days`}</span>
                     </div>
                     <div style={{ width: `${((max - std) / totalScale) * 100}%` }} className="flex flex-col items-center text-center justify-center min-w-max group cursor-default">
-                      <span className="font-bold text-maximal text-[12px] font-inter group-hover:brightness-125 transition-colors">Maximum</span>
-                      <span className="text-muted-foreground text-[11px] font-inter">{std + 1 === max ? `Day ${max}` : `${std + 1}-${max} Days`}</span>
+                      <span className="font-bold text-maximal text-[12px] font-inter group-hover:brightness-125 transition-colors">Maximum</span><span className="text-muted-foreground text-[11px] font-inter">{std + 1 === max ? `Day ${max}` : `${std + 1}-${max} Days`}</span>
                     </div>
                     <div style={{ width: `${((totalScale - max) / totalScale) * 100}%` }} className="flex flex-col items-center text-center justify-center min-w-max group cursor-default">
-                      <span className="font-bold text-over text-[12px] font-inter group-hover:brightness-125 transition-colors">Over</span>
-                      
-                      {/* 🔥 LOGIKA TEKS OVER DIPERBAIKI */}
-                      <span className="text-muted-foreground text-[11px] font-inter">
-                        {max + 1 === over ? `≥ ${over} Days` : `${max + 1}-${over} Days`}
-                      </span>
-
+                      <span className="font-bold text-over text-[12px] font-inter group-hover:brightness-125 transition-colors">Over</span><span className="text-muted-foreground text-[11px] font-inter">{max + 1 === over ? `≥ ${over} Days` : `${max + 1}-${over} Days`}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* BANNER */}
                 <div className={cn("mt-5 mb-3 p-3 px-4 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors duration-500", bannerState.variant === "primary" ? "bg-primary/5 border-primary/20" : "bg-muted/5 border-border/40")}>
                   <div className="flex items-center gap-3 w-full sm:w-auto">
                     <div className={cn("p-1.5 rounded-md shrink-0 transition-colors duration-500", bannerState.variant === "primary" ? "bg-primary/10 text-primary" : "bg-background border border-border/50 text-foreground")}>

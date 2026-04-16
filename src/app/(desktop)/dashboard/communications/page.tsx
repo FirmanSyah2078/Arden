@@ -26,7 +26,8 @@ export default function CommunicationHubPage() {
       </header>
 
       <main className="flex-1 w-full pb-8">
-        <div className="mx-auto max-w-3xl w-full">
+        {/* 🔥 FIX: Diubah dari max-w-3xl menjadi max-w-4xl agar seragam */}
+        <div className="mx-auto max-w-4xl w-full">
           <form onSubmit={handleSave} className="space-y-6">
             <Card className="rounded-3xl border border-border/60 bg-card shadow-lg overflow-hidden">
               <CardHeader className="border-b border-border/40 bg-muted/5 pb-4">
