@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Droplet, Sparkles, Loader2, MessageSquare, Edit3 } from 'lucide-react';
+import { Droplet, Sparkles, Loader2, MessageSquare, Edit3, ChevronDown } from 'lucide-react';
 import { AlertDialog, AlertDialogContent, AlertDialogCancel, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
 import { Form as FormUI, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -146,24 +146,30 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                           <FormControl>
                             <div className="space-y-4">
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="bg-white/[0.02] border-white/10 text-white text-xs h-10 rounded-xl focus:ring-white/20">
+                                <SelectTrigger className="bg-white/[0.05] border-white/10 text-white text-xs h-11 rounded-xl focus:ring-white/20 transition-all hover:bg-white/[0.08] px-4 flex items-center justify-between">
                                   <SelectValue placeholder="Pilih alasan..." />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#1c1b22] border-white/10 text-white">
+                                <SelectContent className="bg-[#1c1b22] border-white/10 text-white rounded-2xl p-1">
                                   {REMARKS_OPTIONS.map((option) => (
-                                    <SelectItem key={option} value={option} className="focus:bg-white/10 focus:text-white">
+                                    <SelectItem 
+                                      key={option} 
+                                      value={option} 
+                                      className="rounded-xl text-xs focus:bg-white/10 focus:text-white cursor-pointer transition-colors"
+                                    >
                                       {option}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                               {watchRemarks === 'Lainnya' && (
-                                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
                                   <div className="relative flex-1">
-                                    <Edit3 className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30" />
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                                      <Edit3 className="w-3 h-3 text-indigo-400" />
+                                    </div>
                                     <Input
-                                      placeholder="Tuliskan alasan..."
-                                      className="pl-8 bg-white/[0.02] border-white/10 text-white text-xs h-10 rounded-xl focus-visible:ring-white/20"
+                                      placeholder="Sebutkan alasannya..."
+                                      className="pl-9 bg-white/[0.02] border-white/10 text-white text-xs h-11 rounded-xl focus-visible:ring-white/20 transition-all focus:bg-white/[0.05]"
                                       value={field.value}
                                       onChange={(e) => field.onChange(e.target.value)}
                                     />
