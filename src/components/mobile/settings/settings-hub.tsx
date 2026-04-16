@@ -45,19 +45,16 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
             <X size={16} />
           </button>
 
-          <div className="flex items-center gap-4 mb-10 text-left">
-            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-              <Settings className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <DialogTitle className="text-lg font-bold tracking-tight">Pengaturan Akun</DialogTitle>
-              <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
-                Account Management
-              </DialogDescription>
-            </div>
+          <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/10">
+            <DialogTitle className="text-xl font-bold tracking-tight text-white">
+              Pengaturan Akun
+            </DialogTitle>
+            <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
+              Account Management
+            </DialogDescription>
           </div>
 
-          <div className="grid gap-3">
+          <div className="grid gap-3 mt-6">
             {menuItems.map((item) => (
               <button
                 key={item.id}
