@@ -115,7 +115,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                         <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-3">
                           <div className="relative flex items-center justify-center">
                             <RadioGroupItem value="Haid" id="r-haid" className="peer sr-only" />
-                            <label htmlFor="r-haid" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-red-500 peer-data-[state=checked]:bg-[#3B1A1A] transition-all cursor-pointer hover:bg-[#2A292F] group">
+                            <label htmlFor="r-haid" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-red-400/50 peer-data-[state=checked]:bg-red-900/30 transition-all cursor-pointer hover:bg-[#2A292F] group">
                               <Droplet className="w-5 h-5 mb-1 text-red-400 group-hover:scale-110 transition-transform" />
                               <span className="text-xs font-bold text-white">Haid</span>
                               <span className="text-[9px] text-white/30 mt-0.5 leading-none">Berhalangan</span>
@@ -123,7 +123,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                           </div>
                           <div className="relative flex items-center justify-center">
                             <RadioGroupItem value="Suci" id="r-suci" className="peer sr-only" />
-                            <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-green-500 peer-data-[state=checked]:bg-[#1A3B1A] transition-all cursor-pointer hover:bg-[#2A292F] group">
+                            <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-green-400/50 peer-data-[state=checked]:bg-green-900/30 transition-all cursor-pointer hover:bg-[#2A292F] group">
                               <Sparkles className="w-5 h-5 mb-1 text-green-400 group-hover:scale-110 transition-transform" />
                               <span className="text-xs font-bold text-white">Sholat</span>
                               <span className="text-[9px] text-white/30 mt-0.5 leading-none">Kondisi Suci</span>
@@ -173,7 +173,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                                     value={field.value}
                                     onChange={(e) => {
                                       field.onChange(e.target.value);
-                                      form.trigger("remarks");
+                                      // Trigger removed to prevent early error messages
                                     }}
                                   />
                                 </div>
@@ -182,7 +182,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                           </div>
                         </FormControl>
                         {form.formState.errors.remarks && (
-                          <div className="p-3 rounded-xl bg-red-950 border border-red-800 text-red-400 text-xs text-center">
+                          <div className="p-3 rounded-xl bg-red-950 border border-red-900/50 text-red-400 text-xs text-center">
                             {form.formState.errors.remarks.message}
                           </div>
                         )}

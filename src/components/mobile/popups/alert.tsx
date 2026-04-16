@@ -81,7 +81,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                     title: 'Berhasil!',
                     subtitle: 'Data absensi telah tersimpan.',
                     icon: <CheckCircle2 className="w-16 h-16 text-emerald-400 animate-in zoom-in duration-500" />,
-                    btnClass: 'bg-white text-black hover:bg-white/90',
+                    btnClass: 'bg-indigo-600 text-white hover:bg-indigo-500',
                     textCol: 'text-emerald-400'
                 };
             case 'error':
@@ -97,7 +97,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                     title: 'Konfirmasi',
                     subtitle: 'Periksa kembali data siswi.',
                     icon: <User className="w-16 h-16 text-white/20" />,
-                    btnClass: 'bg-white text-black hover:bg-white/90',
+                    btnClass: 'bg-indigo-600 text-white hover:bg-indigo-500',
                     textCol: 'text-white'
                 };
         }
@@ -109,14 +109,14 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
         <Dialog open={isOpen} onOpenChange={setOpen}>
             <DialogContent
                 showCloseButton={false}
-                className="w-[92%] max-w-sm rounded-[40px] bg-[#151419] border-white/10 text-white p-8 shadow-2xl overflow-hidden"
+                className="w-[92%] max-w-sm rounded-[40px] bg-[#151419] border-none text-white p-8 shadow-2xl overflow-hidden"
             >
                 <DialogTitle className="sr-only">{config.title}</DialogTitle>
                 <DialogDescription className="sr-only">{config.subtitle}</DialogDescription>
 
                 {/* Status Header */}
                 <div className="flex flex-col items-center text-center mb-10">
-                    <div className="mb-6 p-5 rounded-full bg-white/3 border border-white/5 shadow-inner relative">
+                    <div className="mb-6 p-5 rounded-full bg-[#1F1E23] border border-white/5 shadow-inner relative">
                         <div className="absolute inset-0 blur-xl bg-white/5 rounded-full" />
                         {config.icon}
                     </div>
@@ -128,24 +128,22 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                     </p>
                 </div>
 
-                {/* User Info Card */}
-                <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-white/10 mb-8 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-white/20 rounded-l-3xl" />
-                    
+                {/* User Info Card (Symmetry Style) */}
+                <div className="bg-[#1F1E23] p-6 rounded-3xl border border-white/5 mb-8 shadow-sm relative overflow-hidden">
                     <div className="flex flex-col gap-5 relative z-10">
                         <div>
-                            <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold mb-1">Nama Siswi</p>
-                            <p className="text-white font-bold text-xl leading-tight tracking-tight">{absensiStatus?.full_name}</p>
-                        </div>
-                        
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                            <div>
-                                <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold mb-1">Kelas</p>
-                                <p className="text-white font-mono text-sm font-medium">{absensiStatus?.class_name}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold mb-1">NIS</p>
-                                <p className="text-white font-mono text-sm font-medium">{absensiStatus?.nis}</p>
+                            <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Nama Siswi</p>
+                            <p className="text-white font-bold text-lg leading-tight mb-4">{absensiStatus?.full_name}</p>
+                            <div className="flex items-center gap-4">
+                                <div>
+                                    <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-0.5">Kelas</p>
+                                    <p className="text-white font-mono text-sm">{absensiStatus?.class_name}</p>
+                                </div>
+                                <div className="h-8 w-px bg-white/5"></div>
+                                <div>
+                                    <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-0.5">NIS</p>
+                                    <p className="text-white font-mono text-sm">{absensiStatus?.nis}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -153,17 +151,17 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
 
                 {/* Timing Display */}
                 <div className="flex gap-3 mb-10">
-                    <div className="flex-1 bg-white/3 p-3 rounded-2xl border border-white/5 flex items-center justify-center gap-2 shadow-sm">
+                    <div className="flex-1 bg-[#1F1E23] p-3 rounded-2xl border border-white/5 flex items-center justify-center gap-2 shadow-sm">
                         <Clock size={14} className="text-white/40" />
                         <span className="text-white font-mono text-xs">{scanTime} <span className="text-white/30">WIB</span></span>
                     </div>
-                    <div className="flex-1 bg-white/3 p-3 rounded-2xl border border-white/5 flex items-center justify-center shadow-sm">
+                    <div className="flex-1 bg-[#1F1E23] p-3 rounded-2xl border border-white/5 flex items-center justify-center shadow-sm">
                         <span className="text-white font-bold text-xs tracking-wide uppercase">{sholatTime}</span>
                     </div>
                 </div>
 
                 {processStatus === 'error' && (
-                    <div className="mb-8 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center font-medium">
+                    <div className="mb-8 p-3 rounded-xl bg-red-950 border border-red-800 text-red-400 text-xs text-center font-medium">
                         {errorMessage}
                     </div>
                 )}
