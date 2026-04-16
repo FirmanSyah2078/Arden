@@ -150,7 +150,15 @@ export const Manager = ({
         </div>
       </div>
 
-      <Form isOpen={inputFormOpen} setIsOpen={setInputFormOpen} dataStudent={manualResult} setPick={setManualResult} sholat={activeScanner} setSuccessPopup={setNotifOpen} />
+      <Form
+        key={manualResult?.id}
+        isOpen={inputFormOpen}
+        setIsOpen={setInputFormOpen}
+        dataStudent={manualResult}
+        setPick={setManualResult}
+        sholat={activeScanner}
+        setSuccessPopup={setNotifOpen}
+      />
       <Alert isOpen={notifOpen} absensiStatus={manualResult} setOpen={setNotifOpen} sholatTime={activeScanner as unknown as string} />
     </div>
   );

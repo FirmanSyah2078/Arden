@@ -5,7 +5,7 @@ import { Clock, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useAttendance } from '@/hooks/mobile/use-attendance'; 
+import { useAttendance } from '@/hooks/mobile/use-attendance';
 
 import { formatTime } from '@/lib/date';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
@@ -32,7 +32,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
             setErrorMessage('');
             setProcessStatus(initialStatus || 'idle');
         }
-    }, [isOpen, initialStatus]); 
+    }, [isOpen, initialStatus]);
 
     const handleProcess = async () => {
         if (!absensiStatus?.id) return;
@@ -97,7 +97,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
 
     return (
         <Dialog open={isOpen} onOpenChange={setOpen}>
-            <DialogContent 
+            <DialogContent
                 showCloseButton={false}
                 className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-white/10 text-white p-6 shadow-2xl"
             >
@@ -118,7 +118,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 </div>
 
                 <div className="space-y-4 mb-8">
-                    <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div className="bg-white/3 p-5 rounded-2xl border border-white/5 relative overflow-hidden">
                         <div className="relative z-10">
                             <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Nama Siswi</p>
                             <p className="text-white font-bold text-lg leading-tight mb-4">{absensiStatus?.full_name}</p>
@@ -130,11 +130,11 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <div className="flex-1 bg-white/[0.03] p-3 rounded-2xl border border-white/5 flex items-center justify-center gap-2">
+                        <div className="flex-1 bg-white/3 p-3 rounded-2xl border border-white/5 flex items-center justify-center gap-2">
                             <Clock size={14} className="text-white/60" />
                             <span className="text-white font-mono text-sm">{scanTime} WIB</span>
                         </div>
-                        <div className="flex-1 bg-white/[0.03] p-3 rounded-2xl border border-white/5 flex items-center justify-center">
+                        <div className="flex-1 bg-white/3 p-3 rounded-2xl border border-white/5 flex items-center justify-center">
                             <span className="text-white font-bold text-sm tracking-wide uppercase">{sholatTime}</span>
                         </div>
                     </div>
@@ -143,10 +143,10 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
 
                 <div className="flex flex-col gap-3">
                     {processStatus === 'success' ? (
-                        <Button className="w-full bg-white hover:bg-gray-200 text-black font-bold h-12 rounded-2xl" onClick={handleCloseAndResume}>Tutup</Button>
+                        <Button className="w-full bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 font-bold h-12 rounded-2xl" onClick={handleCloseAndResume}>Tutup</Button>
                     ) : (
                         <>
-                            <Button className="w-full bg-white hover:bg-gray-200 text-black font-bold h-12 rounded-2xl" onClick={handleProcess} disabled={loading}>
+                            <Button className="w-full bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 font-bold h-12 rounded-2xl" onClick={handleProcess} disabled={loading}>
                                 {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Memproses...</> : 'Proses Absensi'}
                             </Button>
                             {!loading && <Button variant="outline" className="w-full bg-white/5 text-white border-white/10 hover:bg-white/10 rounded-2xl h-12" onClick={handleCloseAndResume}>Batal & Scan Ulang</Button>}

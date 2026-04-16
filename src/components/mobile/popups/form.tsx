@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,12 +38,17 @@ const REMARKS_OPTIONS = [
 ];
 
 export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup, sholat }: FormProps) {
+  const [isLainnya, setIsLainnya] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { status: 'Haid', remarks: '' },
   });
 
   const watchStatus = form.watch("status");
+  useEffect(() => {
+    // Setiap kali status berubah, kita reset keterangan jadi kosong
+    form.setValue("remarks", "");
+  }, [watchStatus, form]);
   const watchRemarks = form.watch("remarks");
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -58,6 +63,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
     setSuccessPopup(true);
     setIsOpen(false);
     form.reset();
+    setIsLainnya(false);
   };
 
   return (
@@ -110,7 +116,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                         <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-3">
                           <div className="relative flex items-center justify-center">
                             <RadioGroupItem value="Haid" id="r-haid" className="peer sr-only" />
-                            <label htmlFor="r-haid" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-white/3 peer-data-[state=checked]:border-white/40 peer-data-[state=checked]:bg-white/10 transition-all cursor-pointer hover:bg-white/5 group">
+                            <label htmlFor="r-haid" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-red-400/10 bg-white/3 peer-data-[state=checked]:border-red-400/50 peer-data-[state=checked]:bg-red-400/5 transition-all cursor-pointer hover:bg-white/5 group">
                               <Droplet className="w-5 h-5 mb-1 text-red-400 group-hover:scale-110 transition-transform" />
                               <span className="text-xs font-bold text-white">Haid</span>
                               <span className="text-[9px] text-white/30 mt-0.5 leading-none">Berhalangan</span>
@@ -118,7 +124,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                           </div>
                           <div className="relative flex items-center justify-center">
                             <RadioGroupItem value="Suci" id="r-suci" className="peer sr-only" />
-                            <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-white/3 peer-data-[state=checked]:border-white/40 peer-data-[state=checked]:bg-white/10 transition-all cursor-pointer hover:bg-white/5 group">
+                            <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-green-400/10 bg-white/3 peer-data-[state=checked]:border-green-400/50 peer-data-[state=checked]:bg-green-400/5 transition-all cursor-pointer hover:bg-white/5 group">
                               <Sparkles className="w-5 h-5 mb-1 text-green-400 group-hover:scale-110 transition-transform" />
                               <span className="text-xs font-bold text-white">Sholat</span>
                               <span className="text-[9px] text-white/30 mt-0.5 leading-none">Kondisi Suci</span>
@@ -145,7 +151,10 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                                 <button
                                   key={option}
                                   type="button"
-                                  onClick={() => field.onChange(option)}
+                                  onClick={() => {
+                                    field.onChange(option === 'Lainnya' ? '' : option);
+                                    setIsLainnya(option === 'Lainnya');
+                                  }}
                                   className={`px-3 py-1.5 rounded-full text-[10px] font-medium transition-all border whitespace-nowrap ${watchRemarks === option
                                     ? 'bg-white/10 border-white/40 text-white shadow-inner ring-1 ring-white/20'
                                     : 'bg-white/3 border-white/10 text-white/40 hover:text-white/60'
@@ -155,29 +164,36 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                                 </button>
                               ))}
                             </div>
-                            {watchRemarks === 'Lainnya' && (
+                            {isLainnya && (
                               <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
                                 <div className="relative flex-1">
                                   <Edit3 className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30" />
                                   <Input
-                                    placeholder="Tuliskan alasan..."
+                                    placeholder="Tuliskan alasan"
                                     className="pl-8 bg-white/2 border-white/10 text-white text-xs h-11 rounded-xl focus-visible:ring-white/20"
                                     value={field.value}
-                                    onChange={(e) => field.onChange(e.target.value)}
+                                    onChange={(e) => {
+                                      field.onChange(e.target.value);
+                                      form.trigger("remarks");
+                                    }}
                                   />
                                 </div>
                               </div>
                             )}
                           </div>
                         </FormControl>
-                        <FormMessage />
+                        {form.formState.errors.remarks && (
+                          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center">
+                            {form.formState.errors.remarks.message}
+                          </div>
+                        )}
                       </FormItem>
                     )}
                   />
                 )}
 
                 <div className="flex flex-col gap-3 pt-4">
-                  <Button type="submit" className="w-full rounded-2xl h-12 bg-white text-black hover:bg-white/90 font-bold transition-all active:scale-[0.98] shadow-lg">
+                  <Button type="submit" className="w-full rounded-2xl h-12 bg-indigo-600 text-white hover:bg-indigo-500 font-bold transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20">
                     Proses
                   </Button>
                   <AlertDialogCancel className="w-full bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-2xl h-12 mt-0 transition-all active:scale-[0.98]">
