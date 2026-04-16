@@ -135,16 +135,14 @@ export const Manager = ({
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group outline-none flex items-center justify-center shrink-0 border-none shadow-sm ${isMenuOpen ? 'bg-red-600 text-white' : 'bg-[#2A292F] text-white/40 hover:text-white hover:bg-[#35343B]'}`}
+            className={`h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group outline-none flex items-center justify-center shrink-0 border-none shadow-sm ${isMenuOpen ? 'bg-[#35343B] text-white/40' : 'bg-[#2A292F] text-white/40 hover:text-white hover:bg-[#35343B]'}`}
           >
             {isMenuOpen ? (
-              <X size={20} strokeWidth={1.5} className="w-5 h-5" />
-            ) : (
-              <div className="flex flex-col items-center justify-center gap-1 w-5 h-5">
-                <span className="h-0.5 w-5 bg-current rounded-full" />
-                <span className="h-0.5 w-4 bg-current rounded-full" />
-                <span className="h-0.5 w-3 bg-current rounded-full" />
+              <div className="flex items-center justify-center w-5 h-5">
+                <X size={20} strokeWidth={2} />
               </div>
+            ) : (
+              <Menu size={20} strokeWidth={2} />
             )}
           </button>
         </div>
