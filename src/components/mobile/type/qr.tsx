@@ -47,7 +47,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
           v.style.objectFit = 'cover';
           v.style.width = '100%';
           v.style.height = '100%';
-          // scale(1.05) dihapus biar nggak terlalu zoom, nya!
         }
 
         setIsCameraActive(true);
@@ -56,7 +55,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         setTimeout(() => {
           setScanning(true);
         }, 800);
-
       } catch (e) {
         console.error(e);
         toast.error("Gagal membuka kamera, nya!");
@@ -126,13 +124,11 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   };
 
   return (
-    <div className="w-full h-full relative bg-white/2 border border-white/5 shadow-inner rounded-3xl overflow-hidden">
+    <div className="w-full h-full relative bg-[#1F1E23] border border-white/5 shadow-inner rounded-3xl overflow-hidden">
       <div id="reader" className="w-full h-full absolute inset-0" />
 
-
-
       {!isCameraActive && !validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500 pb-20">
           <div className="flex flex-col items-center text-center">
             <div className="relative flex items-center justify-center mb-6">
               <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
@@ -158,8 +154,8 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
       )}
 
       {validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-black/60 backdrop-blur-md">
-          <Loader2 size={48} className="animate-spin text-indigo-400" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-[#151419]">
+          <Loader2 size={48} className="animate-spin text-white" />
           <p className="text-xs mt-4 text-white font-mono tracking-widest uppercase opacity-80">Validating Data...</p>
         </div>
       )}

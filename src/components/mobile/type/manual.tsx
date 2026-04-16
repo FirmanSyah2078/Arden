@@ -17,12 +17,11 @@ export interface ManualProps {
     onScrollDirectionChange?: (visible: boolean) => void;
 }
 
-// --- KOMPONEN 1: SEARCH BAR (ULTRA-SMOOTH MATERIAL VERSION) ---
+// --- KOMPONEN 1: SEARCH BAR (MATCHING EDIT-PROFILE INPUT STYLE) ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
     <div className="relative mb-6 flex-none z-20 px-1">
-        <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-transparent shadow-[0_0_0_1px_rgba(255,255,255,0.4),0_0_12px_rgba(255,255,255,0.05)]' : 'border-[#2A292F]'
-            }`}>
-            <Search size={18} className={`${search ? 'text-white/80' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
+        <div className="relative h-12 w-full bg-[#1F1E23] rounded-2xl border border-white/5 flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg focus-within:ring-4 focus-within:ring-white/10 focus-within:border-white/20">
+            <Search size={18} className={`${search ? 'text-white' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
             <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -52,7 +51,7 @@ export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: 
     </div>
 );
 
-// --- KOMPONEN 2: HASIL PENCARIAN ---
+// --- KOMPONEN 2: HASIL PENCARIAN (SOLID MATERIAL VERSION) ---
 export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused, onScrollDirectionChange }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean, onScrollDirectionChange?: (visible: boolean) => void }) => {
     const MAX_RESULTS = 15;
     const lastScrollY = useRef(0);
@@ -111,20 +110,20 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                             >
                                 <button
                                     onClick={() => handleSelect(item)}
-                                    className="w-full text-left bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl p-4 flex items-center gap-4 transition-all active:scale-[0.98] group shadow-sm"
+                                    className="w-full text-left bg-[#1F1E23] hover:bg-[#2A292F] border border-white/5 rounded-2xl p-4 flex items-center gap-4 transition-all active:scale-[0.98] group shadow-sm"
                                 >
-                                    <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-300 font-bold text-sm flex items-center justify-center border border-indigo-500/20 group-hover:border-indigo-500/40 transition-all shrink-0 shadow-inner">
+                                    <div className="w-11 h-11 rounded-xl bg-[#2A292F] text-white font-bold text-sm flex items-center justify-center border-none group-hover:bg-[#35343B] transition-all shrink-0 shadow-inner">
                                         {item.full_name.charAt(0)}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-white truncate group-hover:text-indigo-300 transition-colors"> {item.full_name} </p>
+                                        <p className="text-sm font-semibold text-white truncate group-hover:text-white transition-colors"> {item.full_name} </p>
                                         <div className="flex items-center gap-2 text-[10px] text-white/30 mt-0.5">
                                             <span className="bg-white/5 px-1.5 py-0.5 rounded-md uppercase tracking-wider font-medium text-white/50"> {item.class_name} </span>
                                             <span className="opacity-20">•</span>
                                             <span className="font-mono tracking-wide">{item.nis}</span>
                                         </div>
                                     </div>
-                                    <div className="text-white/10 group-hover:text-indigo-400 transition-all shrink-0 transform group-hover:translate-x-1">
+                                    <div className="text-white/10 group-hover:text-white/40 transition-all shrink-0 transform group-hover:translate-x-1">
                                         <ChevronRight size={18} />
                                     </div>
                                 </button>
@@ -142,7 +141,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
 
             {search && !isLoading && data.length === 0 && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-24 animate-in fade-in duration-300">
-                    <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4 text-red-400 ar-beat-loop shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                    <div className="w-16 h-16 rounded-full bg-red-950 border border-red-900/50 flex items-center justify-center mb-4 text-red-400 ar-beat-loop shadow-[0_0_15px_rgba(127,29,29,0.2)]">
                         <AlertCircle size={28} />
                     </div>
                     <h3 className="text-white font-semibold text-base mb-1">No Results Found</h3>

@@ -116,7 +116,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
 
                 {/* Status Header */}
                 <div className="flex flex-col items-center text-center mb-10">
-                    <div className="mb-6 p-5 rounded-full bg-white/[0.03] border border-white/5 shadow-inner relative">
+                    <div className="mb-6 p-5 rounded-full bg-white/3 border border-white/5 shadow-inner relative">
                         <div className="absolute inset-0 blur-xl bg-white/5 rounded-full" />
                         {config.icon}
                     </div>
@@ -129,7 +129,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 </div>
 
                 {/* User Info Card */}
-                <div className="bg-white/[0.05] backdrop-blur-md p-6 rounded-3xl border border-white/10 mb-8 shadow-sm relative overflow-hidden">
+                <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-white/10 mb-8 shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-white/20 rounded-l-3xl" />
                     
                     <div className="flex flex-col gap-5 relative z-10">
@@ -153,11 +153,11 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
 
                 {/* Timing Display */}
                 <div className="flex gap-3 mb-10">
-                    <div className="flex-1 bg-white/[0.03] p-3 rounded-2xl border border-white/5 flex items-center justify-center gap-2 shadow-sm">
+                    <div className="flex-1 bg-white/3 p-3 rounded-2xl border border-white/5 flex items-center justify-center gap-2 shadow-sm">
                         <Clock size={14} className="text-white/40" />
                         <span className="text-white font-mono text-xs">{scanTime} <span className="text-white/30">WIB</span></span>
                     </div>
-                    <div className="flex-1 bg-white/[0.03] p-3 rounded-2xl border border-white/5 flex items-center justify-center shadow-sm">
+                    <div className="flex-1 bg-white/3 p-3 rounded-2xl border border-white/5 flex items-center justify-center shadow-sm">
                         <span className="text-white font-bold text-xs tracking-wide uppercase">{sholatTime}</span>
                     </div>
                 </div>
