@@ -124,7 +124,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   };
 
   return (
-    <div className="w-full h-full relative bg-[#1F1E23] border border-white/5 shadow-inner rounded-3xl overflow-hidden">
+    <div className="w-full h-full relative overflow-hidden">
       <div id="reader" className="w-full h-full absolute inset-0" />
 
       {!isCameraActive && !validating && (

@@ -17,10 +17,11 @@ export interface ManualProps {
     onScrollDirectionChange?: (visible: boolean) => void;
 }
 
-// --- KOMPONEN 1: SEARCH BAR (MATCHING EDIT-PROFILE INPUT STYLE) ---
+// --- KOMPONEN 1: SEARCH BAR (BACK TO GRAY OUTLINE VERSION) ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
     <div className="relative mb-6 flex-none z-20 px-1">
-        <div className="relative h-12 w-full bg-[#1F1E23] rounded-2xl border border-white/5 flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg focus-within:ring-4 focus-within:ring-white/10 focus-within:border-white/20">
+        <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-transparent shadow-[0_0_0_1px_rgba(255,255,255,0.4),0_0_12px_rgba(255,255,255,0.05)]' : 'border-white/5'
+            }`}>
             <Search size={18} className={`${search ? 'text-white' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
             <input
                 value={search}
@@ -51,7 +52,7 @@ export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: 
     </div>
 );
 
-// --- KOMPONEN 2: HASIL PENCARIAN (SOLID MATERIAL VERSION) ---
+// --- KOMPONEN 2: HASIL PENCARIAN (SOLID MATERIAL WHITE THEME) ---
 export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused, onScrollDirectionChange }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean, onScrollDirectionChange?: (visible: boolean) => void }) => {
     const MAX_RESULTS = 15;
     const lastScrollY = useRef(0);
@@ -98,7 +99,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                 >
                     <div className="py-2 px-1 flex justify-between items-center opacity-100 transition-all duration-300">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Search Results</span>
-                        <span className="text-[10px] font-medium text-indigo-400">{data.length} Students found</span>
+                        <span className="text-[10px] font-medium text-white">{data.length} Students found</span>
                     </div>
 
                     <ul className="flex flex-col gap-3 pb-8 pt-1">
