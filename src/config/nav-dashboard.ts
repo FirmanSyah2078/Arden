@@ -3,17 +3,15 @@ import {
   BookUser,
   School,
   FileText,
-  Settings2,
   BookOpen,
   ShieldAlert,
   Eye,
-  Activity, // Icon untuk Period Rules
-  Clock,    // Icon untuk Prayer Schedules
   Terminal,  // Icon untuk Logs
-  CalendarDays,
-  MessageSquareWarning,
-  Wifi,
-  Globe,
+  GanttChart,   // Untuk Planning
+  Waves,        // Untuk Phases
+  Satellite,    // Untuk Dispatch
+  Waypoints,    // Untuk Bridges
+  Hexagon       // Untuk Globals
 } from "lucide-react";
 import { type NavItemType } from "@/components/dashboard/nav-group";
 
@@ -50,36 +48,36 @@ export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]
       ],
     },
     {
-      label: "System Architecture", // Menggantikan Configuration
+      label: "Structure", // Fondasi Sistem
       items: [
         {
-          title: "Academic Schedules", // Jadwal mingguan, kalender, libur
+          title: "Planning", // Menggantikan Academic Schedules
           url: "/dashboard/schedules",
-          icon: CalendarDays,
+          icon: GanttChart, 
           variant: "default"
         },
         {
-          title: "Menstrual Logic", // Khusus 4-Phase biologi
+          title: "Phases", // Menggantikan Menstrual Logic
           url: "/dashboard/menstrual",
-          icon: Activity,
+          icon: Waves, 
           variant: "default"
         },
         {
-          title: "Communication Hub", // Khusus template notifikasi/SP
+          title: "Dispatch", // Menggantikan Communication Hub
           url: "/dashboard/communications",
-          icon: MessageSquareWarning,
+          icon: Satellite, 
           variant: "default"
         },
         {
-          title: "Data Integrations", // Khusus API luar (Aladhan, WA, dll)
+          title: "Bridges", // Menggantikan Data Integrations
           url: "/dashboard/integrations",
-          icon: Wifi,
+          icon: Waypoints, 
           variant: "default"
         },
         {
-          title: "Global Preferences", // Khusus Geografis, Zona Waktu, Profil
+          title: "Globals", // Menggantikan Global Preferences
           url: "/dashboard/preferences",
-          icon: Globe,
+          icon: Hexagon, 
           variant: "default"
         },
       ],
