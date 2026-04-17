@@ -2,8 +2,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { UserSearch, ScanLine, Menu, X, History as HistoryIcon, Settings, LogOut, RotateCcw, Camera } from 'lucide-react';
+import { UserSearch, ScanLine, Menu, X, History as HistoryIcon, Settings, LogOut, RotateCcw, Camera, User } from 'lucide-react';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 import Qr, { QrHandle } from '../type/qr';
 import { Manual } from '../type/manual';
@@ -11,6 +12,7 @@ import { Alert } from '../popups/alert';
 import { Form } from '../popups/form';
 import { AttendanceStatusResponse, StudentMobile } from '@/types/api';
 import { useSholat } from '@/hooks/mobile/use-sholat';
+import { useProfile } from '@/hooks/settings/use-profile';
 
 interface ManagerProps {
   className?: string;
@@ -39,6 +41,7 @@ export const Manager = ({
 
   const qrRef = useRef<QrHandle>(null);
   const { activeScanner } = useSholat();
+  const { formData } = useProfile();
 
   useEffect(() => {
     if (mode !== 'manual') return;
@@ -109,42 +112,69 @@ export const Manager = ({
         )}
       </div>
 
+      {/* ULTIMATE BOTTOM DOCK: Integrated Identity & Controls */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-in-out">
-        <div className="flex items-center bg-[#1F1E23] p-1.5 rounded-full shadow-xl gap-1.5">
-          <Button
-            variant="secondary"
-            onClick={handleToggleMode}
-            className="h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shrink-0 border-none bg-[#2A292F] text-white/40 hover:text-white hover:bg-[#35343B]"
-          >
-            {mode === 'scan' ? (
-              <UserSearch size={16} className="text-current" />
-            ) : (
-              <ScanLine size={16} className="text-current" />
-            )}
-          </Button>
+        <div className="flex items-center bg-[#1F1E23] p-1.5 rounded-full shadow-2xl gap-3 border border-white/10">
+          
+          {/* LEFT SECTION: Identity */}
+          <div className="flex items-center gap-2 px-2">
+            <Image
+                src="/arden.svg"
+                alt="Logo"
+                width={16}
+                height={18}
+                className="object-contain shrink-0 translate-y-[1px]"
+            />
+            <div className="flex flex-col">
+                <span className="text-[10px] font-extrabold text-white tracking-tighter leading-none">
+                    ARDEN
+                </span>
+                <span className="text-[8px] font-bold uppercase tracking-widest text-white/40 leading-none mt-0.5 whitespace-nowrap">
+                    Attendance System
+                </span>
+            </div>
+          </div>
 
-          {mode === 'scan' && (
+          {/* DIVIDER LINE */}
+          <div className="w-px h-6 bg-white/10" />
+
+          {/* RIGHT SECTION: Controls */}
+          <div className="flex items-center gap-1.5">
             <Button
               variant="secondary"
-              onClick={handleCamAction}
-              className="h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shrink-0 border-none bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+              onClick={handleToggleMode}
+              className="h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shrink-0 border-none bg-[#2A292F] text-white/40 hover:text-white hover:bg-[#35343B]"
             >
-              <Camera size={16} className="group-hover:animate-pulse" />
+              {mode === 'scan' ? (
+                <UserSearch size={16} className="text-current" />
+              ) : (
+                <ScanLine size={16} className="text-current" />
+              )}
             </Button>
-          )}
 
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group outline-none flex items-center justify-center shrink-0 border-none shadow-sm ${isMenuOpen ? 'bg-[#35343B] text-white/40' : 'bg-[#2A292F] text-white/40 hover:text-white hover:bg-[#35343B]'}`}
-          >
-            {isMenuOpen ? (
-              <div className="flex items-center justify-center w-5 h-5">
-                <X size={20} strokeWidth={2} />
-              </div>
-            ) : (
-              <Menu size={20} strokeWidth={2} />
+            {mode === 'scan' && (
+              <Button
+                variant="secondary"
+                onClick={handleCamAction}
+                className="h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group flex items-center justify-center shrink-0 border-none bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+              >
+                <Camera size={16} className="group-hover:animate-pulse" />
+              </Button>
             )}
-          </button>
+
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`h-10 w-10 rounded-full transition-all duration-300 active:scale-90 group outline-none flex items-center justify-center shrink-0 border-none shadow-sm ${isMenuOpen ? 'bg-indigo-600 text-white' : 'bg-[#2A292F] text-white/40 hover:text-white hover:bg-[#35343B]'}`}
+            >
+              {isMenuOpen ? (
+                <div className="flex items-center justify-center w-5 h-5">
+                  <X size={20} strokeWidth={2} />
+                </div>
+              ) : (
+                <Menu size={20} strokeWidth={2} />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
