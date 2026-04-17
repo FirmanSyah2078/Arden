@@ -95,6 +95,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
             {search && data.length > 0 && (
                 <div
                     onScroll={handleScroll}
+                    onTouchStart={() => (document.activeElement as HTMLElement)?.blur()}
                     className="h-full w-full pr-3 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
                     <div className="py-2 px-1 flex justify-between items-center opacity-100 transition-all duration-300">
