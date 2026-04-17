@@ -14,7 +14,7 @@ interface HistoryProps {
   sholat: DailyPrayer;
 }
 
-// --- KOMPONEN LIST (Monochromatic Luxury & Fixed Scroll) ---
+// --- KOMPONEN LIST (Sangat Ringan & Luxury) ---
 const ListContent = ({ isLoadingHistory, historyData }: { isLoadingHistory: boolean, historyData: any[] }) => (
   <div className="flex flex-col w-full">
     <div className="max-h-[50vh] w-full overflow-y-auto overscroll-contain pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -31,33 +31,29 @@ const ListContent = ({ isLoadingHistory, historyData }: { isLoadingHistory: bool
                 <div className="flex items-center w-full">
                   <div className="flex-1 bg-[#1F1E23] rounded-2xl p-3 flex items-center gap-4 shadow-sm">
 
-                    {/* AVATAR: Monochromatic Grey */}
                     <div className="w-11 h-11 rounded-xl bg-[#2A292F] text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-inner">
                       {item.tbl_students.full_name.charAt(0).toUpperCase()}
                     </div>
 
-                    {/* CONTENT AREA: Name, Class, NIS & Time */}
                     <div className="flex-1 min-w-0 flex justify-between items-center gap-3">
-
-                      {/* Sisi Kiri: Nama & Detail */}
                       <div className="flex flex-col min-w-0">
                         <p className="text-sm font-semibold text-white truncate leading-tight">
                           {item.tbl_students.full_name}
                         </p>
                         <div className="flex items-center gap-1.5 text-[10px] text-white/40 font-mono tracking-wider uppercase mt-0.5">
-                          <span className="text-white/60">{item.tbl_students.class_name || 'N/A'}</span>
+                          <span className="text-white/60">
+                            {item.tbl_students.tbl_classes?.class_name || 'N/A'}
+                          </span>
                           <span className="opacity-20">•</span>
-                          <span>NIS: {item.tbl_students.nis}</span>
+                          <span className="font-mono tracking-wide">{item.tbl_students.nis}</span>
                         </div>
                       </div>
 
-                      {/* Sisi Kanan: Jam di pojok */}
                       <div className="text-right shrink-0">
                         <span className="text-white/60 font-mono text-[10px] leading-none">
                           {formatTime(item.created_at)} WIB
                         </span>
                       </div>
-
                     </div>
 
                   </div>

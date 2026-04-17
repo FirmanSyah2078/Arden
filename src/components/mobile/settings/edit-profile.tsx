@@ -15,23 +15,23 @@ interface EditProfileProps {
 }
 
 export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
-  const { 
-    formData, 
-    isLoading, 
-    isSubmitting, 
-    isSaveDisabled, 
-    handleChange, 
-    handleSave, 
-    handleFileChange, 
-    fileInputRef, 
-    handleUploadClick 
+  const {
+    formData,
+    isLoading,
+    isSubmitting,
+    isSaveDisabled,
+    handleChange,
+    handleSave,
+    handleFileChange,
+    fileInputRef,
+    handleUploadClick
   } = useProfile();
 
   const [imageLoading, setImageLoading] = useState(true);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent 
+      <DialogContent
         showCloseButton={false}
         className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
       >
@@ -40,35 +40,35 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
             <div className="w-24 h-24 rounded-full bg-[#1F1E23] border-2 border-white/5 flex items-center justify-center overflow-hidden transition-all group-hover:border-white/10">
               {/* Placeholder icon when loading or no image */}
               <User className={`w-12 h-12 text-white/10 transition-opacity duration-300 ${formData.avatarUrl && !imageLoading ? 'opacity-0' : 'opacity-100'}`} />
-              
+
               {formData.avatarUrl && (
                 <>
                   {imageLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-[#1F1E23]/60 backdrop-blur-[2px] animate-pulse">
-                      <div className="w-6 h-6 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#1F1E23] transition-opacity duration-300">
+                      <div className="w-6 h-6 border-2 border-white/10 border-t-white rounded-full animate-spin" />
                     </div>
                   )}
-                  <img 
-                    src={formData.avatarUrl} 
-                    alt="Profile" 
-                    className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`} 
+                  <img
+                    src={formData.avatarUrl}
+                    alt="Profile"
+                    className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
                     onLoad={() => setImageLoading(false)}
                   />
                 </>
               )}
             </div>
-            <button 
+            <button
               onClick={handleUploadClick}
-              className="absolute bottom-0 right-0 p-2 rounded-full bg-white text-black shadow-lg transition-all active:scale-90 hover:bg-white/90"
+              className="absolute bottom-0 right-0 p-2 rounded-full bg-indigo-600 text-white shadow-lg transition-all active:scale-90 hover:bg-indigo-700"
             >
               <Camera size={14} />
             </button>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
-              className="hidden" 
-              accept="image/*" 
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/*"
             />
           </div>
           <div className="flex flex-col items-center gap-2">
@@ -85,7 +85,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
         <div className="space-y-4 mb-8">
           <div className="space-y-2">
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Nama Lengkap</Label>
-            <Input 
+            <Input
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
               className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
@@ -94,7 +94,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
           </div>
           <div className="space-y-2">
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Username</Label>
-            <Input 
+            <Input
               value={formData.username}
               onChange={(e) => handleChange('username', e.target.value)}
               className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
@@ -104,7 +104,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
         </div>
 
         <div className="flex flex-col gap-3">
-          <Button 
+          <Button
             onClick={async () => {
               await handleSave();
               setIsOpen(false);
@@ -119,8 +119,8 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
               <span>{isSubmitting ? 'Memproses...' : 'Konfirmasi'}</span>
             </div>
           </Button>
-          
-          <Button 
+
+          <Button
             onClick={() => setIsOpen(false)}
             variant="outline"
             className="w-full h-12 rounded-2xl bg-[#1F1E23] text-white border-white/5 hover:bg-[#2A292F] font-semibold transition-all active:scale-[0.98]"
