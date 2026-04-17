@@ -123,7 +123,7 @@ export const Manager = ({
                 alt="Logo"
                 width={16}
                 height={18}
-                className="object-contain shrink-0 translate-y-[1px]"
+                className="object-contain shrink-0 translate-y-px"
             />
             <div className="flex flex-col">
                 <span className="text-[10px] font-extrabold text-white tracking-tighter leading-none">

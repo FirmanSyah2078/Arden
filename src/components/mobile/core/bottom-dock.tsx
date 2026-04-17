@@ -39,7 +39,7 @@ export const BottomDock = ({ onOpenHistory, onOpenSettings, onLogout }: BottomDo
                             </div>
                         )}
                     </div>
-                    <span className="text-[10px] font-bold text-white truncate max-w-[60px]">
+                    <span className="text-[10px] font-bold text-white truncate max-w-15">
                         {formData?.name?.split(' ')[0] || 'User'}
                     </span>
                 </div>
