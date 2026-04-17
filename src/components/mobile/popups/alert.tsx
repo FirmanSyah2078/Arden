@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import { Clock, Loader2, CheckCircle2, AlertCircle, User } from 'lucide-react';
@@ -34,6 +34,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
         }
     }, [isOpen, initialStatus]);
 
+    // --- SUBMISSION LOGIC: Process attendance data to the backend ---
     const handleProcess = async () => {
         if (!absensiStatus?.id) return;
         setErrorMessage('');
@@ -54,17 +55,17 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 setProcessStatus('success');
             } else {
                 setProcessStatus('error');
-                setErrorMessage(response.message || 'Gagal memproses data.');
+                setErrorMessage(response.message || 'Failed to process data.');
             }
         } catch {
             setProcessStatus('error');
-            setErrorMessage('Terjadi kesalahan koneksi.');
+            setErrorMessage('A network connection error occurred.');
         }
     };
 
     const handleCloseAndResume = () => {
         if (processStatus === 'success') {
-            toast.success("Data Berhasil Disimpan", { 
+            toast.success("Attendance Saved Successfully", { 
                 description: `${absensiStatus?.full_name} - ${sholatTime}`, 
                 duration: 3000, 
                 position: 'top-center' 
@@ -74,28 +75,29 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
         onScanUlang?.();
     };
 
+    // --- UI STATE MAPPING: Returns configuration based on the current process status ---
     const getStatusConfig = () => {
         switch (processStatus) {
             case 'success':
                 return {
-                    title: 'Berhasil!',
-                    subtitle: 'Data absensi telah tersimpan.',
+                    title: 'Success!',
+                    subtitle: 'Attendance data has been saved.',
                     icon: <CheckCircle2 className="w-16 h-16 text-emerald-400 animate-in zoom-in duration-500" />,
                     btnClass: 'bg-indigo-600 text-white hover:bg-indigo-500',
                     textCol: 'text-emerald-400'
                 };
             case 'error':
                 return {
-                    title: 'Gagal!',
-                    subtitle: 'Ada kendala saat menyimpan data.',
+                    title: 'Failed!',
+                    subtitle: 'An error occurred while saving data.',
                     icon: <AlertCircle className="w-16 h-16 text-red-400 animate-in shake duration-300" />,
                     btnClass: 'bg-red-500 text-white hover:bg-red-400',
                     textCol: 'text-red-400'
                 };
             default:
                 return {
-                    title: 'Konfirmasi',
-                    subtitle: 'Periksa kembali data siswi.',
+                    title: 'Confirmation',
+                    subtitle: 'Please review the student details.',
                     icon: <User className="w-16 h-16 text-white/20" />,
                     btnClass: 'bg-indigo-600 text-white hover:bg-indigo-500',
                     textCol: 'text-white'
@@ -132,16 +134,16 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 <div className="bg-[#1F1E23] p-6 rounded-3xl border border-white/5 mb-8 shadow-sm relative overflow-hidden">
                     <div className="flex flex-col gap-5 relative z-10">
                         <div>
-                            <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Nama Siswi</p>
+                            <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Student Name</p>
                             <p className="text-white font-bold text-lg leading-tight mb-4">{absensiStatus?.full_name}</p>
                             <div className="flex items-center gap-4">
                                 <div>
-                                    <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-0.5">Kelas</p>
+                                    <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-0.5">Class</p>
                                     <p className="text-white font-mono text-sm">{absensiStatus?.class_name}</p>
                                 </div>
                                 <div className="h-8 w-px bg-white/5"></div>
                                 <div>
-                                    <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-0.5">NIS</p>
+                                    <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-0.5">Student ID (NIS)</p>
                                     <p className="text-white font-mono text-sm">{absensiStatus?.nis}</p>
                                 </div>
                             </div>
@@ -173,7 +175,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                             className={`w-full ${config.btnClass} font-bold h-14 rounded-2xl transition-all active:scale-[0.98] text-sm shadow-lg`} 
                             onClick={handleCloseAndResume}
                         >
-                            Selesai
+                            Done
                         </Button>
                     ) : (
                         <>
@@ -183,8 +185,8 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                                 disabled={loading}
                             >
                                 {loading ? (
-                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Memproses...</>
-                                ) : 'Simpan Absensi'}
+                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
+                                ) : 'Save Attendance'}
                             </Button>
                             {!loading && (
                                 <Button 
@@ -192,7 +194,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                                     className="w-full bg-transparent text-white/60 border-white/10 hover:bg-white/5 hover:text-white rounded-2xl h-12 transition-all text-xs" 
                                     onClick={handleCloseAndResume}
                                 >
-                                    Batal & Scan Ulang
+                                    Cancel & Rescan
                                 </Button>
                             )}
                         </>

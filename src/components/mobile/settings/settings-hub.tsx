@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { User, HelpCircle, Bell, Shield, X, ChevronRight, Settings } from 'lucide-react';
@@ -14,25 +14,20 @@ interface SettingsHubProps {
 export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
   const [activePopup, setActivePopup] = useState<'none' | 'edit-profile' | 'help'>('none');
 
+  // UI Configuration for settings menu items
   const menuItems = [
     {
       id: 'edit-profile',
-      title: 'Kelola Profil Akun',
-      description: 'Perbarui informasi identitas dan data akun',
+      title: 'Manage Account Profile',
+      description: 'Update identity information and account details',
       icon: <User className="w-5 h-5" />,
       action: () => setActivePopup('edit-profile'),
-    },
-    {
-      id: 'help',
-      title: 'Pusat Panduan Operasional',
-      description: 'Dokumentasi penggunaan sistem dan prosedur absensi',
-      icon: <HelpCircle className="w-5 h-5" />,
-      action: () => setActivePopup('help'),
     },
   ];
 
   return (
     <>
+      {/* Main Settings Hub Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent 
           showCloseButton={false}
@@ -40,7 +35,7 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
         >
           <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
             <DialogTitle className="text-xl font-bold tracking-tight text-white">
-              Pengaturan Sistem
+              System Settings
             </DialogTitle>
             <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
               System Configuration
@@ -70,15 +65,9 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Sub-Popups */}
+      {/* Sub-Popup Routing Management */}
       <EditProfile 
         isOpen={activePopup === 'edit-profile'} 
-        setIsOpen={(val: boolean) => {
-          if (!val) setActivePopup('none');
-        }} 
-      />
-      <HelpGuide 
-        isOpen={activePopup === 'help'} 
         setIsOpen={(val: boolean) => {
           if (!val) setActivePopup('none');
         }} 

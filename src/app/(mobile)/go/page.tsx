@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -8,19 +8,21 @@ import { Manager } from '@/components/mobile/core/manager';
 import { StatusCard } from '@/components/mobile/core/status-card';
 import HistoryPopup from '@/components/mobile/popups/history';
 import SettingsHub from '@/components/mobile/settings/settings-hub';
+import HelpGuide from '@/components/mobile/settings/help-guide';
 import { useLogout } from '@/hooks/use-logout';
 import { useSholat } from '@/hooks/mobile/use-sholat';
-import { History as LucideHistory, Settings as LucideSettings, LogOut as LucideLogOut } from 'lucide-react';
+import { History as LucideHistory, Settings as LucideSettings, LogOut as LucideLogOut, HelpCircle } from 'lucide-react';
 
 export default function MobilePage() {
   const [showHistory, setShowHistory] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false); 
   const { activeScanner } = useSholat();
   const { handleLogout } = useLogout();
 
   const onLogoutClick = () => {
-    toast.success('Sampai jumpa!');
+    toast.success('See you soon!');
     setTimeout(() => {
       handleLogout();
     }, 300);
@@ -65,7 +67,22 @@ export default function MobilePage() {
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">History</span>
-                    <span className="text-[10px] text-white/30 leading-tight">Riwayat absensi siswi</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Attendance history logs</span>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => { setIsHelpOpen(true); setIsMenuOpen(false); }}
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white/40 flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                    <HelpCircle size={14} />
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Guide</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Operational guidelines</span>
                   </div>
                 </div>
               </button>
@@ -80,7 +97,7 @@ export default function MobilePage() {
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Settings</span>
-                    <span className="text-[10px] text-white/30 leading-tight">Preferensi aplikasi</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Application preferences</span>
                   </div>
                 </div>
               </button>
@@ -97,7 +114,7 @@ export default function MobilePage() {
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Logout</span>
-                    <span className="text-[10px] text-white/30 leading-tight">Keluar dari sistem Arden</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Sign out from Arden system</span>
                   </div>
                 </div>
               </button>
@@ -110,6 +127,11 @@ export default function MobilePage() {
         isOpen={showHistory}
         setIsOpen={setShowHistory}
         sholat={activeScanner}
+      />
+
+      <HelpGuide 
+        isOpen={isHelpOpen} 
+        setIsOpen={setIsHelpOpen} 
       />
 
       <SettingsHub 

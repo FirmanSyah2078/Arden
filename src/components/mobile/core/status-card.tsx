@@ -7,29 +7,27 @@ import { useSholat } from '@/hooks/mobile/use-sholat';
 
 export const StatusCard = () => {
   const { formData } = useProfile();
-  const { displayStatus, timeRange } = useSholat(); // Mengembalikan ke typo asli jika memang itu yang ada di hook, tapi saya akan perbaiki menjadi useSholat jika memungkinkan. Namun untuk menghindari error import, saya ikuti struktur yang ada.
-  // Berdasarkan read_file sebelumnya, hook-nya adalah useSholat.
+  const { displayStatus, timeRange } = useSholat();
   
+  // Mapping for prayer names to professional English labels
   const labels: Record<string, string> = { 
-    Fajr: 'Shubuh', 
-    Sunrise: 'Dhuha', 
-    Dhuhr: 'Zhuhur', 
-    Asr: 'Ashar', 
+    Fajr: 'Fajr', 
+    Sunrise: 'Sunrise', 
+    Dhuhr: 'Dhuhr', 
+    Asr: 'Asr', 
     Maghrib: 'Maghrib', 
-    Isha: 'Isya' 
+    Isha: 'Isha' 
   };
 
   return (
     <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/5 shadow-xl flex items-center gap-4 transition-all duration-500">
-      <div className="w-14 h-14 rounded-2xl bg-[#2A292F] overflow-hidden shrink-0 border border-white/10 shadow-inner">
+      {/* Avatar with Symmetry Blurred BG Glow effect */}
+      <div className="w-14 h-14 rounded-full bg-[#2A292F] overflow-hidden shrink-0 border border-white/10 shadow-inner relative">
         {formData && formData.avatarUrl ? (
-          <Image 
-            src={formData.avatarUrl} 
-            alt="Profile" 
-            width={56} 
-            height={56} 
-            className="w-full h-full object-cover" 
-          />
+          <>
+            <Image src={formData.avatarUrl} alt="Blur" width={56} height={56} className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50" />
+            <Image src={formData.avatarUrl} alt="Profile" width={56} height={56} className="relative z-10 w-full h-full object-contain" />
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white/20">
             <User size={24} />
@@ -45,9 +43,10 @@ export const StatusCard = () => {
           {formData?.name || 'User'}
         </h2>
         <div className="flex items-center gap-2">
+          {/* Professional Prayer Status Badge */}
           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-600 border-none shrink-0 shadow-sm">
             <span className="text-[9px] font-bold tracking-wider text-white capitalize">
-              {labels[displayStatus] ? `Jadwal Sholat ${labels[displayStatus]}` : '...'}
+              {labels[displayStatus] ? `Prayer Time: ${labels[displayStatus]}` : '...'}
             </span>
           </div>
           <span className="text-[10px] font-mono text-white/40 tracking-tight">

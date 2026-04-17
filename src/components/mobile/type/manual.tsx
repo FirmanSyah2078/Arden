@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useRef } from 'react';
 import { Search, User, Loader2, ChevronRight, AlertCircle, Info, X } from 'lucide-react';
@@ -17,7 +17,7 @@ export interface ManualProps {
     onScrollDirectionChange?: (visible: boolean) => void;
 }
 
-// --- KOMPONEN 1: SEARCH BAR (BACK TO GRAY OUTLINE VERSION) ---
+// --- COMPONENT 1: SEARCH BAR (High-End Gray Outline Version) ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
     <div className="relative mb-6 flex-none z-20 px-1">
         <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-transparent shadow-[0_0_0_1px_rgba(255,255,255,0.4),0_0_12px_rgba(255,255,255,0.05)]' : 'border-white/5'
@@ -52,11 +52,12 @@ export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: 
     </div>
 );
 
-// --- KOMPONEN 2: HASIL PENCARIAN (SOLID MATERIAL WHITE THEME) ---
+// --- COMPONENT 2: SEARCH RESULTS (Solid Material White Theme) ---
 export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused, onScrollDirectionChange }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean, onScrollDirectionChange?: (visible: boolean) => void }) => {
     const MAX_RESULTS = 15;
     const lastScrollY = useRef(0);
 
+    // Handle scroll direction to trigger UI changes (e.g., hide/show header)
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const currentScrollY = e.currentTarget.scrollTop;
         const delta = currentScrollY - lastScrollY.current;
@@ -88,7 +89,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                         </div>
                     </div>
                     <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">Manual Search</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Ketikkan nama atau NIS untuk mencari data santri secara manual.</p>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Enter name or NIS to search for student data manually.</p>
                 </div>
             )}
 
@@ -147,7 +148,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                         <AlertCircle size={28} />
                     </div>
                     <h3 className="text-white font-semibold text-base mb-1">No Results Found</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Siswa dengan nama atau NIS tersebut tidak ditemukan.</p>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">No student found with the provided name or NIS.</p>
                 </div>
             )}
         </div>

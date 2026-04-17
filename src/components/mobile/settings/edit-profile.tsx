@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { User, Camera, X } from 'lucide-react';
@@ -15,16 +15,16 @@ interface EditProfileProps {
 }
 
 export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
-  const {
-    formData,
-    isLoading,
-    isSubmitting,
-    isSaveDisabled,
-    handleChange,
-    handleSave,
-    handleFileChange,
-    fileInputRef,
-    handleUploadClick
+  const { 
+    formData, 
+    isLoading, 
+    isSubmitting, 
+    isSaveDisabled, 
+    handleChange, 
+    handleSave, 
+    handleFileChange, 
+    fileInputRef, 
+    handleUploadClick 
   } = useProfile();
 
   const [imageLoading, setImageLoading] = useState(true);
@@ -35,14 +35,17 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
         showCloseButton={false}
         className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
       >
+        {/* Header Section - Professional English */}
         <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
           <DialogTitle className="text-xl font-bold tracking-tight text-white">
-            Edit Profil Akun
+            Edit Account Profile
           </DialogTitle>
           <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
             Update your identity and account details
           </DialogDescription>
         </div>
+
+        {/* Avatar Section - Preserving original structure */}
         <div className="flex flex-col items-center gap-4 mb-8">
           <div className="relative group">
             <div className="w-24 h-24 rounded-full bg-[#1F1E23] border-2 border-white/5 flex items-center justify-center overflow-hidden transition-all group-hover:border-white/10">
@@ -88,9 +91,10 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
           </div>
         </div>
 
+        {/* Form Fields - Professional English */}
         <div className="space-y-4 mb-8">
           <div className="space-y-2">
-            <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Nama Lengkap</Label>
+            <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Full Name</Label>
             <Input
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
@@ -109,6 +113,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
           </div>
         </div>
 
+        {/* Action Buttons - Professional English */}
         <div className="flex flex-col gap-3">
           <Button
             onClick={async () => {
@@ -122,7 +127,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
               {isSubmitting ? (
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : null}
-              <span>{isSubmitting ? 'Memproses...' : 'Konfirmasi'}</span>
+              <span>{isSubmitting ? 'Saving...' : 'Save Changes'}</span>
             </div>
           </Button>
 
@@ -131,7 +136,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
             variant="outline"
             className="w-full h-12 rounded-2xl bg-[#1F1E23] text-white border-white/5 hover:bg-[#2A292F] font-semibold transition-all active:scale-[0.98]"
           >
-            Kembali
+            Back
           </Button>
         </div>
       </DialogContent>

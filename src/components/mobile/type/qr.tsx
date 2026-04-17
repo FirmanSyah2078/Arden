@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -28,6 +28,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
+  // --- IMPERATIVE HANDLE: Allows parent component to control scanner lifecycle ---
   useImperativeHandle(ref, () => ({
     start: async () => {
       if (!cameraId) return;
@@ -57,7 +58,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         }, 800);
       } catch (e) {
         console.error(e);
-        toast.error("Gagal membuka kamera, nya!");
+        toast.error("Failed to access the camera.");
       }
     },
     stop: async () => {
@@ -89,6 +90,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
     })();
   }, []);
 
+  // --- VALIDATION PIPELINE: Decode QR -> Extract ID -> API Validation ---
   const handleScanSuccess = async (decodedText: string) => {
     if (validating || showPopup) return;
     try {
@@ -105,7 +107,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
 
       const res = await fetch(`/api/student?icode=${icode}`);
       const jsonRes = await res.json();
-      if (jsonRes.status !== 'success' || !jsonRes.data) throw new Error("Data siswi tidak ditemukan.");
+      if (jsonRes.status !== 'success' || !jsonRes.data) throw new Error("Student data not found.");
 
       setScanResult({
         id: jsonRes.data.id_student.toString(),
@@ -113,12 +115,12 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         nis: jsonRes.data.nis,
         class_name: jsonRes.data.tbl_classes?.class_name || '-',
         status: 'success',
-        message: 'Menunggu konfirmasi',
+        message: 'Awaiting confirmation',
       });
       setValidating(false);
       setShowPopup(true);
     } catch (err: any) {
-      toast.error("Gagal", { description: err.message || "QR Gagal" });
+      toast.error("Scanning Failed", { description: err.message || "Invalid QR Code" });
       setValidating(false);
     }
   };
@@ -146,8 +148,8 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
             </div>
             <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">QR Scanner</h3>
             <p className="text-white/40 text-xs max-w-55 leading-relaxed text-center">
-              Arahkan kamera ke Code QR. <br />
-              Tekan <span className="text-indigo-400 font-bold">Start Cam</span> untuk memulai.
+              Point the camera at the QR Code. <br />
+              Press <span className="text-indigo-400 font-bold">Start Cam</span> to begin.
             </p>
           </div>
         </div>

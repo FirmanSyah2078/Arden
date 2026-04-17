@@ -8,7 +8,7 @@ const API_URL =
 // DEBUG SECTION: Simulasikan waktu sholat (Contoh: '19:30' untuk Isya)
 // Set ke null untuk menggunakan waktu asli.
 // =============================================================================
-const DEBUG_TIME = '14:52';
+const DEBUG_TIME = '14:00';
 // =============================================================================
 
 interface ExtendedPrayerTimes extends PrayerTimes {

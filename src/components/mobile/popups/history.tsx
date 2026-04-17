@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import { Inbox, Loader2 } from 'lucide-react';
@@ -14,9 +14,10 @@ interface HistoryProps {
   sholat: DailyPrayer;
 }
 
-// --- KOMPONEN LIST (Sangat Ringan & Luxury) ---
+// --- LIST COMPONENT (High-End Luxury Implementation) ---
 const ListContent = ({ isLoadingHistory, historyData }: { isLoadingHistory: boolean, historyData: any[] }) => (
   <div className="flex flex-col w-full">
+    {/* Custom scroll area with hidden scrollbar for a seamless mobile experience */}
     <div className="max-h-[50vh] w-full overflow-y-auto overscroll-contain pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <div className="flex flex-col gap-0 w-full pb-2">
         <ul className="flex flex-col gap-3 w-full">
@@ -29,6 +30,7 @@ const ListContent = ({ isLoadingHistory, historyData }: { isLoadingHistory: bool
             historyData.map((item, idx) => (
               <li key={idx}>
                 <div className="flex items-center w-full">
+                  {/* Student Item Card - Material Solid Surface */}
                   <div className="flex-1 bg-[#1F1E23] rounded-2xl p-3 flex items-center gap-4 shadow-sm">
 
                     <div className="w-11 h-11 rounded-xl bg-[#2A292F] text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-inner">
@@ -63,7 +65,7 @@ const ListContent = ({ isLoadingHistory, historyData }: { isLoadingHistory: bool
           ) : (
             <div className="flex flex-col items-center justify-center h-40 text-white/20 bg-[#1F1E23] rounded-3xl border-2 border-dashed border-white/5">
               <Inbox className="w-10 h-10 mb-3 opacity-20" />
-              <p className="text-xs font-medium tracking-wide">Belum ada riwayat</p>
+              <p className="text-xs font-medium tracking-wide">No history available</p>
             </div>
           )}
         </ul>
@@ -93,15 +95,17 @@ export default function History({ isOpen, setIsOpen, sholat }: HistoryProps) {
         showCloseButton={false}
         className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
       >
+        {/* Header Section - professional English */}
         <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
           <DialogTitle className="text-xl font-bold tracking-tight text-white">
-            Riwayat Kehadiran
+            Attendance History
           </DialogTitle>
           <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
             Attendance History Logs
           </DialogDescription>
         </div>
 
+        {/* Tab Navigation - Material Solid Surface */}
         <div className="w-full bg-[#1F1E23] rounded-2xl p-1 h-12 flex items-center gap-1 mb-6 shadow-inner">
           <button
             onClick={() => setActiveTab('Dhuhr')}
@@ -110,7 +114,7 @@ export default function History({ isOpen, setIsOpen, sholat }: HistoryProps) {
               : 'text-white/40 hover:text-white/60'
               }`}
           >
-            Dzuhur
+            Dhuhr
           </button>
           <button
             onClick={() => setActiveTab('Asr')}
@@ -119,7 +123,7 @@ export default function History({ isOpen, setIsOpen, sholat }: HistoryProps) {
               : 'text-white/40 hover:text-white/60'
               }`}
           >
-            Ashar
+            Asr
           </button>
         </div>
 
