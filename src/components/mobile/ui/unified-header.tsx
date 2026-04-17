@@ -11,7 +11,7 @@ export const UnifiedHeader = () => {
     return (
         <div className="w-full bg-[#1F1E23] border border-white/5 rounded-2xl p-4 flex flex-col gap-3 shadow-sm transition-all duration-500">
 
-            {/* TOP ROW: App Identity - Kept exactly as requested nya! */}
+            {/* TOP ROW: App Identity */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Image
@@ -28,22 +28,9 @@ export const UnifiedHeader = () => {
                 </div>
             </div>
 
-            {/* BOTTOM ROW: Sholat Status & Time Range */}
-            <div className="flex items-center justify-between gap-3 min-w-0 border-t border-white/5 pt-3">
-                {/* Prayer Name Badge - Migrated to Solid Material */}
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-600 border-none shrink-0 shadow-sm">
-                    <div className="w-1 h-1 rounded-full bg-white animate-pulse" />
-                    <span className="text-[10px] font-bold tracking-wider text-white capitalize">
-                        Sholat {labels[displayStatus] || '...'}
-                    </span>
-                </div>
-
-                {/* Time Range */}
-                <div className="flex items-center gap-1.5 text-white/80 min-w-0">
-                    <p className="text-xs font-mono font-bold tracking-tight truncate">
-                        {timeRange} <span className="text-white/40 font-medium ml-1">WIB</span>
-                    </p>
-                </div>
+            {/* BOTTOM ROW: Just a clean separator line (Symmetry Style) */}
+            <div className="border-t border-white/5 pt-1">
+               <div className="h-1 w-8 bg-indigo-600 rounded-full opacity-50" />
             </div>
         </div>
     );

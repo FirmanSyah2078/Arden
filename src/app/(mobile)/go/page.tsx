@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { UnifiedHeader } from '@/components/mobile/ui/unified-header';
 import { Manager } from '@/components/mobile/core/manager';
+import { StatusCard } from '@/components/mobile/core/status-card';
 import History from '@/components/mobile/popups/history';
 import SettingsHub from '@/components/mobile/settings/settings-hub';
 import { useLogout } from '@/hooks/use-logout';
@@ -14,12 +15,12 @@ import { History as HistoryIcon, Settings, LogOut } from 'lucide-react';
 export default function MobilePage() {
   const [showHistory, setShowHistory] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { activeScanner } = useSholat();
   const { handleLogout } = useLogout();
 
   const onLogoutClick = () => {
-    toast.success("Sampai jumpa!");
+    toast.success('Sampai jumpa!');
     setTimeout(() => {
       handleLogout();
     }, 300);
@@ -28,8 +29,12 @@ export default function MobilePage() {
   return (
     <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
       <UnifiedHeader />
+      
+      <div className="mt-4 mb-6">
+        <StatusCard />
+      </div>
 
-      <div className="flex-1 min-h-0 relative w-full mt-4">
+      <div className="flex-1 min-h-0 relative w-full">
         <Manager
           className="h-full w-full"
           onOpenHistory={() => setShowHistory(true)}
@@ -39,7 +44,6 @@ export default function MobilePage() {
         />
       </div>
 
-      {/* OVERLAY */}
       {isMenuOpen && (
         <div
           className="absolute inset-0 z-40 bg-black/50 transition-opacity animate-in fade-in duration-300"
@@ -47,12 +51,10 @@ export default function MobilePage() {
         />
       )}
 
-      {/* MENU PANEL (SOLID MATERIAL VERSION) */}
       {isMenuOpen && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 w-52 animate-in slide-in-from-bottom-8 duration-300">
           <div className="bg-[#1F1E23] border border-white/5 rounded-3xl p-2 shadow-2xl">
             <div className="flex flex-col gap-1">
-              {/* ITEM: History */}
               <button
                 onClick={() => { setShowHistory(true); setIsMenuOpen(false); }}
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
@@ -68,7 +70,6 @@ export default function MobilePage() {
                 </div>
               </button>
 
-              {/* ITEM: Settings */}
               <button
                 onClick={() => { setIsSettingsOpen(true); setIsMenuOpen(false); }}
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
@@ -86,7 +87,6 @@ export default function MobilePage() {
 
               <div className="h-px bg-white/10 my-1 mx-2" />
 
-              {/* ITEM: Logout - Now Monochromatic Solid */}
               <button
                 onClick={() => { onLogoutClick(); setIsMenuOpen(false); }}
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
