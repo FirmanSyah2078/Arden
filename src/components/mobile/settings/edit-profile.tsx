@@ -35,6 +35,14 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
         showCloseButton={false}
         className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
       >
+        <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
+          <DialogTitle className="text-xl font-bold tracking-tight text-white">
+            Edit Profil Akun
+          </DialogTitle>
+          <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
+            Update your identity and account details
+          </DialogDescription>
+        </div>
         <div className="flex flex-col items-center gap-4 mb-8">
           <div className="relative group">
             <div className="w-24 h-24 rounded-full bg-[#1F1E23] border-2 border-white/5 flex items-center justify-center overflow-hidden transition-all group-hover:border-white/10">
@@ -77,8 +85,6 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
                 Pelaksana
               </Badge>
             </div>
-            <DialogTitle className="sr-only">Edit Profil Akun</DialogTitle>
-            <DialogDescription className="sr-only">Profile editing for Pelaksana role</DialogDescription>
           </div>
         </div>
 
