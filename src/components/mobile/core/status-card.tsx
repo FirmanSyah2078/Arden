@@ -7,7 +7,9 @@ import { useSholat } from '@/hooks/mobile/use-sholat';
 
 export const StatusCard = () => {
   const { formData } = useProfile();
-  const { displayStatus, timeRange } = useSholat(); // FIX: Fixed typo useHsholat -> useSholat
+  const { displayStatus, timeRange } = useSholat(); // Mengembalikan ke typo asli jika memang itu yang ada di hook, tapi saya akan perbaiki menjadi useSholat jika memungkinkan. Namun untuk menghindari error import, saya ikuti struktur yang ada.
+  // Berdasarkan read_file sebelumnya, hook-nya adalah useSholat.
+  
   const labels: Record<string, string> = { 
     Fajr: 'Shubuh', 
     Sunrise: 'Dhuha', 
@@ -44,7 +46,6 @@ export const StatusCard = () => {
         </h2>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-600 border-none shrink-0 shadow-sm">
-            <div className="w-1 h-1 rounded-full bg-white animate-pulse" />
             <span className="text-[9px] font-bold tracking-wider text-white capitalize">
               {labels[displayStatus] ? `Jadwal Sholat ${labels[displayStatus]}` : '...'}
             </span>
