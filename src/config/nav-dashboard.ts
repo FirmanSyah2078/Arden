@@ -3,10 +3,15 @@ import {
   BookUser,
   School,
   FileText,
-  Settings2,
   BookOpen,
   ShieldAlert,
-  Eye
+  Eye,
+  Terminal,  // Icon untuk Logs
+  GanttChart,   // Untuk Planning
+  Waves,        // Untuk Phases
+  Satellite,    // Untuk Dispatch
+  Waypoints,    // Untuk Bridges
+  Hexagon       // Untuk Globals
 } from "lucide-react";
 import { type NavItemType } from "@/components/dashboard/nav-group";
 
@@ -43,10 +48,45 @@ export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]
       ],
     },
     {
-      label: "System",
+      label: "Structure", // Fondasi Sistem
       items: [
-        { title: "Settings", url: "/dashboard/settings", icon: Settings2, variant: "default" },
+        {
+          title: "Planning", // Menggantikan Academic Schedules
+          url: "/dashboard/schedules",
+          icon: GanttChart, 
+          variant: "default"
+        },
+        {
+          title: "Phases", // Menggantikan Menstrual Logic
+          url: "/dashboard/menstrual",
+          icon: Waves, 
+          variant: "default"
+        },
+        {
+          title: "Dispatch", // Menggantikan Communication Hub
+          url: "/dashboard/communications",
+          icon: Satellite, 
+          variant: "default"
+        },
+        {
+          title: "Bridges", // Menggantikan Data Integrations
+          url: "/dashboard/integrations",
+          icon: Waypoints, 
+          variant: "default"
+        },
+        {
+          title: "Globals", // Menggantikan Global Preferences
+          url: "/dashboard/preferences",
+          icon: Hexagon, 
+          variant: "default"
+        },
+      ],
+    },
+    {
+      label: "Support & Resources", // Area Dokumentasi & Log
+      items: [
         { title: "Documentation", url: "/dashboard/docs", icon: BookOpen, variant: "default" },
+        { title: "System Logs", url: "/dashboard/logs", icon: Terminal, variant: "default" },
       ],
     },
   ],

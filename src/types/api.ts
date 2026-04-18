@@ -158,3 +158,27 @@ export interface AttendanceDataMobile {
       nis: string;
   };
 }
+
+
+// ==========================================
+// 3. TYPE DEFINITIONS CONFIGURATION (ARDEN)
+// ==========================================
+
+export interface PeriodSettingsData {
+  minDuration: number;
+  standardDuration: number;
+  maxDuration: number;
+  overLimit: number;
+}
+
+// ==========================================
+// 4. TYPE DEFINITIONS PRAYER CACHE
+// ==========================================
+export interface PrayerCacheData {
+  date: string; // Format YYYY-MM-DD
+  fajr: string;
+  dhuhr: string;
+  asr: string;
+  maghrib: string;
+  isha: string;
+}

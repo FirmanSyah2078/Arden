@@ -34,7 +34,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useLogout } from "@/hooks/use-logout"
+import { useLogout } from "@/hooks/auth/use-logout"
 import { SettingsDialog } from "@/components/dashboard/settings/settings-dialog"
 import { getInitials } from "@/lib/utils" // 🔥 Import logika Inisial dari Utils
 

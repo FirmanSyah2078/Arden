@@ -9,9 +9,11 @@ import { StatusCard } from '@/components/mobile/core/status-card';
 import HistoryPopup from '@/components/mobile/popups/history';
 import SettingsHub from '@/components/mobile/settings/settings-hub';
 import HelpGuide from '@/components/mobile/settings/help-guide';
-import { useLogout } from '@/hooks/use-logout';
 import { useSholat } from '@/hooks/mobile/use-sholat';
 import { History as LucideHistory, Settings as LucideSettings, LogOut as LucideLogOut, HelpCircle } from 'lucide-react';
+import { useLogout } from '@/hooks/auth/use-logout';
+import { DailyPrayer } from '@/types/api';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function MobilePage() {
   const [showHistory, setShowHistory] = useState(false);

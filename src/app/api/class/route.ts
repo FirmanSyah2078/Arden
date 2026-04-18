@@ -1,6 +1,6 @@
 // src/app/api/class/route.ts
 import { NextResponse } from 'next/server';
-import { ClassService } from '@/db/dashboard/directory/class.service'
+import { ClassService } from '@/db/directory/class.service'
 
 export async function GET() {
   try {

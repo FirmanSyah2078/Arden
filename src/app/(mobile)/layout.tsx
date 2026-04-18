@@ -18,6 +18,8 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         <Toaster
           position="top-center"
           theme="dark"
+          richColors
+          closeButton
           toastOptions={{
             style: {
               background: '#1F1E23',
