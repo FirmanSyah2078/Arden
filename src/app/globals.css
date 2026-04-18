@@ -737,5 +737,6 @@
 }
 
 .animate-scan-line {
-  animation: scan-line 3s ease-in-out infinite;
+  position: absolute;
+  animation: scan-line 3s ease-in-out infinite alternate;
 }
