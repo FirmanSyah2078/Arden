@@ -304,79 +304,170 @@
      1. AR-BOUNCE-X (Maju mundur halus - Cocok untuk panah/masuk/submit)
      ------------------------------------------------------------------------- */
 @keyframes ar-bounce-x {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(4px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
 }
-@utility ar-bounce-x      { animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) 1; }
-@utility ar-bounce-x-loop { animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-@utility ar-bounce-x-hold { animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@utility ar-bounce-x {
+  animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) 1;
+}
+@utility ar-bounce-x-loop {
+  animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@utility ar-bounce-x-hold {
+  animation: ar-bounce-x 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
 /* -------------------------------------------------------------------------
      2. AR-FLOAT (Naik-turun melayang - Cocok untuk Cloud/Upload/Download/Save)
      ------------------------------------------------------------------------- */
 @keyframes ar-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
-@utility ar-float      { animation: ar-float 2s ease-in-out 1; }
-@utility ar-float-loop { animation: ar-float 2s ease-in-out infinite; }
-@utility ar-float-hold { animation: ar-float 2s ease-in-out forwards; }
+@utility ar-float {
+  animation: ar-float 2s ease-in-out 1;
+}
+@utility ar-float-loop {
+  animation: ar-float 2s ease-in-out infinite;
+}
+@utility ar-float-hold {
+  animation: ar-float 2s ease-in-out forwards;
+}
 
 /* -------------------------------------------------------------------------
      3. AR-SHAKE (Getaran scanner memudar - Cocok untuk QR/Search/Bell/Alert)
      ------------------------------------------------------------------------- */
 @keyframes ar-shake {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  15% { transform: rotate(-10deg) scale(1.15); }
-  30% { transform: rotate(10deg) scale(1.15); }
-  45% { transform: rotate(-6deg) scale(1.15); }
-  60% { transform: rotate(6deg) scale(1.15); }
-  75% { transform: rotate(-2deg) scale(1.15); }
-  85% { transform: rotate(2deg) scale(1.15); }
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  15% {
+    transform: rotate(-10deg) scale(1.15);
+  }
+  30% {
+    transform: rotate(10deg) scale(1.15);
+  }
+  45% {
+    transform: rotate(-6deg) scale(1.15);
+  }
+  60% {
+    transform: rotate(6deg) scale(1.15);
+  }
+  75% {
+    transform: rotate(-2deg) scale(1.15);
+  }
+  85% {
+    transform: rotate(2deg) scale(1.15);
+  }
 }
-@utility ar-shake      { animation: ar-shake 1.2s ease-in-out 1; }
-@utility ar-shake-loop { animation: ar-shake 1.2s ease-in-out infinite; }
-@utility ar-shake-hold { animation: ar-shake 1.2s ease-in-out forwards; }
+@utility ar-shake {
+  animation: ar-shake 1.2s ease-in-out 1;
+}
+@utility ar-shake-loop {
+  animation: ar-shake 1.2s ease-in-out infinite;
+}
+@utility ar-shake-hold {
+  animation: ar-shake 1.2s ease-in-out forwards;
+}
 
 /* -------------------------------------------------------------------------
      4. AR-TADA (Mengecil lalu meledak goyang - Cocok untuk Success/Check/Star)
      ------------------------------------------------------------------------- */
 @keyframes ar-tada {
-  0% { transform: scale(1); }
-  10%, 20% { transform: scale(0.9) rotate(-3deg); }
-  30%, 50%, 70%, 90% { transform: scale(1.2) rotate(3deg); }
-  40%, 60%, 80% { transform: scale(1.2) rotate(-3deg); }
-  100% { transform: scale(1) rotate(0); }
+  0% {
+    transform: scale(1);
+  }
+  10%,
+  20% {
+    transform: scale(0.9) rotate(-3deg);
+  }
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: scale(1.2) rotate(3deg);
+  }
+  40%,
+  60%,
+  80% {
+    transform: scale(1.2) rotate(-3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
 }
-@utility ar-tada      { animation: ar-tada 1.5s ease-in-out 1; }
-@utility ar-tada-loop { animation: ar-tada 1.5s ease-in-out infinite; }
-@utility ar-tada-hold { animation: ar-tada 1.5s ease-in-out forwards; }
+@utility ar-tada {
+  animation: ar-tada 1.5s ease-in-out 1;
+}
+@utility ar-tada-loop {
+  animation: ar-tada 1.5s ease-in-out infinite;
+}
+@utility ar-tada-hold {
+  animation: ar-tada 1.5s ease-in-out forwards;
+}
 
 /* -------------------------------------------------------------------------
      5. AR-BEAT (Detak jantung - Cocok untuk Heart/Live/Active/Online Status)
      ------------------------------------------------------------------------- */
 @keyframes ar-beat {
-  0%, 100% { transform: scale(1); }
-  15% { transform: scale(1.25); }
-  30% { transform: scale(1); }
-  45% { transform: scale(1.25); }
-  60% { transform: scale(1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.25);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.25);
+  }
+  60% {
+    transform: scale(1);
+  }
 }
-@utility ar-beat      { animation: ar-beat 1.2s ease-in-out 1; }
-@utility ar-beat-loop { animation: ar-beat 1.2s ease-in-out infinite; }
-@utility ar-beat-hold { animation: ar-beat 1.2s ease-in-out forwards; }
+@utility ar-beat {
+  animation: ar-beat 1.2s ease-in-out 1;
+}
+@utility ar-beat-loop {
+  animation: ar-beat 1.2s ease-in-out infinite;
+}
+@utility ar-beat-hold {
+  animation: ar-beat 1.2s ease-in-out forwards;
+}
 
 /* -------------------------------------------------------------------------
      6. AR-SPIN-SLOW (Putaran sangat halus - Cocok untuk Settings/Refresh/Sync)
      ------------------------------------------------------------------------- */
 @keyframes ar-spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
-@utility ar-spin-slow      { animation: ar-spin-slow 4s linear 1; }
-@utility ar-spin-slow-loop { animation: ar-spin-slow 4s linear infinite; }
-@utility ar-spin-slow-hold { animation: ar-spin-slow 4s linear forwards; }
-
+@utility ar-spin-slow {
+  animation: ar-spin-slow 4s linear 1;
+}
+@utility ar-spin-slow-loop {
+  animation: ar-spin-slow 4s linear infinite;
+}
+@utility ar-spin-slow-hold {
+  animation: ar-spin-slow 4s linear forwards;
+}
 
 @layer utilities {
   /* -------------------------------------------------------------------------
@@ -477,8 +568,12 @@
   --muted-foreground: oklch(1 0 0 / 0.5); /* Teks redup (text-white/50) */
 
   /* 🔥 FIX 4: ACCENT (Untuk efek Hover / Active) */
-  --accent: oklch(1 0 0 / 0.1); /* Background menyala saat dihover (bg-white/10) */
-  --accent-foreground: oklch(0.985 0 0); /* Teks menjadi putih solid saat dihover */
+  --accent: oklch(
+    1 0 0 / 0.1
+  ); /* Background menyala saat dihover (bg-white/10) */
+  --accent-foreground: oklch(
+    0.985 0 0
+  ); /* Teks menjadi putih solid saat dihover */
 
   /* --- STATUS COLORS (Tetap Solid untuk Peringatan) --- */
   --destructive: oklch(0.637 0.237 25.331);
@@ -498,7 +593,9 @@
   ); /* Cincin fokus keyboard yang tidak terlalu menusuk mata */
 
   /* --- SIDEBAR --- */
-  --sidebar: oklch(0.145 0 0); /* Mengikuti warna background agar menyatu (seamless) */
+  --sidebar: oklch(
+    0.145 0 0
+  ); /* Mengikuti warna background agar menyatu (seamless) */
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
@@ -620,4 +717,25 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
+}
+
+@keyframes scan-line {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.animate-scan-line {
+  animation: scan-line 3s ease-in-out infinite;
 }

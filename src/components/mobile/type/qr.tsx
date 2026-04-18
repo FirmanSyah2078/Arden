@@ -129,6 +129,28 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
     <div className="w-full h-full relative overflow-hidden">
       <div id="reader" className="w-full h-full absolute inset-0" />
 
+      {/* Viewfinder Overlay - Muncul hanya saat kamera aktif dan tidak sedang validasi */}
+      {isCameraActive && !validating && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+          <div className="relative w-64 h-64">
+            {/* 1. The Cutout (Masker Gelap) */}
+            <div className="absolute inset-0 rounded-3xl shadow-[0_0_0_9999px_rgba(21,20,25,0.7)]" />
+
+            {/* 2. Luxury Frame (Border Indigo + Glow) */}
+            <div className="absolute inset-0 border-[1.5px] border-indigo-500/40 rounded-3xl shadow-[0_0_20px_rgba(79,70,229,0.2)]" />
+
+            {/* 3. Corner Accents (L-Shape) */}
+            <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-indigo-400 rounded-tl-3xl" />
+            <div className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-indigo-400 rounded-tr-3xl" />
+            <div className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-indigo-400 rounded-bl-3xl" />
+            <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-indigo-400 rounded-br-3xl" />
+
+            {/* 4. Scanning Line Animation (Luxury Touch) */}
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-linear-to-r from-transparent via-indigo-400 to-transparent shadow-[0_0_10px_rgba(129,140,248,0.8)] animate-scan-line" />
+          </div>
+        </div>
+      )}
+
       {!isCameraActive && !validating && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500 pb-20">
           <div className="flex flex-col items-center text-center">
