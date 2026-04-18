@@ -1,68 +1,145 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
-import { Menu, History as HistoryIcon, Settings, LogOut } from 'lucide-react'; 
 import { toast } from 'sonner';
 
-import { Header } from '@/components/mobile/ui/header';
-import { CardSholat } from '@/components/mobile/ui/card-sholat';
+import { UnifiedHeader } from '@/components/mobile/ui/unified-header';
 import { Manager } from '@/components/mobile/core/manager';
-import History from '@/components/mobile/popups/history';
+import { StatusCard } from '@/components/mobile/core/status-card';
+import HistoryPopup from '@/components/mobile/popups/history';
+import SettingsHub from '@/components/mobile/settings/settings-hub';
+import HelpGuide from '@/components/mobile/settings/help-guide';
+import { useSholat } from '@/hooks/mobile/use-sholat';
+import { History as LucideHistory, Settings as LucideSettings, LogOut as LucideLogOut, HelpCircle } from 'lucide-react';
+import { useLogout } from '@/hooks/auth/use-logout';
 import { DailyPrayer } from '@/types/api';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useSholat } from '@/hooks/mobile/use-sholat';
-
-// 🔥 FIX: Import hook sakti milikmu
-import { useLogout } from '@/hooks/auth/use-logout';
 
 export default function MobilePage() {
   const [showHistory, setShowHistory] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { activeScanner } = useSholat();
-  
-  // 🔥 FIX: Panggil fungsi dari hook, UI jadi bersih dari logika!
   const { handleLogout } = useLogout();
 
   const onLogoutClick = () => {
-    toast.success("Sampai jumpa!");
-    // Beri sedikit waktu agar animasi toast muncul sebelum hard-reload dari hook
+    toast.success('See you soon!');
     setTimeout(() => {
       handleLogout();
     }, 300);
   };
 
   return (
-    <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col p-5 font-sans overflow-hidden">
-      <div className="flex-none">
-        <Header>
-          <DropdownMenu>
-              <DropdownMenuTrigger className="outline-none">
-                  <div className="p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer">
-                      <Menu className="w-6 h-6 text-white" />
-                  </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-[#1f1e23] border-[#27272A] text-white">
-                  <DropdownMenuItem onClick={() => setShowHistory(true)} className="cursor-pointer hover:bg-[#27272A]">
-                      <HistoryIcon className="mr-2 h-4 w-4" /> <span>History</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info("Fitur Setting belum tersedia")} className="cursor-pointer hover:bg-[#27272A]">
-                      <Settings className="mr-2 h-4 w-4" /> <span>Settings</span>
-                  </DropdownMenuItem>
-                  
-                  {/* 🔥 FIX: Panggil fungsi onLogoutClick yang menggunakan hook */}
-                  <DropdownMenuItem onClick={onLogoutClick} className="cursor-pointer text-red-500 hover:bg-[#27272A]">
-                      <LogOut className="mr-2 h-4 w-4" /> <span>Logout</span>
-                  </DropdownMenuItem>
-              </DropdownMenuContent>
-          </DropdownMenu>
-        </Header>
-        <div className="mb-4 mt-2">
-            <CardSholat />
-        </div>
+    <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
+      <UnifiedHeader />
+
+      <div className="mt-4 mb-6">
+        <StatusCard />
       </div>
+
       <div className="flex-1 min-h-0 relative w-full">
-         <Manager className="h-full w-full" />
+        <Manager
+          className="h-full w-full"
+          onOpenHistory={() => setShowHistory(true)}
+          onLogout={onLogoutClick}
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+        />
       </div>
-      <History isOpen={showHistory} setIsOpen={setShowHistory} sholat={activeScanner} />
+
+      {isMenuOpen && (
+        <div
+          className="absolute inset-0 z-40 bg-black/50 transition-opacity animate-in fade-in duration-300"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
+
+      {isMenuOpen && (
+        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-50 w-52 animate-in slide-in-from-bottom-8 duration-300">
+          <div className="bg-[#1F1E23] border border-white/5 rounded-3xl p-2 shadow-2xl">
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => { setShowHistory(true); setIsMenuOpen(false); }}
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                    <LucideHistory size={14} />
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">History</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Attendance history logs</span>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => { setIsHelpOpen(true); setIsMenuOpen(false); }}
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                    <HelpCircle size={14} />
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Guide</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Operational guidelines</span>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => { setIsSettingsOpen(true); setIsMenuOpen(false); }}
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                    <LucideSettings size={14} />
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Settings</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Application preferences</span>
+                  </div>
+                </div>
+              </button>
+
+              <div className="h-px bg-white/10 my-1 mx-2" />
+
+              <button
+                onClick={() => { onLogoutClick(); setIsMenuOpen(false); }}
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                    <LucideLogOut size={14} />
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Logout</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Sign out from Arden system</span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <HistoryPopup
+        isOpen={showHistory}
+        setIsOpen={setShowHistory}
+        sholat={activeScanner}
+      />
+
+      <HelpGuide
+        isOpen={isHelpOpen}
+        setIsOpen={setIsHelpOpen}
+      />
+
+      <SettingsHub
+        isOpen={isSettingsOpen}
+        setIsOpen={setIsSettingsOpen}
+      />
     </div>
   );
 }

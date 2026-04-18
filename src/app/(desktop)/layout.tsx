@@ -1,4 +1,5 @@
 import { cookies } from "next/headers"
+import { Toaster } from "@/components/ui/sonner"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { DashboardHeader } from "@/components/dashboard/header"
 import {
@@ -28,7 +29,7 @@ export default async function DesktopLayout({
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-x-hidden">
             {children}
           </div>
-
+          <Toaster />
         </SidebarInset>
       </SidebarProvider>
     </DashboardProvider>

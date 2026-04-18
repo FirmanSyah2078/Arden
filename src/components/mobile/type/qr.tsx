@@ -1,62 +1,104 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
-import { Scan, Loader2, Maximize2, AlertCircle } from 'lucide-react';
+import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
+import { Html5Qrcode } from 'html5-qrcode';
+import { Loader2, QrCode, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
-import { Alert } from '../popups/alert'; 
+import { Alert } from '../popups/alert';
 
 interface QrProps {
   sholat: DailyPrayer;
   onCamActive?: (isActive: boolean) => void;
 }
 
-export default function Qr({ sholat, onCamActive }: QrProps) {
-  const qrRef = useRef<Html5Qrcode | null>(null);
+export interface QrHandle {
+  start: () => Promise<void>;
+  stop: () => Promise<void>;
+  isScanning: boolean;
+}
+
+const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   const [cameraId, setCameraId] = useState<string | null>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [validating, setValidating] = useState(false);
-  const [permissionError, setPermissionError] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [scanResult, setScanResult] = useState<AttendanceStatusResponse | undefined>(undefined);
 
+  const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    start: async () => {
+      if (!cameraId) return;
+      try {
+        // ELEMENT MUST EXIST IN DOM BEFORE THIS CALL
+        const scanner = new Html5Qrcode('reader');
+        html5QrCodeRef.current = scanner;
+
+        await scanner.start(
+          { deviceId: { exact: cameraId } },
+          { fps: 20 },
+          (text: string) => handleScanSuccess(text),
+          () => { }
+        );
+
+        const v = document.querySelector('#reader video') as HTMLVideoElement;
+        if (v) {
+          v.style.objectFit = 'cover';
+          v.style.width = '100%';
+          v.style.height = '100%';
+        }
+
+        setIsCameraActive(true);
+        if (onCamActive) onCamActive(true);
+
+        setTimeout(() => {
+          setScanning(true);
+        }, 800);
+      } catch (e) {
+        console.error(e);
+        toast.error("Failed to access the camera.");
+      }
+    },
+    stop: async () => {
+      try {
+        if (html5QrCodeRef.current) {
+          await html5QrCodeRef.current.stop();
+          html5QrCodeRef.current.clear();
+          html5QrCodeRef.current = null;
+        }
+        setIsCameraActive(false);
+        setScanning(false);
+        if (onCamActive) onCamActive(false);
+      } catch (e) {
+        console.error("Error stopping camera:", e);
+      }
+    },
+    get isScanning() { return scanning; }
+  }));
+
   useEffect(() => {
-    let isMounted = true;
-    const initCamera = async () => {
+    (async () => {
       try {
         const devices = await Html5Qrcode.getCameras();
-        if (!isMounted) return;
-        if (devices && devices.length > 0) {
+        if (devices?.length > 0) {
           const backCam = devices.find((d) => d.label.toLowerCase().includes('back')) || devices[0];
           setCameraId(backCam.id);
-        } else {
-          setPermissionError(true);
         }
-      } catch {
-        if (isMounted) setPermissionError(true);
-      }
-    };
-    initCamera();
-    return () => {
-      isMounted = false;
-      if (qrRef.current?.isScanning) qrRef.current.stop().catch(() => { }).then(() => qrRef.current?.clear());
-    };
+      } catch { }
+    })();
   }, []);
 
-  const onScan = async (decodedText: string) => {
+  const handleScanSuccess = async (decodedText: string) => {
     if (validating || showPopup) return;
     try {
-      await qrRef.current?.pause(true);
       setValidating(true);
       let icode = decodedText;
-
       if (decodedText.startsWith('http') || decodedText.includes('://')) {
         const parts = decodedText.split('/');
-        const lastPart = parts[parts.length - 1];
-        if (lastPart) icode = lastPart;
+        icode = parts[parts.length - 1] || icode;
       }
-
       try {
         const json = JSON.parse(decodedText);
         icode = json.i || json.icode || json.nis || icode;
@@ -64,100 +106,95 @@ export default function Qr({ sholat, onCamActive }: QrProps) {
 
       const res = await fetch(`/api/student?icode=${icode}`);
       const jsonRes = await res.json();
+      if (jsonRes.status !== 'success' || !jsonRes.data) throw new Error("Student data not found.");
 
-      if (jsonRes.status !== 'success' || !jsonRes.data) throw new Error("Data siswi tidak ditemukan.");
-
-      const student = jsonRes.data;
       setScanResult({
-        id: student.id_student.toString(),
-        full_name: student.full_name,
-        nis: student.nis,
-        class_name: student.tbl_classes?.class_name || '-',
+        id: jsonRes.data.id_student.toString(),
+        full_name: jsonRes.data.full_name,
+        nis: jsonRes.data.nis,
+        class_name: jsonRes.data.tbl_classes?.class_name || '-',
         status: 'success',
-        message: 'Menunggu konfirmasi',
+        message: 'Awaiting confirmation',
       });
-
       setValidating(false);
       setShowPopup(true);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "QR Gagal";
-      toast.error("Gagal", { description: msg }); 
+    } catch (err: any) {
+      toast.error("Scanning Failed", { description: err.message || "Invalid QR Code" });
       setValidating(false);
-      setTimeout(() => {
-        try { if (qrRef.current?.getState() === Html5QrcodeScannerState.PAUSED) qrRef.current.resume(); } catch { }
-      }, 1500);
     }
-  };
-
-  const handleScanUlang = () => {
-    setShowPopup(false);
-    setTimeout(() => {
-      try { if (qrRef.current?.getState() === Html5QrcodeScannerState.PAUSED) qrRef.current.resume(); } catch { }
-    }, 300);
-  };
-
-  const start = async () => {
-    if (!cameraId) return;
-    if (qrRef.current) { try { await qrRef.current.stop(); qrRef.current.clear(); } catch { } }
-    const html5QrCode = new Html5Qrcode('reader');
-    qrRef.current = html5QrCode;
-    try {
-      await html5QrCode.start({ deviceId: { exact: cameraId } }, { fps: 20 }, onScan, () => { });
-      setScanning(true);
-      setPermissionError(false);
-      if (onCamActive) onCamActive(true);
-      setTimeout(() => {
-        const v = document.querySelector('#reader video') as HTMLVideoElement;
-        if (v) { v.style.objectFit = 'cover'; v.style.width = '100%'; v.style.height = '100%'; v.style.transform = 'scale(1.02)'; }
-      }, 300);
-    } catch {
-      setPermissionError(true);
-      toast.error("Gagal membuka kamera");
-    }
-  };
-
-  const stop = async () => {
-    try { if (qrRef.current?.isScanning) { await qrRef.current.stop(); qrRef.current.clear(); } } catch { }
-    setScanning(false);
-    if (onCamActive) onCamActive(false);
   };
 
   return (
-    <div className="w-full h-full relative">
-      <div id="reader" className="w-full h-full" />
-      {scanning && !validating && !showPopup && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-          <div className="w-64 h-64 relative">
-            <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-white/90 rounded-tl-3xl"></div>
-            <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-white/90 rounded-tr-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-white/90 rounded-bl-3xl"></div>
-            <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-white/90 rounded-br-3xl"></div>
+    <div className="w-full h-full relative overflow-hidden bg-[#151419] flex flex-col items-center justify-center p-4 pb-32">
+
+      {/* CAMERA WINDOW: Always in DOM but visually hidden when inactive */}
+      <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-500 ${isCameraActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+        <div id="reader" className="w-full h-full absolute inset-0" />
+
+        {/* Viewfinder Overlay - Only show when active */}
+        {isCameraActive && !validating && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+            <div className="relative w-48 h-48">
+              <div className="absolute inset-0 rounded-none shadow-[0_0_0_9999px_rgba(21,20,25,0.6)]" />
+              <div className="absolute inset-0 border border-zinc-500/30 rounded-none" />
+              <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white rounded-none" />
+              <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white rounded-none" />
+              <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white rounded-none" />
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white rounded-none" />
+              <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-zinc-300 to-transparent shadow-[0_0_8px_rgba(209,203,203,0.6)] animate-scan-line" />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* IDLE STATE: Rendered as an absolute overlay when camera is inactive */}
+      {!isCameraActive && !validating && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500 px-6 text-center pb-20">
+          <div className="flex flex-col items-center text-center">
+            <div className="relative flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
+              <div className="relative flex items-center justify-center -space-x-3">
+                <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0s' }}>
+                  <User size={16} className="text-white/20" />
+                </div>
+                <div className="w-12 h-12 rounded-full border-2 border-[#151419] bg-[#27272A] flex items-center justify-center z-20 scale-110 shadow-xl ar-float-loop" style={{ animationDelay: '0.2s' }}>
+                  <QrCode size={20} className="text-white/60" />
+                </div>
+                <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0.4s' }}>
+                  <User size={16} className="text-white/20" />
+                </div>
+              </div>
+            </div>
+            <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">QR Scanner</h3>
+            <p className="text-white/40 text-xs max-w-xs leading-relaxed">
+              Point the camera at the QR Code. <br />
+              Press <span className="text-indigo-400 font-bold">Start Cam</span> to begin.
+            </p>
           </div>
         </div>
       )}
-      {!scanning && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40">
-          <div className="relative mb-6"><div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-2xl"></div><Maximize2 size={64} strokeWidth={1} className="text-white/80 relative z-10" /></div>
-          <p className="text-xs text-white/40 mt-2">Scanner standby</p>
+
+      {/* VALIDATING STATE */}
+      {validating && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-[#151419]/90 backdrop-blur-sm">
+          <Loader2 size={40} className="animate-spin text-white" />
+          <p className="text-[10px] mt-3 text-white font-mono tracking-widest uppercase opacity-80">Validating Data...</p>
         </div>
       )}
-      {validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-50"><Loader2 size={48} className="animate-spin text-green-500" /><p className="text-xs mt-2 text-white font-mono">MEMERIKSA...</p></div>
-      )}
-      <div className="absolute bottom-8 w-full flex justify-center z-50">
-        <button onClick={scanning ? stop : start} disabled={validating || showPopup} className={`w-14 h-14 rounded-full backdrop-blur-md border-2 transition-all duration-300 flex items-center justify-center ${permissionError ? 'border-red-500 text-red-500 bg-red-500/10' : scanning ? 'border-green-500 text-white' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}>
-          {permissionError ? <AlertCircle /> : <Scan />}
-        </button>
-      </div>
 
       <Alert
         isOpen={showPopup}
         absensiStatus={scanResult}
         setOpen={setShowPopup}
         sholatTime={sholat as unknown as string}
-        onScanUlang={handleScanUlang}
+        onScanUlang={() => {
+          setShowPopup(false);
+        }}
         initialStatus="idle"
       />
     </div>
   );
-}
+});
+
+Qr.displayName = 'Qr';
+export default Qr;

@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
-import { Info, Clock, Inbox, Loader2 } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Inbox, Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DailyPrayer } from '@/types/api';
-import { useAttendance } from '@/hooks/mobile/use-attendance'; 
+import { useAttendance } from '@/hooks/mobile/use-attendance';
 
 import { formatTime } from '@/lib/date';
 
@@ -16,70 +14,122 @@ interface HistoryProps {
   sholat: DailyPrayer;
 }
 
-export default function History({ isOpen, setIsOpen }: HistoryProps) {
+// --- LIST COMPONENT (High-End Luxury Implementation) ---
+const ListContent = ({ isLoadingHistory, historyData }: { isLoadingHistory: boolean, historyData: any[] }) => (
+  <div className="flex flex-col w-full">
+    {/* Custom scroll area with hidden scrollbar for a seamless mobile experience */}
+    <div className="max-h-[50vh] w-full overflow-y-auto overscroll-contain pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex flex-col gap-0 w-full pb-2">
+        <ul className="flex flex-col gap-3 w-full">
+          {isLoadingHistory ? (
+            <div className="flex w-full py-12 items-center justify-center gap-3 text-white/30">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-xs font-mono tracking-widest uppercase">Loading...</span>
+            </div>
+          ) : historyData.length > 0 ? (
+            historyData.map((item, idx) => (
+              <li key={idx}>
+                <div className="flex items-center w-full">
+                  {/* Student Item Card - Material Solid Surface */}
+                  <div className="flex-1 bg-[#1F1E23] rounded-2xl p-3 flex items-center gap-4 shadow-sm">
+
+                    <div className="w-11 h-11 rounded-xl bg-[#2A292F] text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-inner">
+                      {item.tbl_students.full_name.charAt(0).toUpperCase()}
+                    </div>
+
+                    <div className="flex-1 min-w-0 flex justify-between items-center gap-3">
+                      <div className="flex flex-col min-w-0">
+                        <p className="text-sm font-semibold text-white truncate leading-tight">
+                          {item.tbl_students.full_name}
+                        </p>
+                        <div className="flex items-center gap-1.5 text-[10px] text-white/40 font-mono tracking-wider uppercase mt-0.5">
+                          <span className="text-white/60">
+                            {item.tbl_students.tbl_classes?.class_name || 'N/A'}
+                          </span>
+                          <span className="opacity-20">•</span>
+                          <span className="font-mono tracking-wide">{item.tbl_students.nis}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <span className="text-white/60 font-mono text-[10px] leading-none">
+                          {formatTime(item.created_at)} WIB
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </li>
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center h-40 text-white/20 bg-[#1F1E23] rounded-3xl border-2 border-dashed border-white/5">
+              <Inbox className="w-10 h-10 mb-3 opacity-20" />
+              <p className="text-xs font-medium tracking-wide">No history available</p>
+            </div>
+          )}
+        </ul>
+      </div>
+    </div>
+  </div>
+);
+
+export default function History({ isOpen, setIsOpen, sholat }: HistoryProps) {
   const [activeTab, setActiveTab] = useState<string>('Dhuhr');
   const { historyData, isLoadingHistory, fetchHistory } = useAttendance();
+
+  useEffect(() => {
+    if (isOpen && sholat) {
+      const initialTab = sholat === 'Dhuhr' ? 'Dhuhr' : sholat === 'Asr' ? 'Asr' : 'Dhuhr';
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, sholat]);
 
   useEffect(() => {
     if (isOpen) fetchHistory(activeTab);
   }, [isOpen, activeTab, fetchHistory]);
 
-  const ListContent = () => (
-    <div className="flex flex-col h-full">
-      <div className="w-full flex items-start gap-2.5 p-3 mb-4 bg-[#1F1E23] border border-white/5 rounded-xl shadow-sm">
-        <Info className="text-white/40 w-4 h-4 shrink-0 mt-px" />
-        <p className="text-[11px] leading-relaxed text-white/60 font-medium">Menampilkan riwayat hari ini. Data direset otomatis setiap pukul 00:00 WIB.</p>
-      </div>
-
-      <ScrollArea className="h-[40vh] w-full">
-        <ul className="flex flex-col gap-2 w-full pb-2">
-          {isLoadingHistory ? (
-            <div className="flex w-full p-4 items-center justify-center gap-3 text-white/50">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm font-mono">Loading data...</span>
-            </div>
-          ) : historyData.length > 0 ? (
-            historyData.map((item, idx) => (
-              <li key={idx} className="w-full bg-[#1F1E23] border border-white/5 rounded-2xl p-3.5 flex items-center justify-between gap-3.5">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{item.tbl_students.full_name}</p>
-                  <div className="flex items-center gap-2 text-[10px] text-white/40 mt-0.5">
-                    <span className="font-mono tracking-wide">{item.tbl_students.nis}</span>
-                  </div>
-                </div>
-                <div className="font-mono tracking-wide text-[10px] text-white/40 bg-white/5 px-2 py-1 rounded shrink-0">
-                  {formatTime(item.created_at)} WIB
-                </div>
-              </li>
-            ))
-          ) : (
-            <div className="flex flex-col items-center justify-center h-40 text-white/30 bg-[#1F1E23]/50 border border-white/5 rounded-2xl border-dashed">
-              <Inbox className="w-8 h-8 mb-2 opacity-50" />
-              <p className="text-xs mt-3 font-medium tracking-wide">Belum ada riwayat kehadiran</p>
-            </div>
-          )}
-        </ul>
-      </ScrollArea>
-    </div>
-  );
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="w-[90%] max-w-95 sm:max-w-100 rounded-[16px] bg-[#151419] border-[#27272A] text-white p-6">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg">
-            <Clock className="w-5 h-5 text-white/70" /> Riwayat Kehadiran
+      <DialogContent
+        showCloseButton={false}
+        className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
+      >
+        {/* Header Section - professional English */}
+        <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
+          <DialogTitle className="text-xl font-bold tracking-tight text-white">
+            Attendance History
           </DialogTitle>
-        </DialogHeader>
+          <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
+            Attendance History Logs
+          </DialogDescription>
+        </div>
 
-        <Tabs defaultValue="Dhuhr" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-2 bg-[#1F1E23] border border-white/5 p-1 h-auto rounded-xl">
-            <TabsTrigger value="Dhuhr" className="rounded-lg py-2 data-[state=active]:bg-[#27272A] data-[state=active]:text-white text-white/50 transition-all font-medium text-xs">Dzuhur</TabsTrigger>
-            <TabsTrigger value="Asr" className="rounded-lg py-2 data-[state=active]:bg-[#27272A] data-[state=active]:text-white text-white/50 transition-all font-medium text-xs">Ashar</TabsTrigger>
-          </TabsList>
-          <TabsContent value="Dhuhr" className="mt-4"><ListContent /></TabsContent>
-          <TabsContent value="Asr" className="mt-4"><ListContent /></TabsContent>
-        </Tabs>
+        {/* Tab Navigation - Material Solid Surface */}
+        <div className="w-full bg-[#1F1E23] rounded-2xl p-1 h-12 flex items-center gap-1 mb-6 shadow-inner">
+          <button
+            onClick={() => setActiveTab('Dhuhr')}
+            className={`flex-1 h-full rounded-xl text-xs font-bold transition-all duration-200 ${activeTab === 'Dhuhr'
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'text-white/40 hover:text-white/60'
+              }`}
+          >
+            Dhuhr
+          </button>
+          <button
+            onClick={() => setActiveTab('Asr')}
+            className={`flex-1 h-full rounded-xl text-xs font-bold transition-all duration-200 ${activeTab === 'Asr'
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'text-white/40 hover:text-white/60'
+              }`}
+          >
+            Asr
+          </button>
+        </div>
+
+        <div className="mt-2">
+          <ListContent isLoadingHistory={isLoadingHistory} historyData={historyData} />
+        </div>
       </DialogContent>
     </Dialog>
   );

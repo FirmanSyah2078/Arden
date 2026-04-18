@@ -1,6 +1,7 @@
 "use client"
 
 import { Upload, Info, Clock, ShieldCheck, Trash2, Undo2, CalendarDays, Loader2, CheckCircle2, CircleDashed, Save } from "lucide-react"
+import Image from "next/image"
 import { useProfile } from "@/hooks/settings/use-profile" 
 
 export default function ProfileForm() {
@@ -38,9 +39,15 @@ export default function ProfileForm() {
 
       <div className="flex flex-col items-center justify-center space-y-5 pt-2">
         <div className="relative cursor-pointer">
-          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-black/40 transition-colors hover:border-white/20">
+          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/5 transition-colors hover:border-white/20">
             {formData.avatarUrl ? (
-              <img src={formData.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+              <Image 
+                src={formData.avatarUrl} 
+                alt="Avatar" 
+                width={80} 
+                height={80} 
+                className="h-full w-full object-cover object-center animate-in fade-in duration-500"
+              />
             ) : (
               <div className="flex items-center justify-center w-full h-full bg-linear-to-br from-white/10 to-transparent text-3xl font-medium tracking-tight text-white/40 uppercase select-none">
                 {getInitials(formData.name)}
@@ -129,7 +136,7 @@ export default function ProfileForm() {
                 id="username"
                 value={formData.username}
                 onChange={(e) => handleChange("username", e.target.value)}
-                className="w-full bg-transparent px-3 py-2 text-[13px] text-white placeholder:text-white/30 outline-none focus:outline-none shadow-none"
+                className="w-full bg-transparent px-3 py-2 text-[13px] text-white placeholder:text-white/30 outline-none focus:none shadow-none"
               />
             </div>
           </div>
