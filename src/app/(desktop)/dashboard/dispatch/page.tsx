@@ -1,4 +1,4 @@
-// src/app/(desktop)/dashboard/communications/page.tsx
+// src/app/(desktop)/dashboard/dispatch/page.tsx
 "use client";
 
 import { useCommunications, DEFAULT_WARNING_MESSAGE } from "@/hooks/communications/use-communications";
@@ -8,15 +8,15 @@ import { Switch } from "@/components/ui/switch";
 import { Save, MessageSquareWarning, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function CommunicationHubPage() {
+export default function DispatchPage() {
   const { settings, isLoading, isSaving, isDraftModified, handleChange, handleSave } = useCommunications();
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-minimal/20">
+    <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">
       <header className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-1 w-full">
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Communication Hub</h1>
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Dispatch</h1>
             <p className="text-sm text-muted-foreground leading-relaxed w-full font-inter">
               Manage notification templates and system alert formats for administrative violations.
             </p>
@@ -26,7 +26,6 @@ export default function CommunicationHubPage() {
       </header>
 
       <main className="flex-1 w-full pb-8">
-        {/* 🔥 FIX: Diubah dari max-w-3xl menjadi max-w-4xl agar seragam */}
         <div className="mx-auto max-w-4xl w-full">
           <form onSubmit={handleSave} className="space-y-6">
             <Card className="rounded-3xl border border-border/60 bg-card shadow-lg overflow-hidden">

@@ -1,4 +1,4 @@
-// src/app/(desktop)/dashboard/schedules/page.tsx
+// src/app/(desktop)/dashboard/planning/page.tsx
 "use client";
 
 import { useAcademicSchedules } from "@/hooks/schedules/use-schedules";
@@ -11,14 +11,14 @@ import { DailyPrayer } from "@/types/api";
 
 const PRAYER_LIST: DailyPrayer[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
-export default function AcademicSchedulesPage() {
+export default function PlanningPage() {
   const { weeklySchedule, isLoading, isSaving, isDraftModified, toggleDayActive, togglePrayerTracked, handleSave } = useAcademicSchedules();
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">
       <header className="space-y-6">
         <div className="flex flex-col gap-1 w-full">
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Academic Schedules</h1>
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Planning</h1>
           <p className="text-sm text-muted-foreground leading-relaxed w-full font-inter">Define active school days and mandatory tracking routines.</p>
         </div>
         <div className="h-px w-full bg-linear-to-r from-border via-border/50 to-transparent" />
@@ -38,7 +38,7 @@ export default function AcademicSchedulesPage() {
                 <div className="flex flex-col divide-y divide-border/40">
                   {weeklySchedule.map((schedule) => (
                     <div key={schedule.day} className={cn("flex flex-col md:flex-row md:items-center justify-between gap-4 py-5 px-5 sm:px-0 transition-colors duration-300", !schedule.isActive && "opacity-70", isLoading && "animate-pulse")}>
-                      <div className="flex items-center gap-4 min-w-[150px]">
+                      <div className="flex items-center gap-4 min-w-37.5">
                         <Switch disabled={isLoading} checked={schedule.isActive} onCheckedChange={(val) => toggleDayActive(schedule.day, val)} className="data-[state=checked]:bg-success" />
                         <div className="flex flex-col">
                           <span className={cn("text-[14px] font-bold font-jakarta", !schedule.isActive && "line-through text-muted-foreground")}>{schedule.day}</span>

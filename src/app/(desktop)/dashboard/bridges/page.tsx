@@ -1,4 +1,4 @@
-// src/app/(desktop)/dashboard/integrations/page.tsx
+// src/app/(desktop)/dashboard/bridges/page.tsx
 "use client";
 
 import { useDataIntegrations } from "@/hooks/integrations/use-integrations";
@@ -11,14 +11,14 @@ import { DailyPrayer } from "@/types/api";
 
 const PRAYER_LIST: DailyPrayer[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
-export default function DataIntegrationsPage() {
+export default function BridgesPage() {
   const { syncEnabled, isLoading, apiStatus, prayerRanges, bannerState, toggleApiState } = useDataIntegrations();
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">
       <header className="space-y-6">
         <div className="flex flex-col gap-1 w-full">
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Data Integrations</h1>
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Bridges</h1>
           <p className="text-sm text-muted-foreground leading-relaxed w-full font-inter">Manage third-party API connections and database synchronization.</p>
         </div>
         <div className="h-px w-full bg-linear-to-r from-border via-border/50 to-transparent" />

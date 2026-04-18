@@ -1,4 +1,4 @@
-// src/app/(desktop)/dashboard/preferences/page.tsx
+// src/app/(desktop)/dashboard/globals/page.tsx
 "use client";
 
 import { useGlobalPreferences } from "@/hooks/preferences/use-preferences";
@@ -10,7 +10,7 @@ import { Save, MapPin, Globe, Calculator, Lightbulb, CheckCircle2 } from "lucide
 import { cn } from "@/lib/utils";
 import { CityCombobox } from "@/components/dashboard/configuration/city-combobox";
 
-export default function GlobalPreferencesPage() {
+export default function GlobalsPage() {
   const { settings, isLoading, isSaving, isDraftModified, handleChange, handleSave } = useGlobalPreferences();
   const inputClass = "w-full pl-3 pr-3 h-11 text-[13px] font-medium bg-background/60 border border-border/50 hover:border-foreground/30 focus:bg-background rounded-xl shadow-inner text-foreground transition-all duration-300";
 
@@ -18,7 +18,7 @@ export default function GlobalPreferencesPage() {
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">
       <header className="space-y-6">
         <div className="flex flex-col gap-1 w-full">
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Global Preferences</h1>
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Globals</h1>
           <p className="text-sm text-muted-foreground leading-relaxed w-full font-inter">Manage core platform settings including geospatial parameters.</p>
         </div>
         <div className="h-px w-full bg-linear-to-r from-border via-border/50 to-transparent" />

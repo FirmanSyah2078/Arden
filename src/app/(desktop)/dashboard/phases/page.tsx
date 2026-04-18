@@ -1,4 +1,4 @@
-// src/app/(desktop)/dashboard/menstrual/page.tsx
+// src/app/(desktop)/dashboard/phases/page.tsx
 "use client";
 
 import { useMenstrualLogic } from "@/hooks/menstrual/use-menstrual";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Save, CalendarDays, CalendarCheck, CalendarRange, ClockAlert, Activity, Lightbulb, CheckCircle2, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function MenstrualLogicPage() {
+export default function PhasesPage() {
   const { settings, isLoading, isSaving, isDraftModified, bannerState, handleChange, handleBlur, handleSave } = useMenstrualLogic();
 
   let min = Number(settings.minDuration) || 1; 
@@ -26,11 +26,11 @@ export default function MenstrualLogicPage() {
   const inputPremiumClass = "pl-3 pr-10 h-11 text-lg font-bold bg-background/60 border border-border/50 hover:border-foreground/30 focus:bg-background focus-visible:bg-background focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-foreground/50 rounded-xl shadow-inner text-foreground transition-all duration-300 font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-minimal/20">
+    <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">
       <header className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-1 w-full">
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Menstrual Logic</h1>
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground font-jakarta">Phases</h1>
             <p className="text-sm text-muted-foreground leading-relaxed w-full font-inter">
               Configure biological parameters for female students' menstrual cycles. These settings affect the core algorithm.
             </p>
@@ -40,7 +40,6 @@ export default function MenstrualLogicPage() {
       </header>
 
       <main className="flex-1 w-full pb-8">
-        {/* 🔥 FIX: Diubah dari max-w-3xl menjadi max-w-4xl agar seragam */}
         <div className="mx-auto max-w-4xl w-full">
           <form onSubmit={handleSave} className="space-y-6">
             <Card className="rounded-3xl border border-border/60 bg-card shadow-lg overflow-hidden">

@@ -51,33 +51,33 @@ export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]
       label: "Structure", // Fondasi Sistem
       items: [
         {
-          title: "Planning", // Menggantikan Academic Schedules
-          url: "/dashboard/schedules",
-          icon: GanttChart, 
+          title: "Planning",
+          url: "/dashboard/planning",
+          icon: GanttChart,
           variant: "default"
         },
         {
-          title: "Phases", // Menggantikan Menstrual Logic
-          url: "/dashboard/menstrual",
-          icon: Waves, 
+          title: "Phases",
+          url: "/dashboard/phases",
+          icon: Waves,
           variant: "default"
         },
         {
-          title: "Dispatch", // Menggantikan Communication Hub
-          url: "/dashboard/communications",
-          icon: Satellite, 
+          title: "Dispatch",
+          url: "/dashboard/dispatch",
+          icon: Satellite,
           variant: "default"
         },
         {
-          title: "Bridges", // Menggantikan Data Integrations
-          url: "/dashboard/integrations",
-          icon: Waypoints, 
+          title: "Bridges",
+          url: "/dashboard/bridges",
+          icon: Waypoints,
           variant: "default"
         },
         {
-          title: "Globals", // Menggantikan Global Preferences
-          url: "/dashboard/preferences",
-          icon: Hexagon, 
+          title: "Globals",
+          url: "/dashboard/globals",
+          icon: Hexagon,
           variant: "default"
         },
       ],
