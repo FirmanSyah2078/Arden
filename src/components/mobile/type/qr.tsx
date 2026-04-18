@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Scan, Loader2, QrCode, User } from 'lucide-react';
+import { Loader2, QrCode, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
 import { Alert } from '../popups/alert';
@@ -28,11 +28,11 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
-  // --- IMPERATIVE HANDLE: Allows parent component to control scanner lifecycle ---
   useImperativeHandle(ref, () => ({
     start: async () => {
       if (!cameraId) return;
       try {
+        // ELEMENT MUST EXIST IN DOM BEFORE THIS CALL
         const scanner = new Html5Qrcode('reader');
         html5QrCodeRef.current = scanner;
 
@@ -90,7 +90,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
     })();
   }, []);
 
-  // --- VALIDATION PIPELINE: Decode QR -> Extract ID -> API Validation ---
   const handleScanSuccess = async (decodedText: string) => {
     if (validating || showPopup) return;
     try {
@@ -126,33 +125,31 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
   };
 
   return (
-    <div className="w-full h-full relative overflow-hidden">
-      <div id="reader" className="w-full h-full absolute inset-0" />
+    <div className="w-full h-full relative overflow-hidden bg-[#151419] flex flex-col items-center justify-center p-4 pb-32">
 
-      {/* Viewfinder Overlay */}
-      {isCameraActive && !validating && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-          <div className="relative w-64 h-64">
-            {/* Masker Gelap - FULL SIKU */}
-            <div className="absolute inset-0 rounded-none shadow-[0_0_0_9999px_rgba(21,20,25,0.7)]" />
+      {/* CAMERA WINDOW: Always in DOM but visually hidden when inactive */}
+      <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-500 ${isCameraActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+        <div id="reader" className="w-full h-full absolute inset-0" />
 
-            {/* Frame: Subtle Zinc Gray - FULL SIKU */}
-            <div className="absolute inset-0 border-[1px] border-zinc-500/30 rounded-none" />
-
-            {/* Corner Accents: Putih Siku-Siku Tajam */}
-            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white rounded-none" />
-            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white rounded-none" />
-            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white rounded-none" />
-            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white rounded-none" />
-
-            {/* Laser Line */}
-            <div className="absolute inset-x-0 top-0 h-[1px] bg-linear-to-r from-transparent via-zinc-300 to-transparent shadow-[0_0_8px_rgba(209,203,203,0.6)] animate-scan-line" />
+        {/* Viewfinder Overlay - Only show when active */}
+        {isCameraActive && !validating && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+            <div className="relative w-48 h-48">
+              <div className="absolute inset-0 rounded-none shadow-[0_0_0_9999px_rgba(21,20,25,0.6)]" />
+              <div className="absolute inset-0 border border-zinc-500/30 rounded-none" />
+              <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white rounded-none" />
+              <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white rounded-none" />
+              <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white rounded-none" />
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white rounded-none" />
+              <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-zinc-300 to-transparent shadow-[0_0_8px_rgba(209,203,203,0.6)] animate-scan-line" />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
+      {/* IDLE STATE: Rendered as an absolute overlay when camera is inactive */}
       {!isCameraActive && !validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500 pb-20">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500 px-6 text-center pb-20">
           <div className="flex flex-col items-center text-center">
             <div className="relative flex items-center justify-center mb-6">
               <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
@@ -169,7 +166,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
               </div>
             </div>
             <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">QR Scanner</h3>
-            <p className="text-white/40 text-xs max-w-55 leading-relaxed text-center">
+            <p className="text-white/40 text-xs max-w-xs leading-relaxed">
               Point the camera at the QR Code. <br />
               Press <span className="text-indigo-400 font-bold">Start Cam</span> to begin.
             </p>
@@ -177,10 +174,11 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         </div>
       )}
 
+      {/* VALIDATING STATE */}
       {validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-[#151419]">
-          <Loader2 size={48} className="animate-spin text-white" />
-          <p className="text-xs mt-4 text-white font-mono tracking-widest uppercase opacity-80">Validating Data...</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-[#151419]/90 backdrop-blur-sm">
+          <Loader2 size={40} className="animate-spin text-white" />
+          <p className="text-[10px] mt-3 text-white font-mono tracking-widest uppercase opacity-80">Validating Data...</p>
         </div>
       )}
 
