@@ -20,7 +20,7 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
       id: 'edit-profile',
       title: 'Manage Account Profile',
       description: 'Update identity information and account details',
-      icon: <User className="w-5 h-5" />,
+      icon: <User className="w-5 h-5 text-white" />,
       action: () => setActivePopup('edit-profile'),
     },
   ];
@@ -29,7 +29,7 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
     <>
       {/* Main Settings Hub Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent 
+        <DialogContent
           showCloseButton={false}
           className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
         >
@@ -66,11 +66,11 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
       </Dialog>
 
       {/* Sub-Popup Routing Management */}
-      <EditProfile 
-        isOpen={activePopup === 'edit-profile'} 
+      <EditProfile
+        isOpen={activePopup === 'edit-profile'}
         setIsOpen={(val: boolean) => {
           if (!val) setActivePopup('none');
-        }} 
+        }}
       />
     </>
   );

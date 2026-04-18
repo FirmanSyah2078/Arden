@@ -17,7 +17,7 @@ export default function MobilePage() {
   const [showHistory, setShowHistory] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { activeScanner } = useSholat();
   const { handleLogout } = useLogout();
 
@@ -31,7 +31,7 @@ export default function MobilePage() {
   return (
     <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
       <UnifiedHeader />
-      
+
       <div className="mt-4 mb-6">
         <StatusCard />
       </div>
@@ -62,7 +62,7 @@ export default function MobilePage() {
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white/40 flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
                     <LucideHistory size={14} />
                   </div>
                   <div className="flex flex-col items-start">
@@ -77,7 +77,7 @@ export default function MobilePage() {
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white/40 flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
                     <HelpCircle size={14} />
                   </div>
                   <div className="flex flex-col items-start">
@@ -92,7 +92,7 @@ export default function MobilePage() {
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white/40 flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
                     <LucideSettings size={14} />
                   </div>
                   <div className="flex flex-col items-start">
@@ -109,7 +109,7 @@ export default function MobilePage() {
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white/40 flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
                     <LucideLogOut size={14} />
                   </div>
                   <div className="flex flex-col items-start">
@@ -129,14 +129,14 @@ export default function MobilePage() {
         sholat={activeScanner}
       />
 
-      <HelpGuide 
-        isOpen={isHelpOpen} 
-        setIsOpen={setIsHelpOpen} 
+      <HelpGuide
+        isOpen={isHelpOpen}
+        setIsOpen={setIsHelpOpen}
       />
 
-      <SettingsHub 
-        isOpen={isSettingsOpen} 
-        setIsOpen={setIsSettingsOpen} 
+      <SettingsHub
+        isOpen={isSettingsOpen}
+        setIsOpen={setIsSettingsOpen}
       />
     </div>
   );
