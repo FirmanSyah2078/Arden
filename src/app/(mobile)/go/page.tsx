@@ -56,7 +56,7 @@ export default function MobilePage() {
       )}
 
       {isMenuOpen && (
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-50 w-52 animate-in slide-in-from-bottom-8 duration-300">
+        <div className="absolute bottom-24 right-6 z-50 w-52 animate-in slide-in-from-bottom-8 duration-300">
           <div className="bg-[#1F1E23] border border-white/5 rounded-3xl p-2 shadow-2xl">
             <div className="flex flex-col gap-1">
               <button
