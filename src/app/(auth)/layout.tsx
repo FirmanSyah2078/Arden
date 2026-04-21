@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/sonner";
 
 // Ini opsional: Untuk mengganti judul Tab browser
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default function LoginLayout({
     <section>
       {/* Render halaman page.tsx di sini */}
       {children}
+      <Toaster />
     </section>
   );
 }

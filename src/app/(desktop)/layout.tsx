@@ -6,6 +6,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 import { DashboardProvider } from "@/contexts/cont-dashboard"
+import { Toaster } from "@/components/ui/sonner"
 
 export default async function DesktopLayout({
   children,
@@ -30,6 +31,8 @@ export default async function DesktopLayout({
           </div>
 
         </SidebarInset>
+        {/* Tambahkan Toaster di sini */}
+        <Toaster />
       </SidebarProvider>
     </DashboardProvider>
   )

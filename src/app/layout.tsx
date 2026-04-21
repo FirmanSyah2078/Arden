@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 // Kita ganti ke next/font/google
 import { Geist, Inter, Space_Grotesk, Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
 
 // 1. GEIST (Default Sans)
 const geist = Geist({
@@ -60,7 +59,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         {children}
-        <Toaster />
       </body>
     </html>
   );
