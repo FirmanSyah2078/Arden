@@ -10,48 +10,60 @@ import {
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
-const Toaster = ({ ...props }: ToasterProps) => {
+type CustomToasterProps = ToasterProps & {
+  variant?: "default" | "mobile"
+}
+
+const Toaster = ({ variant = "default", ...props }: CustomToasterProps) => {
   const { theme = "system" } = useTheme()
+  const isMobile = variant === "mobile"
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
-      className="toaster group"
-      position="top-right" // Tetap di Kanan Atas
+      duration={4000} 
+      theme={isMobile ? "dark" : (theme as ToasterProps["theme"])}
+      position={isMobile ? "top-center" : "top-right"} 
+      className={`toaster group ${isMobile ? "absolute mt-4 w-full flex justify-center pointer-events-none" : ""}`}
       
       toastOptions={{
         classNames: {
-          toast:
-            // 🔥 KUNCI MINIMALIS:
-            // 1. rounded-full (Bentuk Kapsul)
-            // 2. bg-black/80 + backdrop-blur (Transparan Glassy)
-            // 3. items-center (Ikon & Teks sejajar tengah)
-            // 4. px-6 py-3 (Padding pas, ngga kegedean)
-            "group toast group-[.toaster]:bg-black/80 group-[.toaster]:backdrop-blur-md group-[.toaster]:text-white group-[.toaster]:border-white/10 group-[.toaster]:shadow-2xl font-sans flex items-center gap-3 px-5 py-3 rounded-full w-fit ml-auto",
+          toast: [
+            "!min-h-0 !border-0 !shadow-[0_15px_40px_-10px_rgba(0,0,0,0.8)] !p-0", 
+            "flex items-center !gap-2.5 !px-4 !py-2 !rounded-[12px] w-fit", 
+            "!relative !overflow-hidden !bg-[#1A191E] !text-white",
+            isMobile ? "mx-auto pointer-events-auto" : "ml-auto",
+            
+            // Animasi Garis Kilat Bawah
+            "after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:animate-toast-progress"
+          ].join(" "),
           
-          description: "hidden", // Sembunyikan description terpisah (kita gabung aja)
+          // Warna Kilat RGB Bawah
+          success: "after:bg-gradient-to-r after:from-transparent after:via-emerald-400 after:to-emerald-300 after:shadow-[0_0_15px_#34d399]",
+          error: "after:bg-gradient-to-r after:from-transparent after:via-red-500 after:to-red-400 after:shadow-[0_0_15px_#f87171]",
+          warning: "after:bg-gradient-to-r after:from-transparent after:via-amber-500 after:to-amber-400 after:shadow-[0_0_15px_#fbbf24]",
+          info: "after:bg-gradient-to-r after:from-transparent after:via-blue-500 after:to-blue-400 after:shadow-[0_0_15px_#60a5fa]",
           
-          title: "text-[13px] font-medium text-gray-200 tracking-wide", // Teks utama kecil & rapi
-          
-          actionButton: "bg-white text-black text-xs px-3 py-1 rounded-full font-medium ml-4",
-          cancelButton: "bg-white/10 text-gray-300 text-xs px-3 py-1 rounded-full ml-2",
+          description: "!hidden", 
+          title: "!text-[13px] !font-medium !text-gray-200 !tracking-wide !leading-none !m-0", 
+          actionButton: "!bg-white !text-black !text-xs !px-3 !py-1 !rounded-[8px] !font-medium !ml-3",
+          cancelButton: "!bg-white/10 !text-gray-300 !text-xs !px-3 !py-1 !rounded-[8px] !ml-2",
         },
       }}
 
-      // 🔥 IKON SIMPEL (Tanpa Background Aneh-aneh)
+      // 🔥 FIX: Menyuntikkan Library Animasi Custom Arden ke Masing-Masing Ikon!
       icons={{
-        success: <CheckCircle2 className="size-4 text-emerald-400" />,
-        info: <Info className="size-4 text-blue-400" />,
-        warning: <AlertTriangle className="size-4 text-amber-400" />,
-        error: <XCircle className="size-4 text-red-400" />,
-        loading: <Loader2 className="size-4 text-gray-400 animate-spin" />,
+        success: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 ar-tada-loop" />,
+        info: <Info className="w-3.5 h-3.5 text-blue-400 ar-float-loop" />,
+        warning: <AlertTriangle className="w-3.5 h-3.5 text-amber-400 ar-shake-loop" />,
+        error: <XCircle className="w-3.5 h-3.5 text-red-400 ar-beat-loop" />,
+        loading: <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />,
       }}
 
-      // Override style default biar ngga kaku
       style={
         {
+          "--toast-padding": "0px",
+          "--toast-border-radius": "12px",
           "--normal-bg": "transparent",
-          "--normal-border": "rgba(255,255,255,0.05)",
         } as React.CSSProperties
       }
       {...props}

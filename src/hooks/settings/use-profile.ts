@@ -220,10 +220,10 @@ export function useProfile() {
   return {
     formData, originalData, isLoading, isSubmitting, isSaveDisabled, isDirty,
     isAvatarRemoved, hasOriginalAvatar,
-    getInitials, 
+    getInitials,
     handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
     handleFileChange,
-    fileInputRef,       
-    handleUploadClick   
+    fileInputRef,
+    handleUploadClick
   }
 }

@@ -17,6 +17,7 @@ export default function LoginLayout({
     <section>
       {/* Render halaman page.tsx di sini */}
       {children}
+
       <Toaster />
     </section>
   );
