@@ -7,17 +7,17 @@ import { UnifiedHeader } from '@/components/mobile/ui/unified-header';
 import { Manager } from '@/components/mobile/core/manager';
 import { StatusCard } from '@/components/mobile/core/status-card';
 import HistoryPopup from '@/components/mobile/popups/history';
-import SettingsHub from '@/components/mobile/settings/settings-hub';
+import EditProfile from '@/components/mobile/settings/edit-profile';
 import HelpGuide from '@/components/mobile/settings/help-guide';
 import { useSholat } from '@/hooks/mobile/use-sholat';
-import { History as LucideHistory, Settings as LucideSettings, LogOut as LucideLogOut, HelpCircle } from 'lucide-react';
+import { History as LucideHistory, LogOut as LucideLogOut, HelpCircle, User } from 'lucide-react';
 import { useLogout } from '@/hooks/auth/use-logout';
 import { DailyPrayer } from '@/types/api';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function MobilePage() {
   const [showHistory, setShowHistory] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { activeScanner } = useSholat();
@@ -59,6 +59,22 @@ export default function MobilePage() {
         <div className="absolute bottom-24 right-6 z-50 w-52 animate-in slide-in-from-bottom-8 duration-300">
           <div className="bg-[#1F1E23] border border-white/5 rounded-3xl p-2 shadow-2xl">
             <div className="flex flex-col gap-1">
+
+              <button
+                onClick={() => { setIsProfileOpen(true); setIsMenuOpen(false); }}
+                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
+                    <User size={14} />
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Profile</span>
+                    <span className="text-[10px] text-white/30 leading-tight">Manage account identity</span>
+                  </div>
+                </div>
+              </button>
+
               <button
                 onClick={() => { setShowHistory(true); setIsMenuOpen(false); }}
                 className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
@@ -85,21 +101,6 @@ export default function MobilePage() {
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Guide</span>
                     <span className="text-[10px] text-white/30 leading-tight">Operational guidelines</span>
-                  </div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => { setIsSettingsOpen(true); setIsMenuOpen(false); }}
-                className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[#2A292F] transition-all active:scale-[0.98] group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#2A292F] text-white flex items-center justify-center border-none group-hover:bg-[#35343B] group-hover:text-white transition-all shrink-0 shadow-inner">
-                    <LucideSettings size={14} />
-                  </div>
-                  <div className="flex flex-col items-start">
-                    <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">Settings</span>
-                    <span className="text-[10px] text-white/30 leading-tight">Application preferences</span>
                   </div>
                 </div>
               </button>
@@ -136,9 +137,9 @@ export default function MobilePage() {
         setIsOpen={setIsHelpOpen}
       />
 
-      <SettingsHub
-        isOpen={isSettingsOpen}
-        setIsOpen={setIsSettingsOpen}
+      <EditProfile
+        isOpen={isProfileOpen}
+        setIsOpen={setIsProfileOpen}
       />
     </div>
   );
