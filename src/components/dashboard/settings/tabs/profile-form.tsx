@@ -9,8 +9,8 @@ export default function ProfileForm() {
     isAvatarRemoved, hasOriginalAvatar,
     getInitials, handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
     handleFileChange,
-    fileInputRef,       
-    handleUploadClick   
+    fileInputRef,
+    handleUploadClick
   } = useProfile()
 
   if (isLoading) {

@@ -1,20 +1,25 @@
 "use client"
 
 import { CycleQualityChart } from "./cycle-quality-chart"
-import { cycleQualityData } from "@/lib/dummy-data"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2 } from "lucide-react"
 
-export function BottomGrids() {
-  return (
-    // Kita ubah grid-cols menjadi maksimal 2 (md:grid-cols-2)
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      
-      {/* 1. KUALITAS SIKLUS (Penting untuk visualisasi utama) */}
-      <CycleQualityChart data={cycleQualityData} />
+// Tambahkan interface untuk props
+interface CycleQualityItem {
+  status: string;
+  count: number;
+  fill: string;
+}
 
-      {/* 2. INSIGHT KONDISI (Keterangan teks untuk memperjelas grafik) */}
-      <Card className="bg-[#151419] border-white/5 shadow-none font-inter h-full">
+export function BottomGrids({ cycleData }: { cycleData: CycleQualityItem[] }) {
+  return (
+    <div className="grid grid-cols-1 gap-4">
+      
+      {/* 1. KUALITAS SIKLUS (Menerima data dari Parent) */}
+      <CycleQualityChart data={cycleData} />
+
+      {/* 2. INSIGHT KONDISI */}
+      <Card className="bg-[#151419] border-white/5 shadow-none font-inter h-full outline-none ring-0">
         <CardHeader className="py-3 px-5 flex flex-row items-center justify-between space-y-0">
           <CardTitle className="text-[11px] font-bold text-white/70 uppercase tracking-widest">
             Kondisi Haid Hari Ini
@@ -40,7 +45,7 @@ export function BottomGrids() {
           </div>
 
           <p className="mt-4 text-[10px] italic text-muted-foreground font-jakarta">
-            *Data ini disinkronkan otomatis dengan laporan harian per kelas.
+            *Data disinkronkan otomatis dengan laporan harian per kelas.
           </p>
         </CardContent>
       </Card>

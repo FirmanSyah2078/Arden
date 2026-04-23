@@ -528,7 +528,6 @@
   --mobile-muted: #b3b3b3;
 
   /* --- CYCLE QUALITY --- */
-  /* --- CYCLE QUALITY --- */
   --minimal: oklch(0.623 0.214 259.815); /* Setara blue-500 */
   --standard: oklch(0.696 0.17 162.48);  /* Setara emerald-500 */
   --maximal: oklch(0.705 0.213 47.604);  /* Setara orange-500 */
