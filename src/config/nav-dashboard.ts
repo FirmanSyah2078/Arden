@@ -6,6 +6,7 @@ import {
   BookOpen,
   ShieldAlert,
   Eye,
+  Inbox,
   Terminal,  // Icon untuk Logs
   GanttChart,   // Untuk Planning
   Waves,        // Untuk Phases
@@ -44,6 +45,7 @@ export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]
             { title: "Users", url: "/dashboard/directory/users" },
           ]
         },
+        { title: "Gatekeeper", url: "/dashboard/gatekeeper", icon: Inbox, variant: "default" },
         { title: "Recapitulation", url: "/dashboard/rekapitulasi", icon: FileText, variant: "default" },
       ],
     },

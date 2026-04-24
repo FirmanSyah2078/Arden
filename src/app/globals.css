@@ -401,6 +401,24 @@
   }
 
   /* -------------------------------------------------------------------------
+     SMOOTH SCROLLBAR (Untuk Grafik/Chart horizontal yang elegan)
+     ------------------------------------------------------------------------- */
+  .smooth-scrollbar::-webkit-scrollbar {
+    height: 6px; /* Tinggi scrollbar horizontal yang tipis */
+  }
+  .smooth-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0 24px; /* Memberi jarak agar scrollbar tidak mentok pinggir banget */
+  }
+  .smooth-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+  .smooth-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* -------------------------------------------------------------------------
      SIDEBAR SHINE (Efek kilapan kaca melintas)
      -------------------------------------------------------------------------
      Cocok untuk: Menu Sidebar yang sedang Aktif, Kartu Premium, atau Tombol.
