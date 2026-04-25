@@ -8,7 +8,7 @@ const ALADHAN_API_URL = process.env.NEXT_PUBLIC_API_TIME_SHOLAT || "https://api.
 
 interface ExtendedPrayerTimes extends PrayerTimes { Sunrise: string }
 
-export function useDataIntegrations() {
+export function usealadhan() {
   const [syncEnabled, setSyncEnabled] = useState(true);
   const [geoConfig, setGeoConfig] = useState({ city: "", country: "", method: "" });
   

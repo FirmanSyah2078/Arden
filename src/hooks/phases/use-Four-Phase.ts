@@ -11,7 +11,7 @@ export interface MenstrualSettings {
   overLimit: number | string;
 }
 
-export function useMenstrualLogic() {
+export function useFourPhase() {
   const [settings, setSettings] = useState<MenstrualSettings>({
     minDuration: 5, standardDuration: 7, maxDuration: 10, overLimit: 30,
   });

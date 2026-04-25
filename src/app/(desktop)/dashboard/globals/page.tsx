@@ -1,7 +1,7 @@
 // src/app/(desktop)/dashboard/globals/page.tsx
 "use client";
 
-import { useGlobalPreferences } from "@/hooks/preferences/use-preferences";
+import { usegeographic } from "@/hooks/globals/use-geographic";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { CityCombobox } from "@/components/dashboard/configuration/city-combobox";
 
 export default function GlobalsPage() {
-  const { settings, isLoading, isSaving, isDraftModified, handleChange, handleSave } = useGlobalPreferences();
+  const { settings, isLoading, isSaving, isDraftModified, handleChange, handleSave } = usegeographic();
   const inputClass = "w-full pl-3 pr-3 h-11 text-[13px] font-medium bg-background/60 border border-border/50 hover:border-foreground/30 focus:bg-background rounded-xl shadow-inner text-foreground transition-all duration-300";
 
   return (

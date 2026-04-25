@@ -9,7 +9,7 @@ export interface DaySchedule {
   trackedPrayers: DailyPrayer[];
 }
 
-export function useAcademicSchedules() {
+export function useRoutine() {
   const defaultWeekly: DaySchedule[] = [
     { day: "Monday", isActive: true, trackedPrayers: ["Dhuhr", "Asr"] },
     { day: "Tuesday", isActive: true, trackedPrayers: ["Dhuhr", "Asr"] },

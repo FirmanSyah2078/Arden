@@ -1,7 +1,7 @@
 // src/app/(desktop)/dashboard/bridges/page.tsx
 "use client";
 
-import { useDataIntegrations } from "@/hooks/integrations/use-integrations";
+import { usealadhan } from "@/hooks/bridges/use-aladhan";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -12,7 +12,7 @@ import { DailyPrayer } from "@/types/api";
 const PRAYER_LIST: DailyPrayer[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
 export default function BridgesPage() {
-  const { syncEnabled, isLoading, apiStatus, prayerRanges, bannerState, toggleApiState } = useDataIntegrations();
+  const { syncEnabled, isLoading, apiStatus, prayerRanges, bannerState, toggleApiState } = usealadhan();
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">

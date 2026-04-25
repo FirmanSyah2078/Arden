@@ -1,7 +1,7 @@
 // src/app/(desktop)/dashboard/phases/page.tsx
 "use client";
 
-import { useMenstrualLogic } from "@/hooks/menstrual/use-menstrual";
+import { useFourPhase } from "@/hooks/phases/use-Four-Phase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,7 @@ import { Save, CalendarDays, CalendarCheck, CalendarRange, ClockAlert, Activity,
 import { cn } from "@/lib/utils";
 
 export default function PhasesPage() {
-  const { settings, isLoading, isSaving, isDraftModified, bannerState, handleChange, handleBlur, handleSave } = useMenstrualLogic();
+  const { settings, isLoading, isSaving, isDraftModified, bannerState, handleChange, handleBlur, handleSave } = useFourPhase();
 
   let min = Number(settings.minDuration) || 1; 
   let std = Number(settings.standardDuration) || (min + 1);

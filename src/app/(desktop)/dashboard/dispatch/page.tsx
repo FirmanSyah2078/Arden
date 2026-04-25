@@ -1,7 +1,7 @@
 // src/app/(desktop)/dashboard/dispatch/page.tsx
 "use client";
 
-import { useCommunications, DEFAULT_WARNING_MESSAGE } from "@/hooks/communications/use-communications";
+import { useCommunications, DEFAULT_WARNING_MESSAGE } from "@/hooks/dispatch/use-communications";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";

@@ -1,7 +1,7 @@
 // src/app/(desktop)/dashboard/planning/page.tsx
 "use client";
 
-import { useAcademicSchedules } from "@/hooks/schedules/use-schedules";
+import { useRoutine } from "@/hooks/planning/use-routine";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { DailyPrayer } from "@/types/api";
 const PRAYER_LIST: DailyPrayer[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
 export default function PlanningPage() {
-  const { weeklySchedule, isLoading, isSaving, isDraftModified, toggleDayActive, togglePrayerTracked, handleSave } = useAcademicSchedules();
+  const { weeklySchedule, isLoading, isSaving, isDraftModified, toggleDayActive, togglePrayerTracked, handleSave } = useRoutine();
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">

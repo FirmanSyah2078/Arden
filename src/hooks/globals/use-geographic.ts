@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { INDONESIAN_CITIES } from "@/lib/indonesia-cities";
 
-export function useGlobalPreferences() {
+export function usegeographic() {
   const [settings, setSettings] = useState({ country: "Indonesia", city: "Kota Blitar / Jawa Timur", timezone: "Asia/Jakarta", method: "20" });
   const [savedCity, setSavedCity] = useState("Kota Blitar / Jawa Timur");
   const [isLoading, setIsLoading] = useState(true);
