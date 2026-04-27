@@ -17,6 +17,24 @@ export interface ManualProps {
     onScrollDirectionChange?: (visible: boolean) => void;
 }
 
+// --- COMPONENT: SKELETON ITEM (High-End Shimmer) ---
+const SkeletonItem = () => (
+    <div className="w-full bg-[#1F1E23] border border-white/5 rounded-2xl p-4 flex items-center gap-4 animate-pulse">
+        <div className="w-11 h-11 rounded-xl bg-[#2A292F] relative overflow-hidden shrink-0">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
+        </div>
+        <div className="flex-1 space-y-2">
+            <div className="h-3 bg-[#2A292F] rounded-full w-1/2 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
+            </div>
+            <div className="h-2 bg-[#2A292F] rounded-full w-1/3 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
+            </div>
+        </div>
+        <div className="w-4 h-4 rounded-full bg-[#2A292F] shrink-0" />
+    </div>
+);
+
 // --- COMPONENT 1: SEARCH BAR (Symmetry Outline Version) ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
     <div className="relative mb-6 flex-none z-20 px-1">
@@ -37,14 +55,14 @@ export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: 
                 {search && (
                     <button
                         onClick={() => setSearch('')}
-                        className="p-1.5 rounded-lg bg-[#2A292F] hover:bg-[#35343B] text-white/40 hover:text-white transition-all active:scale-90"
+                        className="p-1.5 rounded-lg bg-[#2A292F] hover:bg-[#35343B] text-zinc-400 hover:text-white transition-all active:scale-90"
                     >
                         <X size={14} />
                     </button>
                 )}
                 {isLoading && (
-                    <div className="w-8 h-8 flex items-center justify-center shrink-0 rounded-lg bg-white/10 ml-1">
-                        <Loader2 size={16} className="text-white/60 animate-spin shrink-0" />
+                    <div className="w-8 h-8 flex items-center justify-center shrink-0 rounded-lg bg-zinc-800/50 ml-1">
+                        <Loader2 size={16} className="text-zinc-400 animate-spin shrink-0" />
                     </div>
                 )}
             </div>
@@ -74,35 +92,66 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
 
             {!search && !isFocused && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-20 animate-in fade-in duration-500">
-                    <div className="relative mb-6">
-                        <div className="absolute inset-0 blur-2xl bg-indigo-500/20 rounded-full" />
-                        <div className="relative flex items-center justify-center -space-x-3">
-                            <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0s' }}>
-                                <User size={16} className="text-white/20" />
-                            </div>
-                            <div className="w-12 h-12 rounded-full border-2 border-[#151419] bg-[#27272A] flex items-center justify-center z-20 scale-110 shadow-xl ar-float-loop" style={{ animationDelay: '0.2s' }}>
-                                <Search size={20} className="text-white/60" />
-                            </div>
-                            <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0.4s' }}>
-                                <User size={16} className="text-white/20" />
+                    <style>{`
+                        @keyframes symmetry-float {
+                            0%, 100% { transform: translateY(0px); }
+                            50% { transform: translateY(-8px); }
+                        }
+                        @keyframes symmetry-shine {
+                            0% { transform: translateX(-150%) skewX(-20deg); }
+                            100% { transform: translateX(150%) skewX(-20deg); }
+                        }
+                        .animate-symmetry-float {
+                            animation: symmetry-float 4s ease-in-out infinite;
+                        }
+                        .animate-symmetry-shine {
+                            animation: symmetry-shine 5s linear infinite;
+                        }
+                        @keyframes shimmer {
+                            100% { transform: translateX(100%); }
+                        }
+                    `}</style>
+                    <div className="relative mb-8">
+                        {/* Identity Badge Anchor */}
+                        <div className="relative flex items-center justify-center">
+                            <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full scale-150" />
+                            <div className="relative w-24 h-24 rounded-3xl bg-[#1F1E23] border border-white/10 flex items-center justify-center shadow-2xl animate-symmetry-float overflow-hidden">
+                                {/* The Shine Effect */}
+                                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-symmetry-shine" />
+                                <User size={32} className="text-zinc-400 relative z-10" />
                             </div>
                         </div>
                     </div>
-                    <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">Manual Search</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Enter name or NIS to search for student data manually.</p>
+                    <h3 className="text-white font-bold text-xl mb-2 tracking-tight">Manual Search</h3>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium">
+                        Enter student name or NIS to access the attendance record manually.
+                    </p>
                 </div>
             )}
 
-            {search && data.length > 0 && (
+            {isLoading && (
+                <div className="h-full w-full pr-3 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="py-2 px-1 flex justify-between items-center opacity-100 transition-all duration-300">
+                        <span className="text-[10px] font-bold capitalize tracking-wide text-white/30">Searching...</span>
+                    </div>
+                    <ul className="flex flex-col gap-3 pb-8 pt-1">
+                        {[...Array(6)].map((_, i) => (
+                            <SkeletonItem key={i} />
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {search && !isLoading && data.length > 0 && (
                 <div
                     onScroll={handleScroll}
                     onTouchStart={() => (document.activeElement as HTMLElement)?.blur()}
                     className="h-full w-full pr-3 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
-                    <div className="py-2 px-1 flex justify-between items-center opacity-100 transition-all duration-300">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Search Results</span>
-                        <span className="text-[10px] font-medium text-white">{data.length} Students found</span>
-                    </div>
+                                    <div className="py-2 px-1 flex justify-between items-center opacity-100 transition-all duration-300">
+                                        <span className="text-[10px] font-bold capitalize tracking-wide text-white/30">Search results</span>
+                                        <span className="text-[10px] font-medium text-white">{data.length} Students found</span>
+                                    </div>
 
                     <ul className="flex flex-col gap-3 pb-8 pt-1">
                         {data.map((item, index) => (
@@ -119,7 +168,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                                         {item.full_name.charAt(0)}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-white truncate group-hover:text-white transition-colors"> {item.full_name} </p>
+                                        <p className="text-sm font-semibold text-white truncate group-hover:text-white transition-colors capitalize"> {item.full_name} </p>
                                         <div className="flex items-center gap-2 text-[10px] text-white/30 mt-0.5">
                                             <span className="bg-white/5 px-1.5 py-0.5 rounded-md uppercase tracking-wider font-medium text-white/50"> {item.class_name} </span>
                                             <span className="opacity-20">•</span>
