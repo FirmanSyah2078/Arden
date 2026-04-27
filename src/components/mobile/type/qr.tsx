@@ -150,19 +150,32 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
       {/* IDLE STATE: Rendered as an absolute overlay when camera is inactive */}
       {!isCameraActive && !validating && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500 px-6 text-center pb-20">
+          <style>{`
+            @keyframes symmetry-float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-8px); }
+            }
+            .animate-symmetry-float {
+                animation: symmetry-float 4s ease-in-out infinite;
+            }
+          `}</style>
           <div className="flex flex-col items-center text-center">
             <div className="relative flex items-center justify-center mb-6">
-              <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute inset-0 bg-zinc-500/10 rounded-full blur-3xl" />
               <div className="relative flex items-center justify-center -space-x-3">
-                <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0s' }}>
-                  <User size={16} className="text-white/20" />
-                </div>
-                <div className="w-12 h-12 rounded-full border-2 border-[#151419] bg-[#27272A] flex items-center justify-center z-20 scale-110 shadow-xl ar-float-loop" style={{ animationDelay: '0.2s' }}>
-                  <QrCode size={20} className="text-white/60" />
-                </div>
-                <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0.4s' }}>
-                  <User size={16} className="text-white/20" />
-                </div>
+                {[
+                    { icon: User, delay: '0s' },
+                    { icon: QrCode, delay: '0.2s' },
+                    { icon: User, delay: '0.4s' }
+                ].map((item, i) => (
+                    <div 
+                        key={i}
+                        className={`relative w-12 h-12 rounded-full bg-zinc-800 border border-black flex items-center justify-center shadow-xl animate-symmetry-float overflow-hidden transition-all ${i === 1 ? 'z-20 scale-110' : 'z-10 scale-80'}`}
+                        style={{ animationDelay: item.delay }}
+                    >
+                        <item.icon size={20} className="text-zinc-400 relative z-10" />
+                    </div>
+                ))}
               </div>
             </div>
             <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">QR Scanner</h3>
