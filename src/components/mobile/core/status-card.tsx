@@ -9,7 +9,6 @@ export const StatusCard = () => {
   const { formData } = useProfile();
   const { displayStatus, timeRange } = useSholat();
   
-  // Mapping for prayer names to professional English labels
   const labels: Record<string, string> = { 
     Fajr: 'Fajr', 
     Sunrise: 'Sunrise', 
@@ -25,8 +24,8 @@ export const StatusCard = () => {
       <div className="w-14 h-14 rounded-full bg-[#2A292F] overflow-hidden shrink-0 border border-white/10 shadow-inner relative">
         {formData && formData.avatarUrl ? (
           <>
-            <Image src={formData.avatarUrl} alt="Blur" width={56} height={56} className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50" />
-            <Image src={formData.avatarUrl} alt="Profile" width={56} height={56} className="relative z-10 w-full h-full object-contain" />
+            <Image src={formData.avatarUrl} alt="Blur" width={56} height={56} className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40" />
+            <Image src={formData.avatarUrl} alt="Profile" width={56} height={56} className="relative z-10 w-full h-full object-cover" />
           </>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white/20">
@@ -36,7 +35,7 @@ export const StatusCard = () => {
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <span className="text-[10px] text-white/40 uppercase tracking-widest font-medium mb-0.5">
+        <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium mb-0.5">
           Welcome back,
         </span>
         <h2 className="text-base font-bold text-white truncate leading-tight mb-2">
@@ -49,7 +48,7 @@ export const StatusCard = () => {
               {labels[displayStatus] ? `Prayer Time: ${labels[displayStatus]}` : '...'}
             </span>
           </div>
-          <span className="text-[10px] font-mono text-white/40 tracking-tight">
+          <span className="text-[10px] font-mono text-zinc-500 tracking-tight">
             {timeRange} <span className="opacity-50">WIB</span>
           </span>
         </div>
