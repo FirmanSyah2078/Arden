@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { Search, User, Loader2, ChevronRight, AlertCircle, Info, X } from 'lucide-react';
+import { Search, User, Loader2, ChevronRight, AlertCircle, Info, X, SearchX } from 'lucide-react';
 import { AttendanceStatusResponse, StudentMobile } from '@/types/api';
 
 export interface ManualProps {
@@ -112,14 +112,23 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                         }
                     `}</style>
                     <div className="relative mb-8">
-                        {/* Identity Badge Anchor */}
-                        <div className="relative flex items-center justify-center">
+                        {/* Symmetry Trio Anchor */}
+                        <div className="relative flex items-center justify-center -space-x-3">
                             <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full scale-150" />
-                            <div className="relative w-24 h-24 rounded-3xl bg-[#1F1E23] border border-white/10 flex items-center justify-center shadow-2xl animate-symmetry-float overflow-hidden">
-                                {/* The Shine Effect */}
-                                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-symmetry-shine" />
-                                <User size={32} className="text-zinc-400 relative z-10" />
-                            </div>
+                            
+                            {[
+                                { icon: User, delay: '0s' },
+                                { icon: Search, delay: '0.2s' },
+                                { icon: User, delay: '0.4s' }
+                            ].map((item, i) => (
+                                <div 
+                                    key={i}
+                                    className={`relative w-12 h-12 rounded-full bg-zinc-800 border border-black flex items-center justify-center shadow-xl animate-symmetry-float overflow-hidden transition-all ${i === 1 ? 'z-20 scale-110' : 'z-10 scale-80'}`}
+                                    style={{ animationDelay: item.delay }}
+                                >
+                                    <item.icon size={20} className="text-zinc-400 relative z-10" />
+                                </div>
+                            ))}
                         </div>
                     </div>
                     <h3 className="text-white font-bold text-xl mb-2 tracking-tight">Manual Search</h3>
@@ -193,11 +202,13 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
 
             {search && !isLoading && data.length === 0 && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-24 animate-in fade-in duration-300">
-                    <div className="w-16 h-16 rounded-full bg-red-950 border border-red-900/50 flex items-center justify-center mb-4 text-red-400 ar-beat-loop shadow-[0_0_15px_rgba(127,29,29,0.2)]">
-                        <AlertCircle size={28} />
+                    <div className="w-20 h-20 rounded-full bg-zinc-900/50 border border-zinc-800 flex items-center justify-center mb-4 shadow-inner">
+                        <SearchX size={32} className="text-zinc-600" />
                     </div>
-                    <h3 className="text-white font-semibold text-base mb-1">No Results Found</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">No student found with the provided name or NIS.</p>
+                    <div className="space-y-1">
+                        <p className="text-zinc-300 font-semibold text-sm">No results found</p>
+                        <p className="text-zinc-500 text-[11px] font-mono uppercase tracking-wider">Try another keyword</p>
+                    </div>
                 </div>
             )}
         </div>
