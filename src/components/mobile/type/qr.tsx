@@ -160,7 +160,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
             }
           `}</style>
           <div className="flex flex-col items-center text-center">
-            <div className="relative flex items-center justify-center mb-6">
+            <div className="relative mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
               <div className="absolute inset-0 bg-zinc-500/10 rounded-full blur-3xl" />
               <div className="relative flex items-center justify-center -space-x-3">
                 {[
@@ -178,8 +178,8 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
                 ))}
               </div>
             </div>
-            <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">QR Scanner</h3>
-            <p className="text-white/40 text-xs max-w-xs leading-relaxed">
+            <h3 className="text-white font-semibold text-lg mb-1 tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '150ms' }}>QR Scanner</h3>
+            <p className="text-white/40 text-xs max-w-xs leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '300ms' }}>
               Point the camera at the QR Code. <br />
               Press <span className="text-indigo-400 font-bold">Start Cam</span> to begin.
             </p>

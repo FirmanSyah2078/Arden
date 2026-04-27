@@ -37,7 +37,7 @@ const SkeletonItem = () => (
 
 // --- COMPONENT 1: SEARCH BAR (Symmetry Outline Version) ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
-    <div className="relative mb-6 flex-none z-20 px-1">
+    <div className="relative mb-6 flex-none z-20 px-1 animate-in fade-in slide-in-from-top-4 zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '450ms' }}>
         <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group ${search ? 'border-indigo-500/40 ring-1 ring-indigo-500/20' : 'border-white/10'
             }`}>
             <Search size={18} className={`${search ? 'text-white' : 'text-zinc-400'} transition-colors shrink-0 mr-2`} />
@@ -111,10 +111,10 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                             100% { transform: translateX(100%); }
                         }
                     `}</style>
-                    <div className="relative mb-8">
+                    <div className="relative mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
                         {/* Symmetry Trio Anchor */}
                         <div className="relative flex items-center justify-center -space-x-3">
-                            <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full scale-150" />
+                            <div className="absolute inset-0 bg-zinc-500/10 blur-3xl rounded-full scale-150" />
                             
                             {[
                                 { icon: User, delay: '0s' },
@@ -131,8 +131,8 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                             ))}
                         </div>
                     </div>
-                    <h3 className="text-white font-bold text-xl mb-2 tracking-tight">Manual Search</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium">
+                    <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '150ms' }}>Manual Search</h3>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '300ms' }}>
                         Enter student name or NIS to access the attendance record manually.
                     </p>
                 </div>
