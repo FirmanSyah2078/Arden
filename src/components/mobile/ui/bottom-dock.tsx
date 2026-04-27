@@ -28,7 +28,7 @@ export const BottomDock = ({
     }
   };
   return (
-    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-in-out">
+    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-in-out animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
       <div className="flex items-center bg-[#1F1E23] p-1.5 rounded-full shadow-2xl gap-3 border border-white/10">
 
         {/* LEFT SECTION: Identity */}
@@ -67,15 +67,7 @@ export const BottomDock = ({
               </Button>
 
               {/* Camera button strictly for home page */}
-              {variant === 'home' && mode === 'scan' && (
-                <Button
-                  variant="secondary"
-                  onClick={handleCamAction}
-                  className="h-10 w-10 rounded-full transition-all duration-300 group flex items-center justify-center shrink-0 border-none bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
-                >
-                  <Camera size={16} className="group-hover:animate-pulse" />
-                </Button>
-              )}
+              {variant === 'home' && mode === 'scan' && null}
             </>
           )}
 

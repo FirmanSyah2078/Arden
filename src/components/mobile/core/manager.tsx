@@ -14,6 +14,7 @@ import { Form } from '../popups/form';
 import { AttendanceStatusResponse, StudentMobile } from '@/types/api';
 import { useSholat } from '@/hooks/mobile/use-sholat';
 import { useProfile } from '@/hooks/settings/use-profile';
+import { BottomDock } from '../ui/bottom-dock';
 
 interface ManagerProps {
   className?: string;
@@ -43,6 +44,12 @@ export const Manager = ({
   const qrRef = useRef<QrHandle>(null);
   const { activeScanner } = useSholat();
   const { formData } = useProfile();
+
+  useEffect(() => {
+    const handleShutter = () => handleCamAction();
+    window.addEventListener('start-qr-camera', handleShutter);
+    return () => window.removeEventListener('start-qr-camera', handleShutter);
+  }, []);
 
   useEffect(() => {
     if (mode !== 'manual') return;
@@ -91,7 +98,7 @@ export const Manager = ({
       <div className="relative w-full h-full">
         {mode === 'scan' ? (
           <div key="scan-view" className="w-full h-full animate-in fade-in slide-in-from-left-4 zoom-in-95 duration-500 ease-out">
-            <Qr ref={qrRef} sholat={activeScanner} onCamActive={setIsCamActive} />
+            <Qr ref={qrRef} sholat={activeScanner} onCamActive={setIsCamActive} onCamAction={handleCamAction} />
           </div>
         ) : (
           <div key="manual-view" className="w-full h-full animate-in fade-in slide-in-from-right-4 zoom-in-95 duration-500 ease-out flex flex-col">
@@ -112,6 +119,7 @@ export const Manager = ({
           </div>
         )}
       </div>
+      <BottomDock variant="home" handleCamAction={handleCamAction} />
 
       <Form
         key={manualResult?.id}

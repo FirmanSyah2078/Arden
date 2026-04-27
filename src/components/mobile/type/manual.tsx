@@ -21,14 +21,14 @@ export interface ManualProps {
 const SkeletonItem = () => (
     <div className="w-full bg-[#1F1E23] border border-white/5 rounded-2xl p-4 flex items-center gap-4 animate-pulse">
         <div className="w-11 h-11 rounded-xl bg-[#2A292F] relative overflow-hidden shrink-0">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
         </div>
         <div className="flex-1 space-y-2">
             <div className="h-3 bg-[#2A292F] rounded-full w-1/2 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
             </div>
             <div className="h-2 bg-[#2A292F] rounded-full w-1/3 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_infinite] -translate-x-full" />
             </div>
         </div>
         <div className="w-4 h-4 rounded-full bg-[#2A292F] shrink-0" />

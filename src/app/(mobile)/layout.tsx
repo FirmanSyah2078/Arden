@@ -62,7 +62,6 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
               {children}
             </main>
             {!isDockHidden && <GlobalMenu />}
-            {!isDockHidden && <BottomDock variant={currentVariant} />}
             <EditProfile />
             <HelpGuide />
           </>

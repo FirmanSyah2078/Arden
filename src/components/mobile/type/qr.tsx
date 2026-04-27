@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Loader2, QrCode, User } from 'lucide-react';
+import { Loader2, QrCode, User, Camera } from 'lucide-react';
 import { toast } from 'sonner';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
 import { Alert } from '../popups/alert';
@@ -10,6 +10,7 @@ import { Alert } from '../popups/alert';
 interface QrProps {
   sholat: DailyPrayer;
   onCamActive?: (isActive: boolean) => void;
+  onCamAction?: () => void;
 }
 
 export interface QrHandle {
@@ -28,53 +29,72 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
-  useImperativeHandle(ref, () => ({
-    start: async () => {
-      if (!cameraId) return;
-      try {
-        // ELEMENT MUST EXIST IN DOM BEFORE THIS CALL
-        const scanner = new Html5Qrcode('reader');
-        html5QrCodeRef.current = scanner;
+  const startCamera = async () => {
+    try {
+      const scanner = new Html5Qrcode('reader');
+      html5QrCodeRef.current = scanner;
 
+      // Use facingMode instead of specific cameraId for maximum compatibility
+      await scanner.start(
+        { facingMode: "environment" }, 
+        { fps: 20 },
+        (text: string) => handleScanSuccess(text),
+        () => { }
+      );
+
+      const v = document.querySelector('#reader video') as HTMLVideoElement;
+      if (v) {
+        v.style.objectFit = 'cover';
+        v.style.width = '100%';
+        v.style.height = '100%';
+      }
+
+      setIsCameraActive(true);
+      if (onCamActive) onCamActive(true);
+
+      setTimeout(() => {
+        setScanning(true);
+      }, 800);
+    } catch (e) {
+      console.error("Symmetry Error: Camera start failed", e);
+      
+      // Fallback to user camera if environment fails
+      try {
+        const scanner = new Html5Qrcode('reader');
         await scanner.start(
-          { deviceId: { exact: cameraId } },
+          { facingMode: "user" },
           { fps: 20 },
           (text: string) => handleScanSuccess(text),
           () => { }
         );
-
-        const v = document.querySelector('#reader video') as HTMLVideoElement;
-        if (v) {
-          v.style.objectFit = 'cover';
-          v.style.width = '100%';
-          v.style.height = '100%';
-        }
-
         setIsCameraActive(true);
         if (onCamActive) onCamActive(true);
+      } catch (fallbackErr) {
+        toast.error("Camera Access Denied", { 
+          description: "Please enable camera permissions in your browser settings." 
+        });
+      }
+    }
+  };
 
-        setTimeout(() => {
-          setScanning(true);
-        }, 800);
-      } catch (e) {
-        console.error(e);
-        toast.error("Failed to access the camera.");
+  const stopCamera = async () => {
+    try {
+      if (html5QrCodeRef.current) {
+        await html5QrCodeRef.current.stop();
+        html5QrCodeRef.current.clear();
+        html5QrCodeRef.current = null;
       }
-    },
-    stop: async () => {
-      try {
-        if (html5QrCodeRef.current) {
-          await html5QrCodeRef.current.stop();
-          html5QrCodeRef.current.clear();
-          html5QrCodeRef.current = null;
-        }
-        setIsCameraActive(false);
-        setScanning(false);
-        if (onCamActive) onCamActive(false);
-      } catch (e) {
-        console.error("Error stopping camera:", e);
-      }
-    },
+      setIsCameraActive(false);
+      setScanning(false);
+      if (onCamActive) onCamActive(false);
+    } catch (e) {
+      console.error("Symmetry Error: Camera stop failed", e);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    start: startCamera,
+    stop: stopCamera,
     get isScanning() { return scanning; }
   }));
 
@@ -128,7 +148,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
     <div className="w-full h-full relative overflow-hidden bg-[#151419] flex flex-col items-center justify-center p-4 pb-32">
 
       {/* CAMERA WINDOW: Always in DOM but visually hidden when inactive */}
-      <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-500 ${isCameraActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+      <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-700 ease-out ${isCameraActive ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-90 blur-sm pointer-events-none'}`}>
         <div id="reader" className="w-full h-full absolute inset-0" />
 
         {/* Viewfinder Overlay - Only show when active */}
@@ -147,9 +167,24 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         )}
       </div>
 
+      {/* SYMMETRY SHUTTER: Quick access to camera when not active */}
+      {!isCameraActive && !validating && (
+        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center justify-center p-1 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-full shadow-2xl">
+          <button 
+            onClick={startCamera}
+            className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center active:scale-90 transition-all duration-200 shadow-lg"
+          >
+            <Camera size={18} />
+          </button>
+          </div>
+        </div>
+      )}
+
+
       {/* IDLE STATE: Rendered as an absolute overlay when camera is inactive */}
       {!isCameraActive && !validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent animate-in fade-in duration-500 px-6 text-center pb-20">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent pointer-events-none animate-in fade-in duration-500 px-6 text-center pb-20">
           <style>{`
             @keyframes symmetry-float {
                 0%, 100% { transform: translateY(0px); }
@@ -178,8 +213,8 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
                 ))}
               </div>
             </div>
-            <h3 className="text-white font-semibold text-lg mb-1 tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '150ms' }}>QR Scanner</h3>
-            <p className="text-white/40 text-xs max-w-xs leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '300ms' }}>
+            <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '150ms' }}>QR Scanner</h3>
+            <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '300ms' }}>
               Point the camera at the QR Code. <br />
               Press <span className="text-indigo-400 font-bold">Start Cam</span> to begin.
             </p>
