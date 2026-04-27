@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from 'react';
-import { User, Camera, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { User, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { UnifiedHeader } from '@/components/mobile/ui/unified-header';
+import { StatusCard } from '@/components/mobile/core/status-card';
+import { BottomDock } from '@/components/mobile/ui/bottom-dock';
 import { useProfile } from '@/hooks/settings/use-profile';
-import { useDock } from '@/context/dock-context';
+import { useRouter } from 'next/navigation';
 
-export default function EditProfile() {
-  const { isProfileOpen, setIsProfileOpen } = useDock();
+export default function MePage() {
+  const router = useRouter();
   const {
     formData,
     isLoading,
@@ -27,27 +29,20 @@ export default function EditProfile() {
   const [imageLoading, setImageLoading] = useState(true);
 
   return (
-    <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-      <DialogContent
-        showCloseButton={false}
-        className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
-      >
-        {/* Header Section - Professional English */}
-        <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
-          <DialogTitle className="text-xl font-bold tracking-tight text-white">
-            Edit Account Profile
-          </DialogTitle>
-          <DialogDescription className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
-            Update your identity and account details
-          </DialogDescription>
+    <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
+      <UnifiedHeader />
+
+      <div className="flex-1 overflow-y-auto pb-24">
+        {/* StatusCard as Context Anchor */}
+        <div className="mt-4 mb-8">
+          <StatusCard />
         </div>
 
-        {/* Avatar Section - Preserving original structure */}
-        <div className="flex flex-col items-center gap-4 mb-8">
+        {/* Avatar Section - High-End Symmetry */}
+        <div className="flex flex-col items-center gap-4 mb-10">
           <div className="relative group">
-            <div className="w-24 h-24 rounded-full bg-[#1F1E23] border-2 border-white/5 flex items-center justify-center overflow-hidden transition-all group-hover:border-white/10">
-              {/* Placeholder icon when loading or no image */}
-              <User className={`w-12 h-12 text-white/10 transition-opacity duration-300 ${formData.avatarUrl && !imageLoading ? 'opacity-0' : 'opacity-100'}`} />
+            <div className="w-28 h-28 rounded-full bg-[#1F1E23] border-2 border-white/5 flex items-center justify-center overflow-hidden transition-all group-hover:border-white/10 shadow-xl">
+              <User className={`w-14 h-14 text-white/10 transition-opacity duration-300 ${formData.avatarUrl && !imageLoading ? 'opacity-0' : 'opacity-100'}`} />
 
               {formData.avatarUrl && (
                 <>
@@ -67,9 +62,9 @@ export default function EditProfile() {
             </div>
             <button
               onClick={handleUploadClick}
-              className="absolute bottom-0 right-0 p-2 rounded-full bg-indigo-600 text-white shadow-lg transition-all active:scale-90 hover:bg-indigo-700"
+              className="absolute bottom-0 right-0 p-2.5 rounded-full bg-indigo-600 text-white shadow-lg transition-all active:scale-90 hover:bg-indigo-700 border-2 border-[#151419]"
             >
-              <Camera size={14} />
+              <Camera size={16} />
             </button>
             <input
               type="file"
@@ -81,7 +76,7 @@ export default function EditProfile() {
           </div>
           <div className="flex flex-col items-center gap-2">
             <div className="flex justify-center">
-              <Badge variant="outline" className="text-white/60 border-white/20 text-[9px] font-mono uppercase tracking-widest">
+              <Badge variant="outline" className="text-white/60 border-white/20 text-[9px] font-mono uppercase tracking-widest bg-[#1F1E23]">
                 Pelaksana
               </Badge>
             </div>
@@ -89,13 +84,13 @@ export default function EditProfile() {
         </div>
 
         {/* Form Fields - Professional English */}
-        <div className="space-y-4 mb-8">
+        <div className="space-y-6 mb-12">
           <div className="space-y-2">
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Full Name</Label>
             <Input
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
+              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-12 focus:ring-white/20 transition-all"
               disabled={isLoading || isSubmitting}
             />
           </div>
@@ -104,21 +99,20 @@ export default function EditProfile() {
             <Input
               value={formData.username}
               onChange={(e) => handleChange('username', e.target.value)}
-              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
+              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-12 focus:ring-white/20 transition-all"
               disabled={isLoading || isSubmitting}
             />
           </div>
         </div>
 
-        {/* Action Buttons - Professional English */}
+        {/* Action Buttons */}
         <div className="flex flex-col gap-3">
           <Button
             onClick={async () => {
               await handleSave();
-              setIsProfileOpen(false);
             }}
             disabled={isSaveDisabled}
-            className="w-full h-12 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 font-bold transition-all active:scale-[0.98] shadow-lg border-none"
+            className="w-full h-14 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 font-bold transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20 border-none"
           >
             <div className="flex items-center justify-center gap-2">
               {isSubmitting ? (
@@ -129,14 +123,16 @@ export default function EditProfile() {
           </Button>
 
           <Button
-            onClick={() => setIsProfileOpen(false)}
+            onClick={() => router.back()}
             variant="outline"
-            className="w-full h-12 rounded-2xl bg-[#1F1E23] text-white border-white/5 hover:bg-[#2A292F] font-semibold transition-all active:scale-[0.98]"
+            className="w-full h-14 rounded-2xl bg-[#1F1E23] text-white border-white/5 hover:bg-[#2A292F] font-semibold transition-all active:scale-[0.98]"
           >
             Back
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+
+      <BottomDock variant="profile" />
+    </div>
   );
 }

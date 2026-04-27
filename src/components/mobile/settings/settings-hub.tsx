@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { User, HelpCircle, Bell, Shield, X, ChevronRight, Settings } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import EditProfile from './edit-profile';
 import HelpGuide from './help-guide';
+import { useRouter } from 'next/navigation';
 
 interface SettingsHubProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface SettingsHubProps {
 }
 
 export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
-  const [activePopup, setActivePopup] = useState<'none' | 'edit-profile' | 'help'>('none');
+  const router = useRouter();
 
   // UI Configuration for settings menu items
   const menuItems = [
@@ -21,7 +21,10 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
       title: 'Manage Account Profile',
       description: 'Update identity information and account details',
       icon: <User className="w-5 h-5 text-white" />,
-      action: () => setActivePopup('edit-profile'),
+      action: () => {
+        router.push('/me');
+        setIsOpen(false);
+      },
     },
   ];
 
@@ -65,12 +68,10 @@ export default function SettingsHub({ isOpen, setIsOpen }: SettingsHubProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Sub-Popup Routing Management */}
-      <EditProfile
-        isOpen={activePopup === 'edit-profile'}
-        setIsOpen={(val: boolean) => {
-          if (!val) setActivePopup('none');
-        }}
+      {/* Sub-Popup Routing Management (Only for non-page elements like HelpGuide) */}
+      <HelpGuide 
+        isOpen={false} // This can be managed by another state if needed, or moved to a page too
+        setIsOpen={() => {}} 
       />
     </>
   );
