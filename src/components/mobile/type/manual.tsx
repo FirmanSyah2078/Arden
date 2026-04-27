@@ -17,18 +17,18 @@ export interface ManualProps {
     onScrollDirectionChange?: (visible: boolean) => void;
 }
 
-// --- COMPONENT 1: SEARCH BAR (High-End Gray Outline Version) ---
+// --- COMPONENT 1: SEARCH BAR (Symmetry Outline Version) ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
     <div className="relative mb-6 flex-none z-20 px-1">
-        <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-transparent shadow-[0_0_0_1px_rgba(255,255,255,0.4),0_0_12px_rgba(255,255,255,0.05)]' : 'border-white/5'
+        <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group ${search ? 'border-indigo-500/40 ring-1 ring-indigo-500/20' : 'border-white/10'
             }`}>
-            <Search size={18} className={`${search ? 'text-white' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
+            <Search size={18} className={`${search ? 'text-white' : 'text-zinc-400'} transition-colors shrink-0 mr-2`} />
             <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onFocus={onFocus}
                 onBlur={onBlur}
-                placeholder="Search by Name or NIS..."
+                placeholder="Search by Name or NIS"
                 spellCheck="false"
                 autoComplete="off"
                 className="flex-1 min-w-0 bg-transparent border-none outline-none text-white font-medium placeholder:text-white/20 text-[14px] h-full"

@@ -85,11 +85,6 @@ export default function HistoryPage() {
     <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
       <UnifiedHeader />
 
-      {/* StatusCard as the Hero/Identity Anchor */}
-      <div className="mt-6 mb-8">
-        <StatusCard />
-      </div>
-
       <div className="flex-1 overflow-y-auto pb-20">
         <div className="flex flex-col gap-6">
           

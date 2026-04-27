@@ -36,8 +36,7 @@ export default function MobilePage() {
 
   return (
     <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
-      <UnifiedHeader />
-
+      
       <div className="mt-4 mb-6">
         <StatusCard />
       </div>

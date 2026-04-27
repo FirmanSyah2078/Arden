@@ -28,6 +28,8 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
     return 'profile';
   };
 
+  const isDockHidden = pathname !== '/go' && pathname !== '/';
+  console.log('DEBUG ARDEN - Pathname:', pathname, '| isDockHidden:', isDockHidden);
   const currentVariant = getDockVariant();
 
   return (
@@ -59,8 +61,8 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
             <main className="flex-1 w-full h-full relative overflow-hidden animate-in fade-in duration-500">
               {children}
             </main>
-            <GlobalMenu />
-            <BottomDock variant={currentVariant} />
+            {!isDockHidden && <GlobalMenu />}
+            {!isDockHidden && <BottomDock variant={currentVariant} />}
             <EditProfile />
             <HelpGuide />
           </>
