@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Loader2, QrCode, User, Camera } from 'lucide-react';
+import { Loader2, QrCode, User, Camera, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
 import { Alert } from '../popups/alert';
@@ -167,16 +167,16 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         )}
       </div>
 
-      {/* SYMMETRY SHUTTER: Quick access to camera when not active */}
-      {!isCameraActive && !validating && (
+      {/* SYMMETRY SHUTTER: Toggle camera access */}
+      {!validating && (
         <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center justify-center p-1 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-full shadow-2xl">
-          <button 
-            onClick={startCamera}
-            className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center active:scale-90 transition-all duration-200 shadow-lg"
-          >
-            <Camera size={18} />
-          </button>
+            <button 
+              onClick={isCameraActive ? stopCamera : startCamera}
+              className={`w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 shadow-lg ${isCameraActive ? 'bg-zinc-700 text-white' : 'bg-indigo-600 text-white'}`}
+            >
+              {isCameraActive ? <X size={18} /> : <Camera size={18} />}
+            </button>
           </div>
         </div>
       )}
