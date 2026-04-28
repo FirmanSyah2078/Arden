@@ -28,11 +28,17 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
   const [scanResult, setScanResult] = useState<AttendanceStatusResponse | undefined>(undefined);
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+  const isTransitioning = useRef(false); // Lock to prevent race conditions
+
 
   const startCamera = async () => {
+    if (isTransitioning.current) return; // Block if already starting or stopping
+    isTransitioning.current = true;
+
     try {
       const scanner = new Html5Qrcode('reader');
       html5QrCodeRef.current = scanner;
+
 
       // Use facingMode instead of specific cameraId for maximum compatibility
       await scanner.start(
@@ -56,6 +62,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         setScanning(true);
       }, 800);
     } catch (e) {
+      isTransitioning.current = false;
       console.error("Symmetry Error: Camera start failed", e);
       
       // Fallback to user camera if environment fails
@@ -74,6 +81,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
           setScanning(true);
         }, 800);
       } catch (fallbackErr) {
+        isTransitioning.current = false;
         toast.error("Camera Access Denied", { 
           description: "Please enable camera permissions in your browser settings." 
         });
@@ -82,6 +90,9 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
   };
 
   const stopCamera = async () => {
+    if (isTransitioning.current) return; // Block if already starting or stopping
+    isTransitioning.current = true;
+
     try {
       if (html5QrCodeRef.current) {
         const scanner = html5QrCodeRef.current;
@@ -99,6 +110,8 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       if (onCamActive) onCamActive(false);
     } catch (e) {
       console.error("Symmetry Error: Camera stop failed", e);
+    } finally {
+      isTransitioning.current = false;
     }
   };
 
