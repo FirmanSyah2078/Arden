@@ -21,7 +21,7 @@ export const StatusCard = () => {
   return (
     <>
       {!formData ? (
-        <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/5 shadow-xl flex items-center gap-4 animate-pulse">
+        <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/10 shadow-xl flex items-center gap-4 animate-pulse">
           {/* Avatar Skeleton */}
           <div className="w-14 h-14 rounded-full bg-zinc-800 animate-shimmer shrink-0" />
           
@@ -38,7 +38,7 @@ export const StatusCard = () => {
           </div>
         </div>
       ) : (
-        <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/5 shadow-xl flex items-center gap-4 transition-all duration-500 animate-in fade-in slide-in-from-top-2 fill-mode-both">
+        <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/10 shadow-xl flex items-center gap-4 transition-all duration-500 animate-in fade-in slide-in-from-top-2 fill-mode-both">
           {/* Avatar with Symmetry Blurred BG Glow effect */}
           <div className="w-14 h-14 rounded-full bg-[#2A292F] overflow-hidden shrink-0 border border-white/10 shadow-inner relative">
             {formData.avatarUrl ? (
