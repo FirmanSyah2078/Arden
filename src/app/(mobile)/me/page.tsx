@@ -16,9 +16,11 @@ export default function MePage() {
     isLoading,
     isSubmitting,
     isSaveDisabled,
+    isDirty,
     handleChange,
     handleSave,
     handleFileChange,
+    resetForm,
     fileInputRef,
     handleUploadClick
   } = useProfile();
@@ -30,12 +32,15 @@ export default function MePage() {
       <UnifiedHeader />
 
       <div className="flex-1 overflow-y-auto pb-12 custom-scrollbar">
-        {/* Avatar Section - Simpel & Gede */}
-        <div className="flex flex-col items-center py-10 gap-4">
+        {/* Avatar Section - Symmetry Luxury */}
+        <div className="flex flex-col items-center py-12 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
           <div className="relative">
-            <div className="w-32 h-32 rounded-full bg-[#1F1E23] border-4 border-white/5 flex items-center justify-center overflow-hidden relative z-10 shadow-xl">
-              <User className={`w-16 h-16 text-white/10 transition-opacity duration-300 ${formData.avatarUrl && !imageLoading ? 'opacity-0' : 'opacity-100'}`} />
-              {formData.avatarUrl && (
+            {/* Aura Glow Effect */}
+            <div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-3xl scale-110" />
+            
+            <div className="w-32 h-32 rounded-full bg-[#1F1E23] border-2 border-white/10 flex items-center justify-center overflow-hidden relative z-10 shadow-2xl transition-transform duration-500 hover:scale-105">
+              <User className={`w-16 h-16 text-white/10 transition-opacity duration-300 ${formData?.avatarUrl && !imageLoading ? 'opacity-0' : 'opacity-100'}`} />
+              {formData?.avatarUrl && (
                 <>
                   {imageLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-[#1F1E23] z-20">
@@ -52,11 +57,13 @@ export default function MePage() {
               )}
             </div>
 
+            {/* CAMERA BUTTON - Refined Sleek */}
             <button
               onClick={handleUploadClick}
-              className="absolute bottom-1 right-1 p-3 rounded-full bg-indigo-600 text-white shadow-lg transition-all active:scale-90 border-4 border-[#151419] z-20"
+              className="absolute bottom-1 right-1 p-2 rounded-full bg-indigo-600 text-white shadow-lg transition-all active:scale-90 border-2 border-[#151419] z-20"
+              title="Change Photo"
             >
-              <Camera size={18} />
+              <Camera size={16} />
             </button>
             <input
               type="file"
@@ -68,41 +75,41 @@ export default function MePage() {
           </div>
         </div>
 
-        {/* Form Section - Balik ke Simple List */}
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">
+        {/* Form Section - Symmetry Search Bar Style */}
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 fill-mode-both">
+          <div className="space-y-2 group">
+            <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1 transition-colors group-focus-within:text-indigo-400">
               Full Name
             </Label>
             <Input
-              value={formData.name}
+              value={formData?.name || ''}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-12 px-4"
+              className="bg-zinc-900/50 border-zinc-800 text-white rounded-2xl h-14 px-4 transition-all focus:border-indigo-500/50 focus:ring-0 focus:bg-zinc-900/80"
               disabled={isLoading || isSubmitting}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">
+          <div className="space-y-2 group">
+            <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1 transition-colors group-focus-within:text-indigo-400">
               Username
             </Label>
             <Input
-              value={formData.username}
+              value={formData?.username || ''}
               onChange={(e) => handleChange('username', e.target.value)}
-              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-12 px-4"
+              className="bg-zinc-900/50 border-zinc-800 text-white rounded-2xl h-14 px-4 transition-all focus:border-indigo-500/50 focus:ring-0 focus:bg-zinc-900/80"
               disabled={isLoading || isSubmitting}
             />
           </div>
         </div>
 
-        {/* Action Buttons - Standar */}
-        <div className="flex flex-col gap-3 mt-10">
+        {/* Action Buttons - Dynamic Back/Cancel */}
+        <div className="flex flex-col gap-3 mt-12 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-300 fill-mode-both">
           <Button
             onClick={async () => {
               await handleSave();
             }}
             disabled={isSaveDisabled}
-            className="w-full h-14 rounded-2xl bg-indigo-600 text-white font-bold transition-all active:scale-[0.98] border-none"
+            className="w-full h-14 rounded-2xl bg-indigo-600 text-white font-bold transition-all active:scale-[0.98] border-none shadow-[0_4px_20px_rgba(79,70,229,0.3)]"
           >
             {isSubmitting ? (
               <div className="flex items-center gap-2">
@@ -113,11 +120,17 @@ export default function MePage() {
           </Button>
 
           <Button
-            onClick={() => router.back()}
+            onClick={() => {
+              if (isDirty) {
+                resetForm();
+              } else {
+                router.back();
+              }
+            }}
             variant="outline"
-            className="w-full h-14 rounded-2xl bg-transparent text-white/60 border-white/5 hover:bg-[#2A292F] hover:text-white font-semibold transition-all active:scale-[0.98]"
+            className="w-full h-14 rounded-2xl bg-zinc-900/50 text-white/80 border-white/10 hover:bg-zinc-800 hover:text-white font-semibold transition-all active:scale-[0.98]"
           >
-            Cancel
+            {isDirty ? 'Cancel' : 'Back'}
           </Button>
         </div>
       </div>
