@@ -19,7 +19,7 @@ export interface QrHandle {
   isScanning: boolean;
 }
 
-const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
+const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, ref) => {
   const [cameraId, setCameraId] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -172,7 +172,10 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive }, ref) => {
         <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center justify-center p-1 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-full shadow-2xl">
             <button 
-              onClick={isCameraActive ? stopCamera : startCamera}
+              onClick={() => {
+                isCameraActive ? stopCamera() : startCamera();
+                if (onCamAction) onCamAction();
+              }}
               className={`w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 shadow-lg ${isCameraActive ? 'bg-zinc-700 text-white' : 'bg-indigo-600 text-white'}`}
             >
               {isCameraActive ? <X size={18} /> : <Camera size={18} />}
