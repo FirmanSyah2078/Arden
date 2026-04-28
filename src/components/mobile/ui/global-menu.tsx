@@ -44,16 +44,7 @@ export const GlobalMenu = () => {
       label: "Guide",
       desc: "Operational guidelines",
       icon: HelpCircle,
-      onClick: () => {
-        // Jika HelpGuide masih popup, bisa dipicu di sini atau diarahkan ke page
-        toast.info("Guide coming soon");
-      },
-    },
-    {
-      label: "Settings",
-      desc: "Application preferences",
-      icon: LucideSettings,
-      onClick: () => router.push("/settings"), // Asumsi ada page settings
+      onClick: () => router.push("/guide"),
     },
   ];
 

@@ -20,6 +20,12 @@ export const UnifiedHeader = () => {
         desc: "Attendance tracking records and logs"
       };
     }
+    if (pathname === '/guide') {
+      return {
+        title: "User Guide",
+        desc: "Operational guidelines and system help"
+      };
+    }
     return {
       title: "Arden System",
       desc: "Main navigation and system hub"
