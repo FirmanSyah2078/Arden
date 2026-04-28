@@ -100,11 +100,11 @@ export default function HistoryPage() {
   }, [activeTab, fetchHistory]);
 
   return (
-    <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
+    <div className="relative w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
       <UnifiedHeader />
- 
+
       {/* TAB NAVIGATION - Persistent/Fixed at the top */}
-      <div className="w-full bg-[#1F1E23] rounded-2xl p-1 h-12 flex items-center justify-between gap-1 shadow-inner border border-white/5 mt-4 mb-6">
+      <div className="w-full bg-[#1F1E23] rounded-2xl p-1 h-12 flex items-center justify-between gap-1 shadow-inner border border-white/5 mt-4 mb-4">
         {PRAYER_TIMES.map((time) => (
           <button
             key={time.id}
@@ -118,8 +118,8 @@ export default function HistoryPage() {
           </button>
         ))}
       </div>
- 
-      {/* BODY - The Isolated Scroll Zone */}
+
+      {/* BODY - The Invisible Boundary Zone (Zero-Offside) */}
       <div 
         className="flex-1 overflow-y-auto custom-scrollbar" 
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
@@ -128,13 +128,13 @@ export default function HistoryPage() {
           div { -ms-overflow-style: none; scrollbar-width: none; }
           div::-webkit-scrollbar { display: none; }
         `}</style>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 pb-6">
           <ListContent isLoadingHistory={isLoadingHistory} historyData={historyData} />
         </div>
       </div>
- 
+
       {/* FOOTER - The Safe Zone (No Overlap) */}
-      <div className="p-5 flex justify-center items-center bg-transparent">
+      <div className="pt-4 pb-6 px-4 flex justify-center items-center bg-transparent shrink-0">
         <Button
           onClick={() => router.back()}
           variant="outline"

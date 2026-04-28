@@ -9,6 +9,7 @@ import { BottomDock } from '@/components/mobile/ui/bottom-dock';
 import { GlobalMenu } from '@/components/mobile/ui/global-menu';
 import EditProfile from '@/components/mobile/settings/edit-profile';
 import HelpGuide from '@/components/mobile/settings/help-guide';
+import { usePathname as useP } from "next/navigation";
 
 function MobileLayoutContent({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
@@ -29,7 +30,6 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   const isDockHidden = pathname !== '/go' && pathname !== '/';
-  console.log('DEBUG ARDEN - Pathname:', pathname, '| isDockHidden:', isDockHidden);
   const currentVariant = getDockVariant();
 
   return (
@@ -58,10 +58,15 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         ) : (
           <>
-            <main className="flex-1 w-full h-full relative overflow-hidden animate-in fade-in duration-500">
+            <main className="flex-1 w-full relative overflow-hidden animate-in fade-in duration-500 flex flex-col">
               {children}
             </main>
-            {!isDockHidden && <GlobalMenu />}
+            {!isDockHidden && (
+              <div className="shrink-0 z-50">
+                <BottomDock variant={currentVariant} />
+              </div>
+            )}
+            <GlobalMenu />
             <EditProfile />
             <HelpGuide />
           </>

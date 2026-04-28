@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { UserSearch, ScanLine, Menu, X, Camera } from 'lucide-react';
+import { UserSearch, ScanLine, Menu, X } from 'lucide-react';
 import { useDock } from '@/context/dock-context';
 
 interface BottomDockProps {
@@ -22,13 +22,12 @@ export const BottomDock = ({
     const newMode = mode === 'scan' ? 'manual' : 'scan';
     setMode(newMode);
     
-    // If user is on history page, automatically redirect back to /go
     if (window.location.pathname.includes('/history')) {
       router.push('/go');
     }
   };
   return (
-    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-in-out animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
+    <div className="relative w-full flex justify-center items-center pt-4 pb-6 z-50 transition-all duration-500 ease-in-out animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
       <div className="flex items-center bg-[#1F1E23] p-1.5 rounded-full shadow-2xl gap-3 border border-white/10">
 
         {/* LEFT SECTION: Identity */}
@@ -55,7 +54,7 @@ export const BottomDock = ({
 
         {/* RIGHT SECTION: Controls */}
         <div className="flex items-center gap-1.5">
-          {/* Show mode toggle for both home and history pages */}
+          {/* Mode toggle for both home and history pages */}
           {(variant === 'home' || variant === 'history') && (
             <>
               <Button
@@ -65,9 +64,6 @@ export const BottomDock = ({
               >
                 {mode === 'scan' ? <UserSearch size={16} /> : <ScanLine size={16} />}
               </Button>
-
-              {/* Camera button strictly for home page */}
-              {variant === 'home' && mode === 'scan' && null}
             </>
           )}
 

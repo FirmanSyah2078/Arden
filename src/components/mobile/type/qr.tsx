@@ -42,7 +42,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       html5QrCodeRef.current = scanner;
 
       await scanner.start(
-        { facingMode: "environment" }, 
+        { facingMode: "environment" },
         { fps: 20 },
         (text: string) => handleScanSuccess(text),
         () => { }
@@ -65,11 +65,11 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       // HANDLE ABORT ERROR: User spammed the button, ignore this specific error
       if (e?.name === 'AbortError' || e?.message?.includes('aborted')) {
         console.warn("Symmetry Info: Camera start aborted by user agent (spam protection)");
-        return; 
+        return;
       }
 
       console.error("Symmetry Error: Camera start failed", e);
-      
+
       try {
         const scanner = new Html5Qrcode('reader');
         html5QrCodeRef.current = scanner;
@@ -86,8 +86,8 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         }, 800);
       } catch (fallbackErr: any) {
         if (fallbackErr?.name !== 'AbortError') {
-          toast.error("Camera Access Denied", { 
-            description: "Please enable camera permissions in your browser settings." 
+          toast.error("Camera Access Denied", {
+            description: "Please enable camera permissions in your browser settings."
           });
         }
       }
@@ -106,7 +106,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       if (html5QrCodeRef.current) {
         const scanner = html5QrCodeRef.current;
         html5QrCodeRef.current = null;
-        
+
         try {
           await scanner.stop();
           await scanner.clear();
@@ -188,7 +188,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
   };
 
   return (
-    <div className="w-full h-full relative overflow-hidden bg-[#151419] flex flex-col items-center justify-center p-4 pb-32">
+    <div className="w-full h-full relative overflow-hidden bg-[#151419] flex flex-col items-center justify-center p-4">
 
       <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-700 ease-out ${isCameraActive ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-90 blur-sm pointer-events-none'}`}>
         <div id="reader" className="w-full h-full absolute inset-0" />
@@ -209,9 +209,9 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       </div>
 
       {!validating && (
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both">
           <div className="flex items-center justify-center p-1 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-full shadow-2xl">
-            <button 
+            <button
               onClick={() => {
                 isCameraActive ? stopCamera() : startCamera();
                 if (onCamAction) onCamAction();
@@ -225,7 +225,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       )}
 
       {!isCameraActive && !validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out px-6 text-center pb-20">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent pointer-events-none animate-in fade-in duration-700 ease-out px-6 text-center">
           <style>{`
             @keyframes symmetry-float {
                 0%, 100% { transform: translateY(0px); }
@@ -235,27 +235,28 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
                 animation: symmetry-float 4s ease-in-out infinite;
             }
           `}</style>
-          <div className="flex flex-col items-center text-center">
-            <div className="relative mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
+
+          <div className="flex flex-col items-center justify-center">
+            <div className="relative mb-8 animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
               <div className="absolute inset-0 bg-zinc-500/10 rounded-full blur-3xl" />
               <div className="relative flex items-center justify-center -space-x-3">
                 {[
-                    { icon: User, delay: '0s' },
-                    { icon: QrCode, delay: '0.2s' },
-                    { icon: User, delay: '0.4s' }
+                  { icon: User, delay: '0s' },
+                  { icon: QrCode, delay: '0.2s' },
+                  { icon: User, delay: '0.4s' }
                 ].map((item, i) => (
-                    <div 
-                        key={i}
-                        className={`relative w-12 h-12 rounded-full bg-zinc-800 border border-black flex items-center justify-center shadow-xl animate-symmetry-float overflow-hidden transition-all ${i === 1 ? 'z-20 scale-110' : 'z-10 scale-80'}`}
-                        style={{ animationDelay: item.delay }}
-                    >
-                        <item.icon size={20} className="text-zinc-400 relative z-10" />
-                    </div>
+                  <div
+                    key={i}
+                    className={`relative w-12 h-12 rounded-full bg-zinc-800 border border-black flex items-center justify-center shadow-xl animate-symmetry-float overflow-hidden transition-all ${i === 1 ? 'z-20 scale-110' : 'z-10 scale-80'}`}
+                    style={{ animationDelay: item.delay }}
+                  >
+                    <item.icon size={20} className="text-zinc-400 relative z-10" />
+                  </div>
                 ))}
               </div>
             </div>
-            <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '150ms' }}>QR Scanner</h3>
-            <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" style={{ animationDelay: '300ms' }}>
+            <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '150ms' }}>QR Scanner</h3>
+            <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '300ms' }}>
               Point the camera at the QR Code. <br />
               Press <span className="text-indigo-400 font-bold">Start Cam</span> to begin.
             </p>
