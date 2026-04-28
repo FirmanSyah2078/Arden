@@ -28,19 +28,19 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
   const [scanResult, setScanResult] = useState<AttendanceStatusResponse | undefined>(undefined);
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
-  const isTransitioning = useRef(false); // Lock to prevent race conditions
+  const isTransitioning = useRef(false);
 
+  // Helper for hardware cooldown
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const startCamera = async () => {
-    if (isTransitioning.current) return; // Block if already starting or stopping
+    if (isTransitioning.current) return;
     isTransitioning.current = true;
 
     try {
       const scanner = new Html5Qrcode('reader');
       html5QrCodeRef.current = scanner;
 
-
-      // Use facingMode instead of specific cameraId for maximum compatibility
       await scanner.start(
         { facingMode: "environment" }, 
         { fps: 20 },
@@ -61,11 +61,15 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       setTimeout(() => {
         setScanning(true);
       }, 800);
-    } catch (e) {
-      isTransitioning.current = false;
+    } catch (e: any) {
+      // HANDLE ABORT ERROR: User spammed the button, ignore this specific error
+      if (e?.name === 'AbortError' || e?.message?.includes('aborted')) {
+        console.warn("Symmetry Info: Camera start aborted by user agent (spam protection)");
+        return; 
+      }
+
       console.error("Symmetry Error: Camera start failed", e);
       
-      // Fallback to user camera if environment fails
       try {
         const scanner = new Html5Qrcode('reader');
         html5QrCodeRef.current = scanner;
@@ -80,17 +84,22 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         setTimeout(() => {
           setScanning(true);
         }, 800);
-      } catch (fallbackErr) {
-        isTransitioning.current = false;
-        toast.error("Camera Access Denied", { 
-          description: "Please enable camera permissions in your browser settings." 
-        });
+      } catch (fallbackErr: any) {
+        if (fallbackErr?.name !== 'AbortError') {
+          toast.error("Camera Access Denied", { 
+            description: "Please enable camera permissions in your browser settings." 
+          });
+        }
       }
+    } finally {
+      // Hardware Cooldown: Give the browser 300ms to finalize the transition
+      await sleep(300);
+      isTransitioning.current = false;
     }
   };
 
   const stopCamera = async () => {
-    if (isTransitioning.current) return; // Block if already starting or stopping
+    if (isTransitioning.current) return;
     isTransitioning.current = true;
 
     try {
@@ -101,16 +110,22 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         try {
           await scanner.stop();
           await scanner.clear();
-        } catch (stopErr) {
-          console.warn("Symmetry Warn: Camera was already stopping or inactive");
+        } catch (stopErr: any) {
+          if (stopErr?.name !== 'AbortError') {
+            console.warn("Symmetry Warn: Camera stop failed", stopErr);
+          }
         }
       }
       setIsCameraActive(false);
       setScanning(false);
       if (onCamActive) onCamActive(false);
-    } catch (e) {
-      console.error("Symmetry Error: Camera stop failed", e);
+    } catch (e: any) {
+      if (e?.name !== 'AbortError') {
+        console.error("Symmetry Error: Camera stop failed", e);
+      }
     } finally {
+      // Hardware Cooldown: Give the browser 300ms to release the hardware lock
+      await sleep(300);
       isTransitioning.current = false;
     }
   };
@@ -174,11 +189,9 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
   return (
     <div className="w-full h-full relative overflow-hidden bg-[#151419] flex flex-col items-center justify-center p-4 pb-32">
 
-      {/* CAMERA WINDOW: Always in DOM but visually hidden when inactive */}
       <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-700 ease-out ${isCameraActive ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-90 blur-sm pointer-events-none'}`}>
         <div id="reader" className="w-full h-full absolute inset-0" />
 
-        {/* Viewfinder Overlay - Only show when active */}
         {isCameraActive && !validating && (
           <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
             <div className="relative w-48 h-48">
@@ -194,7 +207,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         )}
       </div>
 
-      {/* SYMMETRY SHUTTER: Toggle camera access */}
       {!validating && (
         <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center justify-center p-1 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-full shadow-2xl">
@@ -211,8 +223,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         </div>
       )}
 
-
-      {/* IDLE STATE: Rendered as an absolute overlay when camera is inactive */}
       {!isCameraActive && !validating && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent pointer-events-none animate-in fade-in duration-500 px-6 text-center pb-20">
           <style>{`
@@ -252,7 +262,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         </div>
       )}
 
-      {/* VALIDATING STATE */}
       {validating && (
         <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-[#151419]/90 backdrop-blur-sm">
           <Loader2 size={40} className="animate-spin text-white" />
