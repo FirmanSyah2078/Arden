@@ -166,8 +166,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                         {data.map((item, index) => (
                                 <li
                                     key={item.id_student}
-                                    className="animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300"
-                                    style={{ animationDelay: `${index * 60}ms` }}
+                                    className="animate-in fade-in duration-300"
                                 >
                                 <button
                                     onClick={() => handleSelect(item)}

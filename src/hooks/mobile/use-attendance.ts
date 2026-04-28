@@ -28,10 +28,23 @@ export function useAttendance() {
   }, []);
 
   const submitAttendance = async (payload: any) => {
+    // --- STATUS SYNC: Ensure status is always 'Menstruation' or 'Pure' before sending to API ---
+    const syncStatus = (s: any) => {
+        const val = String(s).toLowerCase();
+        if (val === 'haid' || val === 'menstruation') return 'Menstruation';
+        if (val === 'suci' || val === 'pure') return 'Pure';
+        return 'Pure';
+    };
+
+    const formattedPayload = {
+        ...payload,
+        status: syncStatus(payload.status)
+    };
+
     const res = await fetch('/api/attendance', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dtnew: payload })
+      body: JSON.stringify({ dtnew: formattedPayload })
     });
     return await res.json();
   };

@@ -177,6 +177,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         class_name: jsonRes.data.tbl_classes?.class_name || '-',
         status: 'success',
         message: 'Awaiting confirmation',
+        icode: jsonRes.data.icode,
       });
       setValidating(false);
       setShowPopup(true);
