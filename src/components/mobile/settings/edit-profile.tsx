@@ -92,21 +92,21 @@ export default function EditProfile() {
         <div className="space-y-4 mb-8">
           <div className="space-y-2">
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Full Name</Label>
-            <Input
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
-              disabled={isLoading || isSubmitting}
-            />
+<Input
+  value={formData.name}
+  onChange={(e) => handleChange('name', e.target.value)}
+  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20"
+  disabled={isLoading || isSubmitting}
+/>
           </div>
           <div className="space-y-2">
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Username</Label>
-            <Input
-              value={formData.username}
-              onChange={(e) => handleChange('username', e.target.value)}
-              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
-              disabled={isLoading || isSubmitting}
-            />
+<Input
+  value={formData.username}
+  onChange={(e) => handleChange('username', e.target.value)}
+  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20"
+  disabled={isLoading || isSubmitting}
+/>
           </div>
         </div>
 
