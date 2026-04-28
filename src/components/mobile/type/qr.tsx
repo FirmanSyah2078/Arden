@@ -26,6 +26,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
   const [validating, setValidating] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [scanResult, setScanResult] = useState<AttendanceStatusResponse | undefined>(undefined);
+  const [camError, setCamError] = useState(false);
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const isTransitioning = useRef(false);
@@ -35,6 +36,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
 
   const startCamera = async () => {
     if (isTransitioning.current) return;
+    setCamError(false);
     isTransitioning.current = true;
 
     try {
@@ -89,6 +91,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
           toast.error("Camera Access Denied", {
             description: "Please enable camera permissions in your browser settings."
           });
+          setCamError(true);
         }
       }
     } finally {
@@ -209,14 +212,14 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       </div>
 
       {!validating && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both">
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both">
           <div className="flex items-center justify-center p-1 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-full shadow-2xl">
             <button
               onClick={() => {
                 isCameraActive ? stopCamera() : startCamera();
                 if (onCamAction) onCamAction();
               }}
-              className={`w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 shadow-lg ${isCameraActive ? 'bg-zinc-700 text-white' : 'bg-indigo-600 text-white'}`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 shadow-lg ${isCameraActive ? 'bg-zinc-700 text-white' : camError ? 'bg-red-600 text-white' : 'bg-indigo-600 text-white'}`}
             >
               {isCameraActive ? <X size={18} /> : <Camera size={18} />}
             </button>
@@ -236,8 +239,8 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
             }
           `}</style>
 
-          <div className="flex flex-col items-center justify-center">
-            <div className="relative mb-8 animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
+          <div className="flex flex-col items-center justify-center translate-y-[36px]">
+            <div className="relative w-32 h-12 mb-8 flex items-center justify-center animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
               <div className="absolute inset-0 bg-zinc-500/10 rounded-full blur-3xl" />
               <div className="relative flex items-center justify-center -space-x-3">
                 {[
