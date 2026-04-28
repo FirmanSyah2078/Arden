@@ -38,10 +38,20 @@ export default function MePage() {
             {/* Aura Glow Effect */}
             <div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-3xl scale-110" />
             
-            <div className="w-32 h-32 rounded-full bg-[#1F1E23] border-2 border-white/10 flex items-center justify-center overflow-hidden relative z-10 shadow-2xl transition-transform duration-500 hover:scale-105">
-              <User className={`w-16 h-16 text-white/10 transition-opacity duration-300 ${formData?.avatarUrl && !imageLoading ? 'opacity-0' : 'opacity-100'}`} />
-              {formData?.avatarUrl && (
+            <div className="w-32 h-32 rounded-full bg-[#1F1E23] border-2 border-white/10 overflow-hidden relative z-10 shadow-2xl transition-transform duration-500 hover:scale-105">
+              {!formData?.avatarUrl ? (
+                <div className="w-full h-full flex items-center justify-center">
+                  <User className="w-16 h-16 text-white/10" />
+                </div>
+              ) : (
                 <>
+                  {/* Symmetry Blurred BG Glow - Exact Mirror of StatusCard */}
+                  <img 
+                    src={formData.avatarUrl} 
+                    alt="Blur" 
+                    className={`absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40 transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-40'}`} 
+                  />
+                  
                   {imageLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-[#1F1E23] z-20">
                       <div className="w-6 h-6 border-2 border-white/10 border-t-white rounded-full animate-spin" />
@@ -50,7 +60,7 @@ export default function MePage() {
                   <img
                     src={formData.avatarUrl}
                     alt="Profile"
-                    className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+                    className={`relative z-10 w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
                     onLoad={() => setImageLoading(false)}
                   />
                 </>
@@ -123,6 +133,9 @@ export default function MePage() {
             onClick={() => {
               if (isDirty) {
                 resetForm();
+                // Add a slight delay before going back to let the user see the reset, 
+                // or just let them click again. But for better UX, we can do:
+                // router.back(); // Uncomment this if you want to force exit after reset
               } else {
                 router.back();
               }

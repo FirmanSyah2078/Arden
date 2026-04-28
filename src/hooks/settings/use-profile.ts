@@ -50,17 +50,7 @@ export function useProfile() {
   };
 
   const handleChange = <K extends keyof UserProfileData>(field: K, value: UserProfileData[K]) => {
-    let finalValue = value;
-
-    if (typeof value === "string") {
-      if (field === "username") {
-        finalValue = (value.toLowerCase().replace(/\s+/g, '') as unknown) as UserProfileData[K];
-      } else if (field === "name") {
-        finalValue = (value.toLowerCase().replace(/(?:^|\s)\w/g, (match) => match.toUpperCase()) as unknown) as UserProfileData[K];
-      }
-    }
-
-    setFormData(prev => ({ ...prev, [field]: finalValue }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,12 +169,6 @@ export function useProfile() {
         finalAvatarUrl = uploadJson.data.url; 
       }
 
-      if (originalData?.avatarUrl && originalData.avatarUrl !== finalAvatarUrl) {
-        await fetch(`/api/upload?url=${encodeURIComponent(originalData.avatarUrl)}`, { 
-          method: 'DELETE' 
-        });
-      }
-
       const payload = { ...formData, photo_url: finalAvatarUrl }; 
       const res = await fetch('/api/user/me', {
         method: 'PATCH',
@@ -200,6 +184,13 @@ export function useProfile() {
       const json = await res.json();
       
       if (json.status === 'success') {
+        // ONLY DELETE OLD AVATAR AFTER DB UPDATE SUCCESS
+        if (originalData?.avatarUrl && originalData.avatarUrl !== finalAvatarUrl) {
+          await fetch(`/api/upload?url=${encodeURIComponent(originalData.avatarUrl)}`, { 
+            method: 'DELETE' 
+          }).catch(e => console.error("Failed to delete old avatar, but profile updated:", e));
+        }
+
         const updatedData = {
           ...formData,
           avatarUrl: finalAvatarUrl,
