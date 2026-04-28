@@ -86,14 +86,14 @@ export default function GuidePage() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col gap-3 w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
+          <div className="flex flex-col gap-3 w-full">
             {guides.map((guide, idx) => {
               const isExpanded = expandedIndex === idx;
               return (
                 <div 
                   key={idx} 
                   className={cn(
-                    "flex flex-col w-full rounded-2xl border transition-all duration-300 overflow-hidden",
+                    "flex flex-col w-full rounded-2xl border transition-colors duration-300 overflow-hidden",
                     isExpanded ? "bg-[#25242B] border-white/20 shadow-md" : "bg-[#1F1E23] border-white/5 shadow-sm"
                   )}
                   onClick={() => setExpandedIndex(isExpanded ? null : idx)}

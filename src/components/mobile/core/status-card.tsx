@@ -38,20 +38,28 @@ export const StatusCard = () => {
           </div>
         </div>
       ) : (
-        <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/10 shadow-xl flex items-center gap-4 transition-all duration-500 animate-in fade-in slide-in-from-top-2 fill-mode-both">
+        <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/10 shadow-xl flex items-center gap-4 transition-all duration-500">
           {/* Avatar with Symmetry Blurred BG Glow effect */}
-          <div className="w-14 h-14 rounded-full bg-[#2A292F] overflow-hidden shrink-0 border border-white/10 shadow-inner relative">
-            {profile.avatarUrl ? (
-              <>
-                <Image src={profile.avatarUrl} alt="Blur" width={56} height={56} className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40" />
-                <Image src={profile.avatarUrl} alt="Profile" width={56} height={56} className="relative z-10 w-full h-full object-cover" />
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-white/20">
-                <User size={24} />
-              </div>
-            )}
-          </div>
+<div className="w-14 h-14 rounded-full bg-[#2A292F] overflow-hidden shrink-0 border border-white/10 shadow-inner relative">
+  {profile.avatarUrl ? (
+    <>
+      <img 
+        src={profile.avatarUrl} 
+        alt="Blur" 
+        className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40" 
+      />
+      <img 
+        src={profile.avatarUrl} 
+        alt="Profile" 
+        className="relative z-10 w-full h-full object-cover" 
+      />
+    </>
+  ) : (
+    <div className="w-full h-full flex items-center justify-center text-white/20">
+      <User size={24} />
+    </div>
+  )}
+</div>
 
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium mb-0.5">

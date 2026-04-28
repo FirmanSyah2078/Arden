@@ -81,24 +81,24 @@ export default function MePage() {
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1 transition-colors group-focus-within:text-indigo-400">
               Full Name
             </Label>
-            <Input
-              value={formData?.name || ''}
-              onChange={(e) => handleChange('name', e.target.value)}
-              className="bg-zinc-900/50 border-zinc-800 text-white rounded-2xl h-14 px-4 transition-all focus:border-indigo-500/50 focus:ring-0 focus:bg-zinc-900/80"
-              disabled={isLoading || isSubmitting}
-            />
+<Input
+  value={formData?.name || ''}
+  onChange={(e) => handleChange('name', e.target.value)}
+  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 !ring-0 !ring-offset-0"
+  disabled={isLoading || isSubmitting}
+/>
           </div>
 
           <div className="space-y-2 group">
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1 transition-colors group-focus-within:text-indigo-400">
               Username
             </Label>
-            <Input
-              value={formData?.username || ''}
-              onChange={(e) => handleChange('username', e.target.value)}
-              className="bg-zinc-900/50 border-zinc-800 text-white rounded-2xl h-14 px-4 transition-all focus:border-indigo-500/50 focus:ring-0 focus:bg-zinc-900/80"
-              disabled={isLoading || isSubmitting}
-            />
+<Input
+  value={formData?.username || ''}
+  onChange={(e) => handleChange('username', e.target.value)}
+  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 !ring-0 !ring-offset-0"
+  disabled={isLoading || isSubmitting}
+/>
           </div>
         </div>
 
