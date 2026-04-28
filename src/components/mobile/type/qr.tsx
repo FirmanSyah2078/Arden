@@ -84,9 +84,15 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
   const stopCamera = async () => {
     try {
       if (html5QrCodeRef.current) {
-        await html5QrCodeRef.current.stop();
-        html5QrCodeRef.current.clear();
+        const scanner = html5QrCodeRef.current;
         html5QrCodeRef.current = null;
+        
+        try {
+          await scanner.stop();
+          await scanner.clear();
+        } catch (stopErr) {
+          console.warn("Symmetry Warn: Camera was already stopping or inactive");
+        }
       }
       setIsCameraActive(false);
       setScanning(false);
