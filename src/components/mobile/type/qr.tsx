@@ -61,6 +61,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       // Fallback to user camera if environment fails
       try {
         const scanner = new Html5Qrcode('reader');
+        html5QrCodeRef.current = scanner;
         await scanner.start(
           { facingMode: "user" },
           { fps: 20 },
@@ -69,6 +70,9 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         );
         setIsCameraActive(true);
         if (onCamActive) onCamActive(true);
+        setTimeout(() => {
+          setScanning(true);
+        }, 800);
       } catch (fallbackErr) {
         toast.error("Camera Access Denied", { 
           description: "Please enable camera permissions in your browser settings." 
