@@ -27,11 +27,12 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
   const [showPopup, setShowPopup] = useState(false);
   const [scanResult, setScanResult] = useState<AttendanceStatusResponse | undefined>(undefined);
   const [camError, setCamError] = useState(false);
+  const isProcessingRef = useRef(false);
+
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const isTransitioning = useRef(false);
 
-  // Helper for hardware cooldown
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const startCamera = async () => {
@@ -64,14 +65,11 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         setScanning(true);
       }, 800);
     } catch (e: any) {
-      // HANDLE ABORT ERROR: User spammed the button, ignore this specific error
       if (e?.name === 'AbortError' || e?.message?.includes('aborted')) {
         console.warn("Symmetry Info: Camera start aborted by user agent (spam protection)");
         return;
       }
-
       console.error("Symmetry Error: Camera start failed", e);
-
       try {
         const scanner = new Html5Qrcode('reader');
         html5QrCodeRef.current = scanner;
@@ -95,7 +93,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         }
       }
     } finally {
-      // Hardware Cooldown: Give the browser 300ms to finalize the transition
       await sleep(300);
       isTransitioning.current = false;
     }
@@ -109,7 +106,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       if (html5QrCodeRef.current) {
         const scanner = html5QrCodeRef.current;
         html5QrCodeRef.current = null;
-
         try {
           await scanner.stop();
           await scanner.clear();
@@ -127,7 +123,6 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         console.error("Symmetry Error: Camera stop failed", e);
       }
     } finally {
-      // Hardware Cooldown: Give the browser 300ms to release the hardware lock
       await sleep(300);
       isTransitioning.current = false;
     }
@@ -149,16 +144,19 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         }
       } catch { }
     })();
-
     return () => {
       stopCamera();
     };
   }, []);
 
   const handleScanSuccess = async (decodedText: string) => {
-    if (validating || showPopup) return;
+    if (isProcessingRef.current || showPopup) return;
+    
+    // HARD LOCK: Kunci instan secara sinkron
+    isProcessingRef.current = true;
+    setValidating(true);
+
     try {
-      setValidating(true);
       let icode = decodedText;
       if (decodedText.startsWith('http') || decodedText.includes('://')) {
         const parts = decodedText.split('/');
@@ -169,7 +167,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         icode = json.i || json.icode || json.nis || icode;
       } catch { }
 
-      const res = await fetch(`/api/student?icode=${icode}`);
+      const res = await fetch(`/api/student?icode=${icode.trim()}`);
       const jsonRes = await res.json();
       if (jsonRes.status !== 'success' || !jsonRes.data) throw new Error("Student data not found.");
 
@@ -184,18 +182,22 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       });
       setValidating(false);
       setShowPopup(true);
+      // Catatan: isProcessingRef tetap TRUE karena popup muncul, mencegah scan di background
     } catch (err: any) {
       toast.error("Scanning Failed", { description: err.message || "Invalid QR Code" });
       setValidating(false);
+      
+      // COOLDOWN: Buka kunci setelah 2 detik agar tidak spamming
+      setTimeout(() => {
+        isProcessingRef.current = false;
+      }, 2000);
     }
   };
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-[#151419] flex flex-col items-center justify-center p-4">
-
       <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-700 ease-out ${isCameraActive ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-90 blur-sm pointer-events-none'}`}>
         <div id="reader" className="w-full h-full absolute inset-0" />
-
         {isCameraActive && !validating && (
           <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
             <div className="relative w-48 h-48">
@@ -238,8 +240,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
                 animation: symmetry-float 4s ease-in-out infinite;
             }
           `}</style>
-
-          <div className="flex flex-col items-center justify-center translate-y-[36px]">
+          <div className="flex flex-col items-center justify-center translate-y-9">
             <div className="relative w-32 h-12 mb-8 flex items-center justify-center animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
               <div className="absolute inset-0 bg-zinc-500/10 rounded-full blur-3xl" />
               <div className="relative flex items-center justify-center -space-x-3">
@@ -268,9 +269,11 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       )}
 
       {validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-[#151419]/90 backdrop-blur-sm">
-          <Loader2 size={40} className="animate-spin text-white" />
-          <p className="text-[10px] mt-3 text-white font-mono tracking-widest uppercase opacity-80">Validating Data...</p>
+        <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/40 animate-in fade-in duration-300">
+          <div className="bg-[#1F1E23] border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center shadow-2xl animate-in zoom-in-95 duration-300">
+            <Loader2 size={32} className="animate-spin text-indigo-500 mb-4" />
+            <p className="text-[10px] text-white/60 font-mono tracking-widest uppercase">Validating Data</p>
+          </div>
         </div>
       )}
 
@@ -281,6 +284,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         sholatTime={sholat as unknown as string}
         onScanUlang={() => {
           setShowPopup(false);
+          isProcessingRef.current = false;
         }}
         initialStatus="idle"
       />

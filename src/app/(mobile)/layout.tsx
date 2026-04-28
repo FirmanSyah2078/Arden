@@ -39,16 +39,18 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
           position="top-center"
           theme="dark"
           richColors
-          closeButton
           toastOptions={{
+            className: "text-sm font-semibold flex items-center",
             style: {
               background: '#1F1E23',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               color: '#FFFFFF',
-              borderRadius: '12px',
+              borderRadius: '16px',
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
+              padding: '12px 16px',
             },
           }}
-          className="absolute mt-4"
+          className="absolute mt-8 [&_[data-sonner-toast]]:flex [&_[data-sonner-toast]]:items-center"
         />
 
         {loading ? (

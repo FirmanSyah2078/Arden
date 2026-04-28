@@ -93,7 +93,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const initialTab = PRAYER_TIMES.find(t => t.id === displayStatus)?.id || 'Dhuhr';
     setActiveTab(initialTab);
-  }, [displayStatus]);
+  }, []); // Only set initial tab on mount to prevent "jumping" when displayStatus updates
 
   useEffect(() => {
     fetchHistory(activeTab);
