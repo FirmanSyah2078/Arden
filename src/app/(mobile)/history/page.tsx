@@ -102,36 +102,43 @@ export default function HistoryPage() {
   return (
     <div className="absolute inset-0 w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
       <UnifiedHeader />
-
-      <div className="flex-1 overflow-y-auto pb-24 custom-scrollbar">
+ 
+      {/* TAB NAVIGATION - Persistent/Fixed at the top */}
+      <div className="w-full bg-[#1F1E23] rounded-2xl p-1 h-12 flex items-center justify-between gap-1 shadow-inner border border-white/5 mt-4 mb-6">
+        {PRAYER_TIMES.map((time) => (
+          <button
+            key={time.id}
+            onClick={() => setActiveTab(time.id)}
+            className={`flex-1 h-full rounded-xl text-[10px] font-bold transition-all duration-300 ${activeTab === time.id
+              ? 'bg-indigo-600 text-white shadow-sm scale-[1.02]'
+              : 'text-white/40 hover:text-white/60'
+            }`}
+          >
+            {time.label}
+          </button>
+        ))}
+      </div>
+ 
+      {/* BODY - The Isolated Scroll Zone */}
+      <div 
+        className="flex-1 overflow-y-auto custom-scrollbar" 
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+      >
+        <style jsx>{`
+          div { -ms-overflow-style: none; scrollbar-width: none; }
+          div::-webkit-scrollbar { display: none; }
+        `}</style>
         <div className="flex flex-col gap-6">
-          
-          {/* Tab Navigation - Material Solid Surface */}
-          <div className="w-full bg-[#1F1E23] rounded-2xl p-1 h-12 flex items-center justify-between gap-1 shadow-inner border border-white/5">
-            {PRAYER_TIMES.map((time) => (
-              <button
-                key={time.id}
-                onClick={() => setActiveTab(time.id)}
-                className={`flex-1 h-full rounded-xl text-[10px] font-bold transition-all duration-300 ${activeTab === time.id
-                  ? 'bg-indigo-600 text-white shadow-sm scale-[1.02]'
-                  : 'text-white/40 hover:text-white/60'
-                }`}
-              >
-                {time.label}
-              </button>
-            ))}
-          </div>
-
           <ListContent isLoadingHistory={isLoadingHistory} historyData={historyData} />
         </div>
       </div>
-
-      {/* NAVIGATION ACTION - Consistency with /me page */}
-      <div className="absolute bottom-8 left-0 right-0 flex justify-center px-5">
+ 
+      {/* FOOTER - The Safe Zone (No Overlap) */}
+      <div className="p-5 flex justify-center items-center bg-transparent">
         <Button
           onClick={() => router.back()}
           variant="outline"
-          className="w-full max-w-sm h-14 rounded-2xl bg-zinc-900/50 text-white/80 border-white/10 hover:bg-zinc-800 hover:text-white font-semibold transition-all active:scale-[0.98]"
+          className="w-full max-w-sm h-14 rounded-2xl bg-zinc-900 text-white/80 border-white/10 hover:bg-zinc-800 hover:text-white font-semibold transition-all active:scale-[0.98]"
         >
           Back
         </Button>
