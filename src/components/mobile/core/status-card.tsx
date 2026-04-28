@@ -6,7 +6,7 @@ import { useProfile } from '@/hooks/settings/use-profile';
 import { useSholat } from '@/hooks/mobile/use-sholat';
 
 export const StatusCard = () => {
-  const { formData } = useProfile();
+  const { profile, isLoading } = useProfile();
   const { displayStatus, timeRange } = useSholat();
   
   const labels: Record<string, string> = { 
@@ -20,7 +20,7 @@ export const StatusCard = () => {
 
   return (
     <>
-      {!formData ? (
+      {isLoading ? (
         <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/10 shadow-xl flex items-center gap-4 animate-pulse">
           {/* Avatar Skeleton */}
           <div className="w-14 h-14 rounded-full bg-zinc-800 animate-shimmer shrink-0" />
@@ -41,10 +41,10 @@ export const StatusCard = () => {
         <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/10 shadow-xl flex items-center gap-4 transition-all duration-500 animate-in fade-in slide-in-from-top-2 fill-mode-both">
           {/* Avatar with Symmetry Blurred BG Glow effect */}
           <div className="w-14 h-14 rounded-full bg-[#2A292F] overflow-hidden shrink-0 border border-white/10 shadow-inner relative">
-            {formData.avatarUrl ? (
+            {profile.avatarUrl ? (
               <>
-                <Image src={formData.avatarUrl} alt="Blur" width={56} height={56} className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40" />
-                <Image src={formData.avatarUrl} alt="Profile" width={56} height={56} className="relative z-10 w-full h-full object-cover" />
+                <Image src={profile.avatarUrl} alt="Blur" width={56} height={56} className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40" />
+                <Image src={profile.avatarUrl} alt="Profile" width={56} height={56} className="relative z-10 w-full h-full object-cover" />
               </>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-white/20">
@@ -58,7 +58,7 @@ export const StatusCard = () => {
               Welcome back,
             </span>
             <h2 className="text-base font-bold text-white truncate leading-tight mb-2">
-              {formData.name || 'User'}
+              {profile.name || 'User'}
             </h2>
             <div className="flex items-center gap-2">
               {/* Professional Prayer Status Badge */}
