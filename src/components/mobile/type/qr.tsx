@@ -112,6 +112,10 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         }
       } catch { }
     })();
+
+    return () => {
+      stopCamera();
+    };
   }, []);
 
   const handleScanSuccess = async (decodedText: string) => {
