@@ -208,7 +208,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       </div>
 
       {!validating && (
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both">
           <div className="flex items-center justify-center p-1 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-full shadow-2xl">
             <button 
               onClick={() => {
@@ -224,7 +224,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
       )}
 
       {!isCameraActive && !validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent pointer-events-none animate-in fade-in duration-500 px-6 text-center pb-20">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out px-6 text-center pb-20">
           <style>{`
             @keyframes symmetry-float {
                 0%, 100% { transform: translateY(0px); }

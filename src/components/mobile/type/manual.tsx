@@ -37,7 +37,7 @@ const SkeletonItem = () => (
 
 // --- COMPONENT 1: SEARCH BAR (Symmetry Outline Version) ---
 export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
-    <div className="relative mb-6 flex-none z-20 px-1 animate-in fade-in slide-in-from-top-4 zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '450ms' }}>
+    <div className="relative mb-6 flex-none z-20 px-1 animate-in fade-in zoom-in-95 duration-500 fill-mode-both" style={{ animationDelay: '450ms' }}>
         <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group ${search ? 'border-indigo-500/40 ring-1 ring-indigo-500/20' : 'border-white/10'
             }`}>
             <Search size={18} className={`${search ? 'text-white' : 'text-zinc-400'} transition-colors shrink-0 mr-2`} />
@@ -91,7 +91,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
             <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-[#151419] to-transparent pointer-events-none z-10" />
 
             {!search && !isFocused && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-20 animate-in fade-in duration-500">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
                     <style>{`
                         @keyframes symmetry-float {
                             0%, 100% { transform: translateY(0px); }
@@ -164,11 +164,11 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
 
                     <ul className="flex flex-col gap-3 pb-8 pt-1">
                         {data.map((item, index) => (
-                            <li
-                                key={item.id_student}
-                                className="animate-in slide-in-from-bottom-2 duration-300"
-                                style={{ animationDelay: `${index * 60}ms` }}
-                            >
+                                <li
+                                    key={item.id_student}
+                                    className="animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300"
+                                    style={{ animationDelay: `${index * 60}ms` }}
+                                >
                                 <button
                                     onClick={() => handleSelect(item)}
                                     className="w-full text-left bg-[#1F1E23] hover:bg-[#2A292F] border border-white/5 rounded-2xl p-4 flex items-center gap-4 transition-all active:scale-[0.98] group shadow-sm"

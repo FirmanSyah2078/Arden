@@ -97,11 +97,11 @@ export const Manager = ({
 
       <div className="relative w-full h-full">
         {mode === 'scan' ? (
-          <div key="scan-view" className="w-full h-full animate-in fade-in slide-in-from-left-4 zoom-in-95 duration-500 ease-out">
+          <div key="scan-view" className="w-full h-full animate-in fade-in zoom-in-95 duration-500 ease-out">
             <Qr ref={qrRef} sholat={activeScanner} onCamActive={setIsCamActive} onCamAction={handleCamAction} />
           </div>
         ) : (
-          <div key="manual-view" className="w-full h-full animate-in fade-in slide-in-from-right-4 zoom-in-95 duration-500 ease-out flex flex-col">
+          <div key="manual-view" className="w-full h-full animate-in fade-in zoom-in-95 duration-500 ease-out flex flex-col">
             <Manual
               search={search}
               setSearch={setSearch}
