@@ -14,8 +14,10 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    if (!body.class_name) { // 🔥 FIX: Sesuai properti bahasa Inggris (advisor sifatnya opsional)
-      return NextResponse.json({ status: 'fail', message: 'Class Name is required' }, { status: 400 });
+    
+    // 🔥 FIX: Validasi 3 kolom wajib
+    if (!body.class_name || !body.grade_level || !body.academic_year) { 
+      return NextResponse.json({ status: 'fail', message: 'Tingkatan, Nama Kelas, dan Tahun Ajaran wajib diisi' }, { status: 400 });
     }
 
     const data = await ClassService.createClass(body);
@@ -52,3 +54,4 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ status: 'fail', message: err.message }, { status: 500 });
   }
 }
+

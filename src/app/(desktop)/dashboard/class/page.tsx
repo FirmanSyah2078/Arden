@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import React from "react";
+// 🔥 TAMBAHAN: Import useRouter untuk navigasi Next.js
+import { useRouter } from "next/navigation"; 
 import { Search, QrCode, SearchX, ExternalLink, Filter, ChevronDown, X, BadgeCheck, MoreHorizontal } from "lucide-react"; 
 
 // Shadcn UI Components
@@ -29,7 +31,7 @@ import {
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 
-// Dummy Data (Updated with description & period stats)
+// Dummy Data
 const classesData = [
   { id: 1, name: "X MIPA 1", wali: "Mr. Mulyono S.Pd.", batch: "X", Student: 32, period: 4, description: "A highly disciplined class focusing on advanced sciences and collaborative projects." },
   { id: 2, name: "X MIPA 2", wali: "Mrs. Susi S.Pd.", batch: "X", Student: 31, period: 2, description: "Known for active participation in national physics Olympiads and teamwork." },
@@ -57,6 +59,8 @@ const classesData = [
 ];
 
 export default function ClassPage() {
+  const router = useRouter(); 
+
   const [keyword, setKeyword] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
@@ -84,32 +88,27 @@ export default function ClassPage() {
   const StudentPages = Math.ceil(filteredClasses.length / itemsPerPage);
   const paginatedClasses = filteredClasses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // 🔥 FIX: Logika Sliding Window Pagination
   const generatePagination = () => {
     if (StudentPages <= 4) {
-      // Jika halaman 4 atau kurang, tampilkan semua (1, 2, 3, 4)
       return Array.from({ length: StudentPages }, (_, i) => i + 1);
     }
     
     if (currentPage <= 2) {
-      // Jika di awal: 1, 2, 3, ..., Terakhir
       return [1, 2, 3, '...', StudentPages];
     }
     
     if (currentPage >= StudentPages - 1) {
-      // Jika di akhir: 1, ..., Terakhir-2, Terakhir-1, Terakhir
       return [1, '...', StudentPages - 2, StudentPages - 1, StudentPages];
     }
     
-    // Jika di tengah: 1, ..., (Current-1), Current, (Current+1), ..., Terakhir
     return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', StudentPages];
   };
 
   const visiblePages = generatePagination();
 
+  // 🔥 WADAH DIHILANGKAN, DIGANTI FRAGMENT
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-white/20">
-      
+    <>
       <header className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-1">
@@ -123,7 +122,6 @@ export default function ClassPage() {
 
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
             
-            {/* 🔥 FIX: Tree React disatukan dan ditambah suppressHydrationWarning */}
             <div className={cn("flex items-center transition-all duration-300", activeFilter !== "all" && "h-9 rounded-md border border-border bg-card shadow-sm animate-in fade-in slide-in-from-right-2")}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -161,7 +159,6 @@ export default function ClassPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Tombol X hanya muncul jika aktif */}
               {activeFilter !== "all" && (
                 <button 
                   onClick={(e) => {
@@ -177,28 +174,22 @@ export default function ClassPage() {
               )}
             </div>
 
-            {/* 🔥 FIX: Search Input yang Lebih Ramping, Anti-Spellcheck, & Ada Tombol Clear */}
             <div className="relative group w-full sm:w-56 sm:focus-within:w-64 transition-all duration-500 ease-out">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 size-4" />
-
               <Input
                 placeholder="Search class or teacher..."
-                // 🔥 FIX: Matikan pemeriksa ejaan browser agar tidak ada garis merah di bawah teks
                 spellCheck={false}
                 autoComplete="off"
-                // 🔥 FIX: Hapus focus-visible:border-white, tambah pr-9 untuk ruang tombol X
                 className="pl-9 pr-9 h-9 bg-muted/30 border-border hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:ring-0 focus-visible:bg-transparent transition-all text-[13px] rounded-md text-foreground placeholder:text-muted-foreground shadow-sm"
                 value={keyword}
                 onChange={handleSearchChange}
               />
-
-              {/* 🔥 FIX: Tombol X muncul otomatis HANYA jika ada teks yang diketik */}
               {keyword && (
                 <button
                   type="button"
                   onClick={() => {
                     setKeyword("");
-                    setCurrentPage(1); // Reset halaman ke 1 saat pencarian dihapus
+                    setCurrentPage(1);
                   }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground hover:bg-destructive/10 rounded-full transition-all animate-in fade-in zoom-in-75 duration-200 outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
                   aria-label="Clear search"
@@ -207,117 +198,107 @@ export default function ClassPage() {
                 </button>
               )}
             </div>
-
           </div>
         </div>
 
         <div className="h-px w-full bg-linear-to-r from-border via-border/50 to-transparent" />
       </header>
 
-      {/* --- GRID CLASS CARDS --- */}
       <main className="flex-1 w-full pb-8">
         {paginatedClasses.length > 0 ? (
           <div className="flex flex-wrap justify-center items-start gap-6 xl:gap-8 mt-4">
-            {paginatedClasses.map((kelas) => (
-              <div
-                key={kelas.id}
-                className="group relative w-63.5 h-91 bg-card border border-border rounded-3xl flex flex-col transition-all duration-300 hover:border-white/20 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
-              >
-                {/* 1. Banner Section */}
-                <div className="relative w-full h-28 shrink-0 bg-muted overflow-hidden rounded-t-3xl">
-                  <Image
-                    src="/bg-banner.jpeg"
-                    alt="Class Banner"
-                    fill
-                    className="object-cover opacity-70 transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/80" />
+            {paginatedClasses.map((kelas) => {
+              // 🔥 TAMBAHAN: Logika Slugifikasi Nama Kelas ("X MIPA 1" -> "x-mipa-1")
+              const classSlug = kelas.name.toLowerCase().replace(/\s+/g, '-');
 
-                  {/* 🔥 FIX: Status Badge menjadi Nama Wali Kelas dengan background gelap agar jelas */}
-                  <div className="absolute top-4 right-4 flex items-center px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 z-10 shadow-sm max-w-40">
-                    <span className="font-inter text-[10px] font-semibold text-white tracking-wide truncate">
-                      {kelas.wali}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 🔥 FIX: Avatar Profile dengan efek Kaca Pucat (Frosted Glass) yang lebih terang */}
-                <div className="absolute top-21 left-5 z-20">
-                  {/* Dasar bg-card (hitam pekat) untuk memblokir garis spanduk agar tidak bocor */}
-                  <div className="relative size-14 rounded-full border-[3px] border-card bg-card flex items-center justify-center shadow-lg overflow-hidden">
-
-                    {/* Lapisan primary transparan yang LEBIH TERANG agar tidak menyatu dengan background */}
-                    <div className="absolute inset-0 bg-linear-to-br from-primary/2 via-primary/8 to-transparent" />
-
-                    <span className="font-space font-bold text-foreground text-[15px] z-10 drop-shadow-md">
-                      {kelas.batch}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 3. Content Section */}
-                <div className="flex flex-col flex-1 p-5 pt-10">
-
-                  {/* Title & Verified Badge */}
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <h3 className="font-jakarta font-bold text-[18px] text-foreground tracking-tight leading-none truncate">
-                      {kelas.name}
-                    </h3>
-                    <BadgeCheck className="size-4 text-blue-500 shrink-0" />
-                  </div>
-
-                  {/* 🔥 FIX: Username menjadi @namakelas huruf kecil */}
-                  <p className="font-mono text-[11px] text-muted-foreground tracking-tight">
-                    @{kelas.name.toLowerCase().replace(/\s+/g, '')}
-                  </p>
-
-                  {/* 🔥 FIX: Deskripsi kelas dengan line-clamp 2 baris */}
-                  <p className="font-inter text-[12px] text-foreground/70 leading-relaxed mt-2.5 line-clamp-2">
-                    {kelas.description}
-                  </p>
-
-                  {/* 🔥 FIX: 4. Stats Section (3 Kolom & Warna "Period" Disamakan) */}
-                  <div className="flex items-center justify-between mt-auto mb-4 font-inter text-[12px]">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-foreground leading-none mb-1">{kelas.Student}</span>
-                      <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Students</span>
-                    </div>
-                    <div className="h-5 w-px bg-border" />
-                    <div className="flex flex-col">
-                      {/* Warna text-foreground disamaratakan */}
-                      <span className="font-bold text-foreground leading-none mb-1">{kelas.period}</span>
-                      <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Period</span>
-                    </div>
-                    <div className="h-5 w-px bg-border" />
-                    <div className="flex flex-col">
-                      <span className="font-bold text-foreground leading-none mb-1">{kelas.batch}</span>
-                      <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Grade</span>
+              return (
+                <div
+                  key={kelas.id}
+                  className="group relative w-63.5 h-91 bg-card border border-border rounded-3xl flex flex-col transition-all duration-300 hover:border-white/20 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+                >
+                  {/* Banner */}
+                  <div className="relative w-full h-28 shrink-0 bg-muted overflow-hidden rounded-t-3xl">
+                    <Image
+                      src="/bg-banner.jpeg"
+                      alt="Class Banner"
+                      fill
+                      className="object-cover opacity-70 transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/80" />
+                    <div className="absolute top-4 right-4 flex items-center px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 z-10 shadow-sm max-w-40">
+                      <span className="font-inter text-[10px] font-semibold text-white tracking-wide truncate">
+                        {kelas.wali}
+                      </span>
                     </div>
                   </div>
 
-                  {/* 5. Links / Action Buttons */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      /* 🔥 FIX: bg-primary/70 agar perbedaan warnanya kentara, dan tambah efek hover melayang sedikit */
-                      className="group/view flex-1 h-9 rounded-full bg-primary text-black hover:bg-primary/70 hover:-translate-y-0.5 font-bold text-[12px] transition-all active:scale-95 shadow-md"
-                    >
-                      <ExternalLink className="mr-1.5 size-3.5 group-hover/view:ar-bounce-x" />
-                      View
-                    </Button>
+                  {/* Avatar */}
+                  <div className="absolute top-21 left-5 z-20">
+                    <div className="relative size-14 rounded-full border-[3px] border-card bg-card flex items-center justify-center shadow-lg overflow-hidden">
+                      <div className="absolute inset-0 bg-linear-to-br from-primary/2 via-primary/8 to-transparent" />
+                      <span className="font-space font-bold text-foreground text-[15px] z-10 drop-shadow-md">
+                        {kelas.batch}
+                      </span>
+                    </div>
+                  </div>
 
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="group/qr h-9 w-9 rounded-full border-border bg-card hover:bg-accent hover:border-white/20 hover:text-foreground transition-all active:scale-95 shadow-sm"
-                      onClick={() => setIsQRModalOpen(true)}
-                    >
-                      <QrCode className="size-4 transition-colors group-hover/qr:text-primary group-hover/qr:ar-shake-loop" />
-                    </Button>
+                  {/* Content */}
+                  <div className="flex flex-col flex-1 p-5 pt-10">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <h3 className="font-jakarta font-bold text-[18px] text-foreground tracking-tight leading-none truncate">
+                        {kelas.name}
+                      </h3>
+                      <BadgeCheck className="size-4 text-blue-500 shrink-0" />
+                    </div>
+
+                    <p className="font-mono text-[11px] text-muted-foreground tracking-tight">
+                      @{kelas.name.toLowerCase().replace(/\s+/g, '')}
+                    </p>
+
+                    <p className="font-inter text-[12px] text-foreground/70 leading-relaxed mt-2.5 line-clamp-2">
+                      {kelas.description}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-auto mb-4 font-inter text-[12px]">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-foreground leading-none mb-1">{kelas.Student}</span>
+                        <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Students</span>
+                      </div>
+                      <div className="h-5 w-px bg-border" />
+                      <div className="flex flex-col">
+                        <span className="font-bold text-foreground leading-none mb-1">{kelas.period}</span>
+                        <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Period</span>
+                      </div>
+                      <div className="h-5 w-px bg-border" />
+                      <div className="flex flex-col">
+                        <span className="font-bold text-foreground leading-none mb-1">{kelas.batch}</span>
+                        <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Grade</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        // 🔥 TAMBAHAN: Navigasi ke URL dinamis saat diklik
+                        onClick={() => router.push(`/dashboard/class/${classSlug}`)}
+                        className="group/view flex-1 h-9 rounded-full bg-primary text-black hover:bg-primary/70 hover:-translate-y-0.5 font-bold text-[12px] transition-all active:scale-95 shadow-md"
+                      >
+                        <ExternalLink className="mr-1.5 size-3.5 group-hover/view:ar-bounce-x" />
+                        View
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="group/qr h-9 w-9 rounded-full border-border bg-card hover:bg-accent hover:border-white/20 hover:text-foreground transition-all active:scale-95 shadow-sm"
+                        onClick={() => setIsQRModalOpen(true)}
+                      >
+                        <QrCode className="size-4 transition-colors group-hover/qr:text-primary group-hover/qr:ar-shake-loop" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="py-32 flex flex-col items-center justify-center opacity-30">
@@ -326,14 +307,11 @@ export default function ClassPage() {
           </div>
         )}
 
-        {/* --- PAGINATION (Premium Rounded Square & Subtle Active) --- */}
+        {/* Pagination Tetap Sama */}
         {StudentPages > 1 && (
           <div className="mt-12 flex justify-center pb-12">
             <Pagination className="mx-0 w-auto">
-              {/* Jarak antar elemen utama dibuat lega (gap-2) */}
               <PaginationContent className="flex items-center gap-2 sm:gap-3">
-
-                {/* Tombol Previous */}
                 <PaginationItem>
                   <PaginationPrevious
                     href="#"
@@ -342,7 +320,6 @@ export default function ClassPage() {
                       if (currentPage > 1) setCurrentPage(currentPage - 1);
                     }}
                     className={cn(
-                      // 🔥 Bentuk rounded-lg untuk kesan kotak melengkung elegan
                       "h-8 px-2 sm:px-3 rounded-lg border border-transparent transition-all duration-300 flex items-center gap-1 font-bold text-[11px] uppercase tracking-wider",
                       currentPage === 1
                         ? "pointer-events-none text-muted-foreground/30"
@@ -351,10 +328,8 @@ export default function ClassPage() {
                   />
                 </PaginationItem>
 
-                {/* Area Angka - Jarak antar angka (gap-1) */}
                 <div className="flex items-center gap-1.5">
                   {visiblePages.map((page, index) => {
-                    // Render Titik-titik (Ellipsis)
                     if (page === '...') {
                       return (
                         <PaginationItem key={`ellipsis-${index}`}>
@@ -364,8 +339,6 @@ export default function ClassPage() {
                         </PaginationItem>
                       );
                     }
-
-                    // Render Angka Halaman
                     return (
                       <PaginationItem key={page}>
                         <PaginationLink
@@ -376,13 +349,10 @@ export default function ClassPage() {
                             setCurrentPage(Number(page));
                           }}
                           className={cn(
-                            // 🔥 FIX KUNCI: rounded-lg (kotak melengkung), h-8 w-8 (proporsi ramping)
                             "h-8 w-8 p-0 flex items-center justify-center font-bold text-xs rounded-lg transition-all duration-300",
                             currentPage === page
-                              // 🔥 AKTIF: Background redup transparan (15%), ada border tipis bercahaya, text putih
                               ? "bg-foreground/15 text-foreground border border-foreground/20 shadow-sm" 
-                              // 🔥 TIDAK AKTIF: Tanpa border, hover menyala elegan
-                              : "bg-transparent text-muted-foreground border border-transparent hover:bg-accent/50 hover:text-foreground" 
+                              : "bg-transparent text-muted-foreground border border-transparent hover:bg-accent/50 hover:text-foreground"
                           )}
                         >
                           {page}
@@ -392,7 +362,6 @@ export default function ClassPage() {
                   })}
                 </div>
 
-                {/* Tombol Next */}
                 <PaginationItem>
                   <PaginationNext
                     href="#"
@@ -408,14 +377,13 @@ export default function ClassPage() {
                     )}
                   />
                 </PaginationItem>
-
               </PaginationContent>
             </Pagination>
           </div>
         )}
       </main>
 
-      {/* --- QR MODAL --- */}
+      {/* QR MODAL (Tetap Sama) */}
       <Dialog open={isQRModalOpen} onOpenChange={setIsQRModalOpen}>
         <DialogContent className="bg-card/95 backdrop-blur-2xl border-border sm:max-w-xs p-0 overflow-hidden rounded-4xl shadow-2xl">
           <div className="p-8 flex flex-col items-center gap-6 text-center">
@@ -441,6 +409,6 @@ export default function ClassPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

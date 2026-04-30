@@ -5,7 +5,8 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2, Users, AlertTriangle, Activity } from "lucide-react"
+// 🔥 IMPORT LAYERS
+import { Pencil, Trash2, Users, AlertTriangle, Activity, Layers } from "lucide-react"
 import {
   Tooltip,
   TooltipContent,
@@ -15,32 +16,12 @@ import {
 import { cn } from "@/lib/utils"
 
 import { CoreTable } from "@/components/dashboard/directory/core-table"
-import {
-  GenericCreateDialog,
-  FieldConfig,
-} from "@/components/dashboard/directory/dialog/create"
+import { GenericCreateDialog } from "@/components/dashboard/directory/dialog/create"
 import { GenericEditDialog } from "@/components/dashboard/directory/dialog/edit"
 import { GenericDeleteDialog } from "@/components/dashboard/directory/dialog/delete"
 
 import { useClasses, ClassWithMetrics } from "@/hooks/directory/use-classes"
 import { useDashboard } from "@/contexts/cont-dashboard"
-
-const classFields: FieldConfig[] = [
-  {
-    name: "class_name", 
-    label: "Class Name",
-    type: "text",
-    placeholder: "Example: X RPL 1",
-    required: true,
-  },
-  {
-    name: "advisor",
-    label: "Homeroom Teacher",
-    type: "text",
-    placeholder: "Teacher's Name",
-    required: true, 
-  },
-]
 
 export default function ClassesPage() {
   const {
@@ -52,8 +33,10 @@ export default function ClassesPage() {
     setEditData,
     deleteData,
     setDeleteData,
-    refreshData, // 🔥 AMBIL FUNGSI PENYEGAR DARI HOOK
+    classFields, 
+    refreshData, 
   } = useClasses()
+  
   const { activeRole, isReady } = useDashboard()
 
   const isReadOnly = activeRole.plan === "Read-Only"
@@ -75,15 +58,17 @@ export default function ClassesPage() {
         <div className="flex items-center justify-center">
           <Avatar className="h-9 w-9 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-transparent">
             <AvatarImage src="" />
-            <AvatarFallback className="bg-transparent text-[10px] font-bold text-gray-500">
-              {row.original.class_name.substring(0, 2).toUpperCase()}
+            {/* 🔥 FOTO PROFIL SEKARANG MUNCULKAN ANGKA TINGKATAN */}
+            <AvatarFallback className="bg-transparent text-[11px] font-black text-white/70 tracking-tighter">
+              {row.original.grade_level}
             </AvatarFallback>
           </Avatar>
         </div>
       ),
     },
     {
-      accessorFn: (row) => `${row.class_name} ${row.advisor || ""}`, 
+      // Accessor digabung untuk kebutuhan Search Box agar sangat cerdas
+      accessorFn: (row) => `${row.grade_level} ${row.class_name} ${row.advisor || ""}`, 
       id: "class_name",
       header: "Class Name",
       meta: { className: "pl-3 text-left min-w-[120px]" },
@@ -94,6 +79,20 @@ export default function ClassesPage() {
           </span>
           <span className="text-[10px] text-gray-500">
             {row.original.advisor || "No Teacher"}
+          </span>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "grade_level",
+      header: "Grade",
+      meta: { className: "text-center px-2" },
+      cell: ({ row }) => (
+        // 🔥 KOLOM GRADE MENGGUNAKAN ICON LAYERS + VALUE
+        <div className="flex items-center justify-center gap-1.5 text-gray-300">
+          <Layers className="h-3.5 w-3.5 text-gray-500" />
+          <span className="font-mono text-xs font-bold">
+            {row.original.grade_level}
           </span>
         </div>
       ),
@@ -223,8 +222,8 @@ export default function ClassesPage() {
           onOpenChange={setOpenCreate}
           title="Create New Class"
           endpoint="/api/class"
-          fields={classFields}
-          onSuccess={refreshData} // 🔥 SUNTIKKAN KE SINI
+          fields={classFields} 
+          onSuccess={refreshData} 
         />
 
         {editData && (
@@ -235,40 +234,44 @@ export default function ClassesPage() {
             endpoint="/api/class"
             initialData={editData as unknown as Record<string, unknown>}
             idField="id_class" 
-            fields={classFields}
-            onSuccess={refreshData} // 🔥 SUNTIKKAN KE SINI
+            fields={classFields} 
+            onSuccess={refreshData} 
           />
         )}
 
-        {deleteData && (
-          <GenericDeleteDialog
-            open={!!deleteData}
-            onOpenChange={(open) => !open && setDeleteData(null)}
-            title="Delete Class & Students"
-            description={
-              <div className="space-y-2">
-                <p>
-                  Are you sure you want to delete{" "}
-                  <b className="text-white">{deleteData.class_name}</b>?
-                </p>
-                <div className="flex items-start gap-2 rounded-md border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">
-                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <span>
-                    <b>WARNING:</b> This action will also permanently delete{" "}
-                    <b className="mx-1 text-white underline">
-                      {deleteData.total_students || 0} student records
-                    </b>
-                    .
-                  </span>
+        {deleteData && (() => {
+          // Konversi grade ke Romawi dan gabungkan dengan nama kelas
+          const grade = deleteData.grade_level;
+          const roman = grade === 10 ? "X" : grade === 11 ? "XI" : grade === 12 ? "XII" : grade;
+          const fullClassName = `${roman} ${deleteData.class_name}`;
+
+          return (
+            <GenericDeleteDialog
+              open={!!deleteData}
+              onOpenChange={(open) => !open && setDeleteData(null)}
+              title="Delete Class"
+              description={
+                <div className="space-y-3 pt-1">
+                  <p className="text-[13px] text-muted-foreground">
+                    Are you sure you want to delete <b className="text-white font-medium">{fullClassName}</b>?
+                  </p>
+                  
+                  {/* Efek Kaca Bening (Glassmorphism) dengan hint merah tipis */}
+                  <div className="flex items-center gap-3 rounded-lg border border-red-500/20 bg-red-500/2 px-3 py-2.5 backdrop-blur-sm">
+                    <AlertTriangle className="size-4 text-red-500/80 shrink-0" />
+                    <p className="text-[12px] text-muted-foreground leading-tight">
+                      This will permanently remove <b className="text-red-400 font-medium">{deleteData.total_students || 0} student records</b>.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            }
-            endpoint="/api/class"
-            itemName={deleteData.class_name}
-            id={deleteData.id_class || 0}
-            onSuccess={refreshData} // 🔥 SUNTIKKAN KE SINI
-          />
-        )}
+              }
+              endpoint="/api/class"
+              itemName={fullClassName}
+              id={deleteData.id_class || 0}
+              onSuccess={refreshData} 
+            />
+          );
+        })()}
       </CoreTable>
     </>
   )

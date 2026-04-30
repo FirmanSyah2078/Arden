@@ -1,41 +1,50 @@
-// src/db/dashboard/directory/class.service.ts
+// src/db/directory/class.service.ts
 import { prisma } from "@/lib/prisma"
 
 export class ClassService {
-  // Ambil semua kelas + jumlah siswinya
   static async getAllClasses() {
-    const classes = await prisma.tbl_classes.findMany({ // 🔥 FIX: tbl_kelas -> tbl_classes
+    const classes = await prisma.tbl_classes.findMany({
       include: {
-        _count: {
-          select: { tbl_students: true } // 🔥 FIX: tbl_siswi -> tbl_students
-        }
+        _count: { select: { tbl_students: true } }
       },
-      orderBy: { class_name: 'asc' } // 🔥 FIX
+      orderBy: [
+        { academic_year: 'desc' }, // Tahun ajaran terbaru di atas
+        { grade_level: 'asc' },    // Kls 10 dulu, baru 11, 12
+        { class_name: 'asc' }      // Baru abjad nama kelas (MIPA 1, MIPA 2)
+      ]
     });
 
-    // Format output & ubah BigInt Prisma menjadi Number agar aman saat di-JSON-kan
     return classes.map(cls => ({
       id_class: Number(cls.id_class),
+      grade_level: cls.grade_level,
       class_name: cls.class_name,
+      academic_year: cls.academic_year,
       advisor: cls.advisor,
-      total_students: cls._count.tbl_students // 🔥 FIX
+      description: cls.description,
+      total_students: cls._count.tbl_students
     }));
   }
 
-  static async createClass(data: { class_name: string; advisor?: string }) { // 🔥 FIX
+  static async createClass(data: { grade_level: number | string; class_name: string; academic_year: string; advisor?: string; description?: string }) {
     const newClass = await prisma.tbl_classes.create({
       data: {
+        grade_level: Number(data.grade_level),
         class_name: data.class_name.toUpperCase(),
-        advisor: data.advisor || null
+        academic_year: data.academic_year,
+        advisor: data.advisor || null,
+        description: data.description || null
       }
     });
     return { ...newClass, id_class: Number(newClass.id_class) };
   }
 
-  static async updateClass(id: number, data: { class_name?: string; advisor?: string }) { // 🔥 FIX
+  static async updateClass(id: number, data: { grade_level?: number | string; class_name?: string; academic_year?: string; advisor?: string; description?: string }) {
     const payload: any = {};
+    if (data.grade_level) payload.grade_level = Number(data.grade_level);
     if (data.class_name) payload.class_name = data.class_name.toUpperCase();
+    if (data.academic_year) payload.academic_year = data.academic_year;
     if (data.advisor !== undefined) payload.advisor = data.advisor;
+    if (data.description !== undefined) payload.description = data.description;
 
     const updated = await prisma.tbl_classes.update({
       where: { id_class: id },
@@ -45,10 +54,9 @@ export class ClassService {
   }
 
   static async deleteClassWithStudents(id: number) {
-    // Prisma Transaction: Hapus siswi dulu, baru hapus kelasnya (Aman & Atomik)
     await prisma.$transaction([
-      prisma.tbl_students.deleteMany({ where: { id_class: id } }), // 🔥 FIX
-      prisma.tbl_classes.delete({ where: { id_class: id } }) // 🔥 FIX
+      prisma.tbl_students.deleteMany({ where: { id_class: id } }),
+      prisma.tbl_classes.delete({ where: { id_class: id } })
     ]);
     return true;
   }

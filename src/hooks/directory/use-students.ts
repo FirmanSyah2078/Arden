@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { Student, Class } from "@/types/api"
+import { FieldConfig } from "@/components/dashboard/directory/dialog/create"
 
 export interface StudentWithStatus extends Student {
   is_menstruating?: boolean
@@ -16,7 +17,6 @@ export function useStudents() {
   const [editData, setEditData] = useState<Student | null>(null)
   const [deleteData, setDeleteData] = useState<Student | null>(null)
 
-  // 🔥 FUNGSI FETCH TERPUSAT (Agar bisa dipanggil ulang setelah save/edit/delete)
   const fetchStudents = useCallback(() => {
     setIsLoading(true);
     fetch("/api/student")
@@ -34,46 +34,60 @@ export function useStudents() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Ambil data Siswi pertama kali komponen dimuat
   useEffect(() => {
     fetchStudents();
   }, [fetchStudents])
 
-  // Fetch Options Kelas (Hanya sekali di awal)
   useEffect(() => {
     fetch('/api/class')
       .then(res => res.json())
       .then(json => {
         if (json.status === 'success') {
           setClassOptions(json.data.map((cls: Class) => ({
-            label: cls.class_name,
+            // 🔥 Sudah menggunakan Angka (10, 11, 12) sesuai DB, jadinya "10 MIPA 1"
+            label: `${cls.grade_level} ${cls.class_name}`, 
             value: cls.id_class.toString()
           })))
         }
       })
   }, [])
 
-  // Setup Fields secara dinamis
-  const createFields = useMemo(() => [
-    { name: "full_name", label: "Full Name", type: "text", required: true },
-    { name: "nis", label: "NIS", type: "number", required: true },
-    { name: "id_class", label: "Class", type: "select", placeholder: "Choose Class", options: classOptions, required: true }
-  ] as any[], [classOptions])
-
-  const editFields = useMemo(() => [
-    { name: "full_name", label: "Full Name", type: "text" },
-    { name: "nis", label: "NIS", type: "number" },
-    { name: "id_class", label: "Class", type: "select", placeholder: "Choose Class", options: classOptions }
-  ] as any[], [classOptions])
+  const studentFields: FieldConfig[] = useMemo(() => [
+    { 
+      name: "full_name", 
+      label: "Full Name", 
+      type: "text", 
+      placeholder: "Ex: Aisyah Putri Maharani", 
+      required: true 
+    },
+    { 
+      // 🔥 FIX: type diubah ke "text" agar panah (spinner) browser hilang
+      name: "nis", 
+      label: "NIS", 
+      type: "text", 
+      placeholder: "Ex: 1002938101", 
+      required: true, 
+      halfWidth: true 
+    },
+    { 
+      name: "id_class", 
+      label: "Class", 
+      type: "select", 
+      placeholder: "Select Class", 
+      options: classOptions, 
+      required: true, 
+      halfWidth: true 
+    }
+  ], [classOptions])
 
   return {
     data,
     classOptions, isLoading,
-    createFields, editFields,
+    studentFields, 
     openCreate, setOpenCreate,
     openImport, setOpenImport,
     editData, setEditData,
     deleteData, setDeleteData,
-    refreshData: fetchStudents // 🔥 EKSPOR FUNGSI SAKTI INI
+    refreshData: fetchStudents 
   }
 }

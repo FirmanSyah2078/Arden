@@ -84,7 +84,9 @@ export interface User {
 
 export interface Class {
   id_class: number;
+  grade_level: number;       // 🔥 BARU
   class_name: string;
+  academic_year: string;     // 🔥 BARU
   advisor: string | null;
   description: string | null;
 }

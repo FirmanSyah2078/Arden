@@ -28,10 +28,11 @@ export function ImportDialog({
   const [sqlMode, setSqlMode] = useState<"edit" | "preview">("edit")
 
   const placeholderSql = "-- Paste your SQL INSERT statement here..."
-  // 🔥 FIX: Template Inggris sesuai Schema Database Baru
-  const simpleTemplateSql = `INSERT INTO tbl_students (full_name, nis, class_name) VALUES
-('Siti Aminah', '12345', 'X MIPA 1'),
-('Dewi Sartika', '67890', 'XI IPS 2');`
+  
+  // 🔥 FIX: Template SQL diperbarui untuk mendukung Grade (10, 11, 12)
+  const simpleTemplateSql = `INSERT INTO tbl_students (full_name, nis, grade_level, class_name) VALUES
+('Siti Aminah', '100123', 10, 'MIPA 1'),
+('Dewi Sartika', '100124', 11, 'IPS 2');`
 
   const [sqlCode, setSqlCode] = useState("")
 
@@ -69,23 +70,22 @@ export function ImportDialog({
     setErrorMsg(null)
   }, [sqlCode, file, activeTab])
 
-  // 1. Download Template Excel (Disesuaikan dengan format Inggris Baru)
+  // 1. Download Template Excel (Disesuaikan dengan Format Baru)
   const handleDownloadTemplate = () => {
     const templateData = [
-      { "NIS": "12345", "Full Name": "Siti Aminah", "Class Name": "X MIPA 1" },
-      { "NIS": "67890", "Full Name": "Dewi Sartika", "Class Name": "XI IPS 2" },
+      { "Full Name": "Siti Aminah", "NIS": "100123", "Grade": "10", "Class Name": "MIPA 1" },
+      { "Full Name": "Dewi Sartika", "NIS": "100124", "Grade": "11", "Class Name": "IPS 2" },
     ]
     const classRefData = [
-      { "Available Classes": "X MIPA 1" },
-      { "Available Classes": "X MIPA 2" },
+      { "Available Grades": "10, 11, 12", "Available Classes": "MIPA 1, IPS 2, etc." },
     ]
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(templateData), "Student Data Input")
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(classRefData), "Class Reference")
-    XLSX.writeFile(wb, "Student_Template.xlsx")
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(classRefData), "Reference")
+    XLSX.writeFile(wb, "ARDEN_Student_Template.xlsx")
   }
 
-  // 2. Handle File Excel
+  // 2. Handle File Excel (SUPER ROBUST NORMALIZATION)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMsg(null)
     const selectedFile = e.target.files?.[0]
@@ -99,25 +99,52 @@ export function ImportDialog({
         if (typeof bstr !== "string") throw new Error("Failed to read file")
         const wb = XLSX.read(bstr, { type: "binary" })
         const ws = wb.Sheets[wb.SheetNames[0]]
-        const data = XLSX.utils.sheet_to_json(ws) as Record<string, unknown>[]
+        
+        // Baca data raw
+        const rawData = XLSX.utils.sheet_to_json(ws) as Record<string, unknown>[]
 
-        if (data.length === 0) throw new Error("Excel file is empty!")
+        if (rawData.length === 0) throw new Error("Excel file is empty!")
 
-        const headers = Object.keys(data[0])
-        if (!headers.includes("Full Name") || !headers.includes("NIS")) {
-          throw new Error("Invalid header format! Ensure 'Full Name' and 'NIS' columns exist.")
-        }
+        // 🔥 PROSES NORMALISASI HEADER SUPER TANGGUH
+        const formattedData = rawData.map((row, index) => {
+          const normalizedRow: Record<string, string> = {}
+          
+          // Sapu bersih semua header: hilangkan spasi depan/belakang, jadikan lowercase
+          Object.keys(row).forEach(key => {
+            const cleanKey = key.trim().toLowerCase().replace(/\s+/g, ' ')
+            normalizedRow[cleanKey] = String(row[key]).trim()
+          })
 
-        const formattedData = data.map(item => ({
-          ...item,
-          'Nama Lengkap': toTitleCase(String(item['Full Name'] || item['Nama Lengkap'] || '')), // Compatibility hack
-          'Nama Kelas': String(item['Class Name'] || item['Nama Kelas'] || ''), // Compatibility hack
-        }))
+          // Deteksi cerdas berbagai kemungkinan nama kolom
+          const fullName = normalizedRow['full name'] || normalizedRow['nama lengkap'] || normalizedRow['nama'] || ''
+          const nis = normalizedRow['nis'] || normalizedRow['no induk'] || ''
+          const grade = normalizedRow['grade'] || normalizedRow['tingkat'] || normalizedRow['grade level'] || ''
+          const className = normalizedRow['class name'] || normalizedRow['nama kelas'] || normalizedRow['kelas'] || ''
+
+          if (!fullName || !nis) {
+            throw new Error(`Data tidak lengkap pada baris ${index + 2}. Nama dan NIS wajib diisi.`)
+          }
+
+          // Gabungkan Grade dan Class (misal: "10" + "MIPA 1" = "10 MIPA 1")
+          // Jika di excel cuma ada 1 kolom yang digabung ("10 MIPA 1"), ini tetap aman.
+          const combinedClass = `${grade} ${className}`.trim()
+
+          if (!combinedClass) {
+            throw new Error(`Data Kelas kosong pada baris ${index + 2}.`)
+          }
+
+          return {
+            'Nama Lengkap': toTitleCase(fullName),
+            'NIS': nis,
+            'Nama Kelas': combinedClass // Lempar format gabungan ke API Backend
+          }
+        })
+
         setJsonData(formattedData)
-        toast.info(`${data.length} rows ready.`)
+        toast.info(`${formattedData.length} rows ready.`)
 
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Failed to read file"
+        const msg = err instanceof Error ? err.message : "Failed to parse Excel file"
         setErrorMsg(msg)
         setFile(null)
       }
@@ -125,10 +152,9 @@ export function ImportDialog({
     reader.readAsBinaryString(selectedFile)
   }
 
-  // 3. PARSE SQL
+  // 3. PARSE SQL (Disesuaikan dengan Format 4 Argumen)
   const parseSqlToJson = (sql: string) => {
     if (!sql.trim()) throw new Error("SQL code is empty.")
-
     if (!sql.toUpperCase().includes("INSERT INTO")) throw new Error("Syntax must contain 'INSERT INTO tbl_students...'")
     if (!sql.toUpperCase().includes("VALUES")) throw new Error("Syntax must contain 'VALUES'")
 
@@ -140,18 +166,22 @@ export function ImportDialog({
     const regex = /\(([^)]+)\)/g
     const matches = valuesOnly.match(regex)
 
-    if (!matches || matches.length === 0) throw new Error("No data values found. Use format ('Name', 'NIS', 'Class').")
+    if (!matches || matches.length === 0) throw new Error("No data values found. Use format ('Name', 'NIS', Grade, 'Class').")
 
     return matches.map((match, index) => {
       const content = match.slice(1, -1) 
       const rowParts = content.split(",").map(s => s.trim().replace(/^'|'$/g, "")) 
 
-      if (rowParts.length < 2) throw new Error(`Incomplete data at row ${index + 1}. Minimum Name and NIS.`)
+      // 🔥 Sekarang menuntut 4 bagian (Name, NIS, Grade, Class)
+      if (rowParts.length < 4) throw new Error(`Incomplete data at row ${index + 1}. Requires Name, NIS, Grade, and Class.`)
+
+      const grade = rowParts[2] || ""
+      const className = rowParts[3] || ""
 
       return {
-        'Nama Lengkap': toTitleCase(rowParts[0] || ""), // Backend still expects 'Nama Lengkap' key based on the service
+        'Nama Lengkap': toTitleCase(rowParts[0] || ""), 
         'NIS': rowParts[1] || "",
-        'Nama Kelas': rowParts[2] || "" 
+        'Nama Kelas': `${grade} ${className}`.trim() // Lempar gabungan
       }
     })
   }
@@ -171,7 +201,6 @@ export function ImportDialog({
         payload = parseSqlToJson(sqlCode)
       }
 
-      // 🔥 FIX: Endpoint bahasa inggris
       const res = await fetch("/api/student/import", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -247,7 +276,7 @@ export function ImportDialog({
                 />
                 
                 <div className={`h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center text-center transition-all duration-200
-                  ${file ? 'border-emerald-500/50' : 'border-white/10 hover:bg-white/5 hover:border-white/20'}
+                  ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:bg-white/5 hover:border-white/20'}
                 `}>
                    {file ? (
                      <div className="flex flex-col items-center gap-1 animate-in zoom-in-50 duration-300">
@@ -292,7 +321,8 @@ export function ImportDialog({
                 </div>
                 <div className="text-sm">
                   <p className="font-medium text-white">SQL Query</p>
-                  <p className="text-xs text-gray-400">Format: (Name, NIS, Class Name)</p>
+                  {/* 🔥 FIX: Update Instruksi Format di UI */}
+                  <p className="text-xs text-gray-400">Format: (Name, NIS, Grade, Class)</p>
                 </div>
               </div>
               <Button size="sm" variant="outline" onClick={toggleSqlMode} disabled={loading || isSuccess} className="group border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/20 hover:text-white">

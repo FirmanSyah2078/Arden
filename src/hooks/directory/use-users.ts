@@ -62,29 +62,19 @@ export function useUsers() {
     return () => window.removeEventListener('profile-updated', handleProfileUpdate);
   }, [fetchUsersAndMe]);
 
-  // 🔥 FIX 1: Tambah required:true ke role. Tambah halfWidth agar password & role bersebelahan
+  // 🔥 FIX: Layout diperbarui sesuai pesanan (Name -> User|Role -> Password)
   const createFields: FieldConfig[] = useMemo(() => [
-    { name: "name", label: "Full Name", type: "text", required: true },
-    { name: "username", label: "Username", type: "text", required: true },
-    { name: "password", label: "Password", type: "password", required: true, halfWidth: true },
-    { 
-      name: "role", label: "Role", type: "select", required: true, halfWidth: true,
-      options: [{label:"Admin", value:"Admin"}, {label:"Pemantau", value:"Pemantau"}, {label:"Pelaksana", value:"Pelaksana"}] 
-    }
+    { name: "name", label: "Full Name", type: "text", placeholder: "Ex: Budi Santoso", required: true },
+    { name: "username", label: "Username", type: "text", placeholder: "Ex: budi_s", required: true, halfWidth: true },
+    { name: "role", label: "Role", type: "select", placeholder: "Select Role", required: true, halfWidth: true, options: [{label:"Admin", value:"Admin"}, {label:"Pemantau", value:"Pemantau"}, {label:"Pelaksana", value:"Pelaksana"}] },
+    { name: "password", label: "Password", type: "password", placeholder: "Min. 6 characters", required: true }, // Full width buat meteran
   ], [])
 
-  // 🔥 FIX 2: Hapus readOnly di username, ubah label is_active jadi Status, kasih halfWidth
   const editFields: FieldConfig[] = useMemo(() => [
-    { name: "name", label: "Full Name", type: "text", required: true },
-    { name: "username", label: "Username", type: "text", required: true }, // readOnly dihapus
-    { 
-      name: "role", label: "Role", type: "select", required: true, halfWidth: true,
-      options: [{label:"Admin", value:"Admin"}, {label:"Pemantau", value:"Pemantau"}, {label:"Pelaksana", value:"Pelaksana"}] 
-    },
-    {
-      name: "is_active", label: "Status", type: "select", required: true, halfWidth: true,
-      options: [{label:"Active", value:"true"}, {label:"Restricted / Banned", value:"false"}]
-    }
+    { name: "name", label: "Full Name", type: "text", placeholder: "Ex: Budi Santoso", required: true },
+    { name: "username", label: "Username", type: "text", placeholder: "Ex: budi_s", required: true },
+    { name: "role", label: "Role", type: "select", placeholder: "Select Role", required: true, halfWidth: true, options: [{label:"Admin", value:"Admin"}, {label:"Pemantau", value:"Pemantau"}, {label:"Pelaksana", value:"Pelaksana"}] },
+    { name: "is_active", label: "Status", type: "select", placeholder: "Select Status", required: true, halfWidth: true, options: [{label:"Active", value:"true"}, {label:"Restricted / Banned", value:"false"}] }
   ], [])
 
   return {

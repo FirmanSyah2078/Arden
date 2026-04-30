@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2, Save } from "lucide-react"
+// 🔥 IMPORT EYE dan EYEOFF
+import { Loader2, Save, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils" 
 
@@ -45,6 +46,9 @@ export function GenericCreateDialog({
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<Record<string, string | number | undefined>>({})
+  
+  // 🔥 STATE UNTUK SHOW/HIDE PASSWORD
+  const [showPassword, setShowPassword] = useState(false)
 
   const toTitleCase = (str: string) => {
     return str.toLowerCase().replace(/(?:^|\s)\w/g, (match) => match.toUpperCase());
@@ -55,7 +59,6 @@ export function GenericCreateDialog({
     if (typeof value === "string") {
       if (key === "name" || key === "full_name") finalValue = toTitleCase(value);
       else if (key === "class_name") finalValue = value.toUpperCase();
-      // 🔥 FIX: Paksa username menjadi huruf kecil semua dan tanpa spasi
       else if (key === "username") finalValue = value.toLowerCase().replace(/\s+/g, '');
     }
     setFormData((prev) => ({ ...prev, [key]: finalValue }))
@@ -65,6 +68,8 @@ export function GenericCreateDialog({
     return fields.every((field) => {
       if (!field.required) return true;
       const val = formData[field.name];
+      // Jika password, wajib minimal 6 karakter
+      if (field.type === "password" && typeof val === "string") return val.length >= 6;
       return val !== undefined && val !== "" && val !== null;
     });
   }, [formData, fields]);
@@ -72,6 +77,23 @@ export function GenericCreateDialog({
   const getIdentifierName = () => {
     return formData.name || formData.full_name || formData.class_name || formData.username || "New Record";
   }
+
+  // 🔥 FUNGSI KALKULASI KEKUATAN PASSWORD
+  const getStrengthUI = (pw: string) => {
+    if (!pw) return null;
+    if (pw.length < 6) return { label: "Too short", color: "bg-red-500", text: "text-red-400", width: "w-[15%]" };
+    
+    let score = 0;
+    if (pw.length >= 8) score += 1;
+    if (/[A-Z]/.test(pw)) score += 1; // Ada huruf besar
+    if (/[0-9]/.test(pw)) score += 1; // Ada angka
+    if (/[^A-Za-z0-9]/.test(pw)) score += 1; // Ada simbol unik
+
+    if (score <= 1) return { label: "Weak", color: "bg-red-500", text: "text-red-400", width: "w-[25%]" };
+    if (score === 2) return { label: "Fair", color: "bg-amber-500", text: "text-amber-400", width: "w-[50%]" };
+    if (score === 3) return { label: "Good", color: "bg-emerald-400", text: "text-emerald-400", width: "w-[75%]" };
+    return { label: "Strong", color: "bg-emerald-500", text: "text-emerald-500", width: "w-full" };
+  };
 
   async function handleSubmit() {
     setLoading(true)
@@ -91,6 +113,7 @@ export function GenericCreateDialog({
 
       onOpenChange(false)
       setFormData({}) 
+      setShowPassword(false) // Reset state mata
       
       setTimeout(() => {
         document.body.style.pointerEvents = "auto"
@@ -140,6 +163,43 @@ export function GenericCreateDialog({
                     ))}
                   </SelectContent>
                 </Select>
+              ) : field.type === "password" ? (
+                // 🔥 RENDER KHUSUS UNTUK PASSWORD
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder={field.placeholder}
+                      className={`${inputClass} pr-10`}
+                      value={formData[field.name]?.toString() || ""}
+                      onChange={(e) => handleInputChange(field.name, e.target.value)}
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                  
+                  {/* BAR METERAN KEKUATAN */}
+                  {(() => {
+                    const pwVal = formData[field.name]?.toString() || "";
+                    const ui = getStrengthUI(pwVal);
+                    if (!ui) return null;
+                    return (
+                      <div className="flex items-center gap-3 mt-2 h-3 transition-all duration-300 opacity-100">
+                        <span className={cn("text-[10px] font-medium shrink-0 min-w-10", ui.text)}>
+                          {ui.label}
+                        </span>
+                        <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                          <div className={cn("h-full transition-all duration-500 ease-out", ui.color, ui.width)} />
+                        </div>
+                      </div>
+                    )
+                  })()}
+                </div>
               ) : (
                 <Input
                   type={field.type}

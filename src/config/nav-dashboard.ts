@@ -140,18 +140,17 @@ export function getDynamicMenus(pathname: string, roleName: string) {
 }
 
 // ============================================================================
-// 4. FUNGSI PINTAR PENCARI BREADCRUMB OTOMATIS
+// 4. FUNGSI PINTAR PENCARI BREADCRUMB OTOMATIS (SUPPORT DYNAMIC SLUG)
 // ============================================================================
 export function getActiveBreadcrumb(pathname: string, roleName: string) {
   const menus = roleMenus[roleName] || roleMenus["Pemantau"];
 
+  // LANGKAH 1: Cek kecocokan URL persis (Exact Match)
   for (const group of menus) {
     for (const item of group.items) {
-      // Cek apakah menu utama cocok dengan URL (Persis sama)
       if (item.url === pathname) {
         return { label: group.label, title: item.title };
       }
-      // Cek apakah sub-menu (collapsible) cocok dengan URL
       if (item.items) {
         for (const sub of item.items) {
           if (sub.url === pathname) {
@@ -166,6 +165,34 @@ export function getActiveBreadcrumb(pathname: string, roleName: string) {
     }
   }
 
-  // Fallback jika halaman tidak ada di daftar menu (contoh: 404 atau /profile)
+  // LANGKAH 2: Logika Fallback Cerdas untuk Dynamic Route (Contoh: /dashboard/class/x-mipa-1)
+  // Memecah URL menjadi segmen array.
+  const segments = pathname.split('/').filter(Boolean);
+
+  // Jika URL memiliki minimal 3 bagian (contoh: dashboard -> class -> x-mipa-1)
+  if (segments.length >= 3 && segments[0] === 'dashboard') {
+    const parentPath = `/${segments[0]}/${segments[1]}`; // Menjadi "/dashboard/class"
+    const slug = segments[segments.length - 1]; // Mengambil "x-mipa-1"
+
+    // Cari Menu Induk-nya
+    for (const group of menus) {
+      for (const item of group.items) {
+        if (item.url === parentPath) {
+          // Format slug menjadi teks cantik ("x-mipa-1" -> "X Mipa 1")
+          const formattedSlug = slug
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, char => char.toUpperCase());
+
+          return {
+            label: group.label,
+            title: item.title,
+            subTitle: formattedSlug, // Slug dinamis otomatis jadi Sub-Title!
+          };
+        }
+      }
+    }
+  }
+
+  // LANGKAH 3: Fallback Terakhir jika URL benar-benar tidak dikenali
   return { label: "System", title: "Overview" };
 }

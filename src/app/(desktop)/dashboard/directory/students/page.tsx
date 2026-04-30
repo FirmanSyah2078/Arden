@@ -32,8 +32,7 @@ export default function StudentsPage() {
   const {
     data,
     isLoading,
-    createFields,
-    editFields,
+    studentFields, 
     openCreate,
     setOpenCreate,
     openImport,
@@ -42,7 +41,7 @@ export default function StudentsPage() {
     setEditData,
     deleteData,
     setDeleteData,
-    refreshData, // 🔥 AMBIL FUNGSI PENYEGAR DARI HOOK
+    refreshData, 
   } = useStudents()
 
   const { activeRole, isReady } = useDashboard()
@@ -113,20 +112,34 @@ export default function StudentsPage() {
       ),
     },
     {
-      accessorFn: (row) => row.tbl_classes?.class_name || "No Class", 
+      accessorFn: (row) => {
+        const cls = row.tbl_classes as any;
+        if (!cls) return "No Class";
+        // Gabungkan 10 + MIPA 1 untuk fitur Search
+        return `${cls.grade_level || ''} ${cls.class_name || ''}`.trim();
+      }, 
       id: "class_name", 
       header: "Class",
       meta: { className: "text-center px-2" },
-      cell: ({ row }) => (
-        <div className="flex justify-center">
-          <Badge
-            variant="outline"
-            className="border-white/10 bg-white/5 text-[10px] font-bold tracking-tight text-gray-400"
-          >
-            {row.original.tbl_classes?.class_name || "No Class"}
-          </Badge>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const cls = row.original.tbl_classes as any;
+        
+        // Merakit text untuk ditampilkan di Badge
+        const displayText = cls 
+          ? `${cls.grade_level || ''} ${cls.class_name || ''}`.trim() 
+          : "No Class";
+
+        return (
+          <div className="flex justify-center">
+            <Badge
+              variant="outline"
+              className="border-white/10 bg-white/5 text-[10px] font-bold tracking-tight text-gray-400"
+            >
+              {displayText}
+            </Badge>
+          </div>
+        )
+      },
     },
     {
       id: "status",
@@ -237,8 +250,8 @@ export default function StudentsPage() {
         onOpenChange={setOpenCreate}
         title="Add New Student"
         endpoint="/api/student" 
-        fields={createFields}
-        onSuccess={refreshData} // 🔥 SUNTIKKAN KE SINI
+        fields={studentFields} 
+        onSuccess={refreshData} 
       />
       <ImportDialog open={openImport} onOpenChangeAction={setOpenImport} />
 
@@ -250,8 +263,8 @@ export default function StudentsPage() {
           endpoint="/api/student" 
           initialData={editData as unknown as Record<string, unknown>}
           idField="id_student" 
-          fields={editFields}
-          onSuccess={refreshData} // 🔥 SUNTIKKAN KE SINI
+          fields={studentFields} 
+          onSuccess={refreshData} 
         />
       )}
 
@@ -270,7 +283,7 @@ export default function StudentsPage() {
           endpoint="/api/student" 
           id={deleteData.id_student} 
           itemName={deleteData.full_name} 
-          onSuccess={refreshData} // 🔥 SUNTIKKAN KE SINI
+          onSuccess={refreshData} 
         />
       )}
     </CoreTable>

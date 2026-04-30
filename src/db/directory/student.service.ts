@@ -1,4 +1,4 @@
-// src/db/dashboard/directory/student.service.ts
+// src/db/directory/student.service.ts
 import { prisma } from "@/lib/prisma"
 import { randomUUID } from "crypto"
 
@@ -20,37 +20,60 @@ export class StudentService {
   // --- 1. AMBIL SEMUA DATA (DASHBOARD) ---
   static async getAllStudents() {
     const students = await prisma.tbl_students.findMany({
-      include: { tbl_classes: { select: { class_name: true } } },
+      include: { 
+        tbl_classes: { 
+          select: { class_name: true, grade_level: true } // 🔥 Pastikan ambil grade
+        } 
+      },
       orderBy: [ { id_class: 'asc' }, { full_name: 'asc' } ]
     });
-    return students.map(s => ({ ...s, id_student: Number(s.id_student), id_class: s.id_class ? Number(s.id_class) : null }));
+    
+    return students.map(s => ({ 
+      ...s, 
+      id_student: Number(s.id_student), 
+      id_class: s.id_class ? Number(s.id_class) : null,
+      // 🔥 Biarkan object aslinya terlempar agar dirakit oleh UI
+      tbl_classes: s.tbl_classes ? { 
+        class_name: s.tbl_classes.class_name,
+        grade_level: s.tbl_classes.grade_level 
+      } : undefined
+    }));
   }
 
   // --- 2. AMBIL 1 DATA BY ICODE/NIS (MOBILE SCANNER) ---
   static async getStudentByCode(code: string) {
     const student = await prisma.tbl_students.findFirst({
       where: { OR: [ { icode: code }, { nis: code } ] },
-      include: { tbl_classes: { select: { class_name: true } } }
+      include: { tbl_classes: { select: { class_name: true, grade_level: true } } }
     });
     if (!student) throw new Error("Data student tidak ditemukan");
-    return { ...student, id_student: Number(student.id_student), id_class: student.id_class ? Number(student.id_class) : null };
+    
+    return { 
+      ...student, 
+      id_student: Number(student.id_student), 
+      id_class: student.id_class ? Number(student.id_class) : null 
+    };
   }
 
-  // 🔥 3. (BARU) PENCARIAN MANUAL MOBILE (NAMA / NIS) 🔥
+  // --- 3. PENCARIAN MANUAL MOBILE (NAMA / NIS) ---
   static async searchStudents(prm: string, limit: number) {
     const students = await prisma.tbl_students.findMany({
       where: {
         OR: [
-          { full_name: { contains: prm, mode: 'insensitive' } }, // Cari berdasarkan nama
-          { nis: { contains: prm } } // Atau cari berdasarkan NIS
+          { full_name: { contains: prm, mode: 'insensitive' } }, 
+          { nis: { contains: prm } } 
         ]
       },
       take: limit,
-      include: { tbl_classes: { select: { class_name: true } } },
+      include: { tbl_classes: { select: { class_name: true, grade_level: true } } },
       orderBy: { full_name: 'asc' }
     });
 
-    return students.map(s => ({ ...s, id_student: Number(s.id_student), id_class: s.id_class ? Number(s.id_class) : null }));
+    return students.map(s => ({ 
+      ...s, 
+      id_student: Number(s.id_student), 
+      id_class: s.id_class ? Number(s.id_class) : null 
+    }));
   }
 
   // --- 4. CREATE DATA MANUAL ---
@@ -90,14 +113,22 @@ export class StudentService {
 
   // --- 7. IMPORT BULK EXCEL ---
   static async importStudents(dataArray: any[]) {
-    const classes = await prisma.tbl_classes.findMany({ select: { id_class: true, class_name: true } });
+    const classes = await prisma.tbl_classes.findMany({ 
+      select: { id_class: true, class_name: true, grade_level: true } 
+    });
+    
     const classMap = new Map<string, number>();
     const validClassIds = new Set<number>();
 
     classes.forEach(cls => {
       const classIdNum = Number(cls.id_class);
       validClassIds.add(classIdNum);
-      if (cls.class_name) classMap.set(this.toCanonicalKey(cls.class_name), classIdNum);
+      if (cls.class_name) {
+        // 🔥 Daftarkan 2 format agar AI importnya cerdas
+        const fullClassName = `${cls.grade_level} ${cls.class_name}`;
+        classMap.set(this.toCanonicalKey(fullClassName), classIdNum); // Contoh: "10MIPA1"
+        classMap.set(this.toCanonicalKey(cls.class_name), classIdNum); // Contoh: "MIPA1"
+      }
     });
 
     const studentsToInsert = dataArray.map((item, index) => {
@@ -112,7 +143,7 @@ export class StudentService {
         if (validClassIds.has(parsedId)) finalClassId = parsedId;
       } 
       if (!finalClassId && rawInput) finalClassId = classMap.get(this.toCanonicalKey(rawInput)) || null;
-      if (!finalClassId) throw new Error(`Gagal pada Baris ${rowNum}: Kelas '${item['Nama Kelas']}' tidak terdaftar.`);
+      if (!finalClassId) throw new Error(`Gagal pada Baris ${rowNum}: Kelas '${item['Nama Kelas']}' tidak ditemukan di sistem.`);
 
       return {
         icode: this.generateIcode(),

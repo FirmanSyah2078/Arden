@@ -137,10 +137,13 @@ model tbl_routine {
   updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 }
 
+
 model tbl_classes {
-  id_class       BigInt           @id @default(autoincrement())
-  class_name     String           @db.VarChar(50)
-  advisor        String?          @db.VarChar(100)
+  id_class       BigInt         @id @default(autoincrement())
+  grade_level    Int
+  class_name     String         @db.VarChar(50)
+  academic_year  String         @db.VarChar(20)
+  advisor        String?        @db.VarChar(100)
   description    String?
   tbl_chart_data tbl_chart_data[]
   tbl_students   tbl_students[]
