@@ -76,8 +76,19 @@ export class StudentService {
     }));
   }
 
-  // --- 4. CREATE DATA MANUAL ---
+  // --- 4. CREATE DATA MANUAL (Dengan Validasi Duplikat) ---
   static async createStudent(data: { full_name: string; nis: string; id_class?: number | string }) {
+    
+    // 🔥 CEK DUPLIKASI NIS SEBELUM MENYIMPAN
+    const existingStudent = await prisma.tbl_students.findFirst({
+      where: { nis: data.nis }
+    });
+
+    if (existingStudent) {
+      // Jika NIS sudah ada, lemparkan error dengan kalimat yang jelas!
+      throw new Error(`Registration failed: NIS '${data.nis}' is already registered to ${existingStudent.full_name}.`);
+    }
+
     const newStudent = await prisma.tbl_students.create({
       data: {
         icode: this.generateIcode(),
@@ -87,7 +98,12 @@ export class StudentService {
         period_status: 'Suci', 
       }
     });
-    return { ...newStudent, id_student: Number(newStudent.id_student), id_class: newStudent.id_class ? Number(newStudent.id_class) : null };
+    
+    return { 
+      ...newStudent, 
+      id_student: Number(newStudent.id_student), 
+      id_class: newStudent.id_class ? Number(newStudent.id_class) : null 
+    };
   }
 
   // --- 5. UPDATE DATA ---
@@ -111,50 +127,70 @@ export class StudentService {
     return true;
   }
 
-  // --- 7. IMPORT BULK EXCEL ---
-  static async importStudents(dataArray: any[]) {
-    const classes = await prisma.tbl_classes.findMany({ 
-      select: { id_class: true, class_name: true, grade_level: true } 
-    });
+  // --- 7. IMPORT BULK EXCEL & SQL (WITH DUPLICATE LOGGING) ---
+static async importStudents(dataArray: any[]) {
+  const classes = await prisma.tbl_classes.findMany({ 
+    select: { id_class: true, class_name: true, grade_level: true } 
+  });
+  
+  const classMap = new Map<string, number>();
+  const validClassIds = new Set<number>();
+
+  classes.forEach(cls => {
+    const classIdNum = Number(cls.id_class);
+    validClassIds.add(classIdNum);
+    if (cls.class_name) {
+      const fullClassName = `${cls.grade_level} ${cls.class_name}`;
+      classMap.set(this.toCanonicalKey(fullClassName), classIdNum);
+      classMap.set(this.toCanonicalKey(cls.class_name), classIdNum);
+    }
+  });
+
+  // 🔥 AMBIL SEMUA NIS YANG SUDAH ADA DI DB
+  const existingStudents = await prisma.tbl_students.findMany({ select: { nis: true } });
+  const existingNisSet = new Set(existingStudents.map(s => s.nis));
+
+  const studentsToInsert: any[] = [];
+  const duplicateLogs: string[] = []; // Menampung info data ganda
+
+  dataArray.forEach((item, index) => {
+    const rowNum = index + 1;
+    const inputNis = item['NIS']?.toString();
+    const inputName = item['Nama Lengkap'];
+
+    // Cek Duplikasi NIS
+    if (existingNisSet.has(inputNis)) {
+      duplicateLogs.push(`${inputName} (NIS: ${inputNis})`);
+      return; // Skip baris ini, lanjut ke baris berikutnya
+    }
+
+    let finalClassId: number | null = null;
+    const rawInput = item['Nama Kelas'] ? item['Nama Kelas'].toString() : "";
+
+    if (/^\d+$/.test(rawInput)) {
+      const parsedId = parseInt(rawInput);
+      if (validClassIds.has(parsedId)) finalClassId = parsedId;
+    } 
+    if (!finalClassId && rawInput) finalClassId = classMap.get(this.toCanonicalKey(rawInput)) || null;
     
-    const classMap = new Map<string, number>();
-    const validClassIds = new Set<number>();
+    if (!finalClassId) throw new Error(`Row ${rowNum}: Class '${item['Nama Kelas']}' not found.`);
 
-    classes.forEach(cls => {
-      const classIdNum = Number(cls.id_class);
-      validClassIds.add(classIdNum);
-      if (cls.class_name) {
-        // 🔥 Daftarkan 2 format agar AI importnya cerdas
-        const fullClassName = `${cls.grade_level} ${cls.class_name}`;
-        classMap.set(this.toCanonicalKey(fullClassName), classIdNum); // Contoh: "10MIPA1"
-        classMap.set(this.toCanonicalKey(cls.class_name), classIdNum); // Contoh: "MIPA1"
-      }
+    studentsToInsert.push({
+      icode: this.generateIcode(),
+      full_name: this.toTitleCase(inputName),
+      nis: inputNis,
+      id_class: finalClassId, 
+      period_status: 'Suci' 
     });
+  });
 
-    const studentsToInsert = dataArray.map((item, index) => {
-      const rowNum = index + 1;
-      if (!item['Nama Lengkap'] || !item['NIS']) throw new Error(`Baris ke-${rowNum}: Nama Lengkap dan NIS wajib diisi.`);
-
-      let finalClassId: number | null = null;
-      const rawInput = item['Nama Kelas'] ? item['Nama Kelas'].toString() : "";
-
-      if (/^\d+$/.test(rawInput)) {
-        const parsedId = parseInt(rawInput);
-        if (validClassIds.has(parsedId)) finalClassId = parsedId;
-      } 
-      if (!finalClassId && rawInput) finalClassId = classMap.get(this.toCanonicalKey(rawInput)) || null;
-      if (!finalClassId) throw new Error(`Gagal pada Baris ${rowNum}: Kelas '${item['Nama Kelas']}' tidak ditemukan di sistem.`);
-
-      return {
-        icode: this.generateIcode(),
-        full_name: this.toTitleCase(item['Nama Lengkap']),
-        nis: item['NIS'].toString(),
-        id_class: finalClassId, 
-        period_status: 'Suci' 
-      };
-    });
-
-    const result = await prisma.tbl_students.createMany({ data: studentsToInsert, skipDuplicates: true });
-    return result.count;
+  if (studentsToInsert.length > 0) {
+    await prisma.tbl_students.createMany({ data: studentsToInsert });
   }
+
+  return {
+    count: studentsToInsert.length,
+    duplicates: duplicateLogs // 🔥 Kirim daftar duplikat ke UI
+  };
+}
 }

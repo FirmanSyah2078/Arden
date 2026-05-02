@@ -253,7 +253,12 @@ export default function StudentsPage() {
         fields={studentFields} 
         onSuccess={refreshData} 
       />
-      <ImportDialog open={openImport} onOpenChangeAction={setOpenImport} />
+      {/* 🔥 FIX: Tambahkan onSuccess di sini */}
+      <ImportDialog 
+        open={openImport} 
+        onOpenChangeAction={setOpenImport} 
+        onSuccessAction={refreshData}
+      />
 
       {editData && (
         <GenericEditDialog

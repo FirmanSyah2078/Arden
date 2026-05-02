@@ -1,8 +1,9 @@
+// src/db/directory/user.service.ts
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 
 export class UserService {
-  /// --- 1. GET ALL USERS ---
+  // --- 1. GET ALL USERS ---
   static async getAllUsers() {
     const users = await prisma.tbl_users.findMany({
       select: {
@@ -37,14 +38,20 @@ export class UserService {
       }
     });
 
-    if (!user) throw new Error("User tidak ditemukan");
+    // 🔥 Diubah ke bahasa Inggris profesional
+    if (!user) throw new Error("User not found.");
+    
     return { ...user, id_user: Number(user.id_user) };
   }
 
   // --- 3. CREATE USER ---
   static async createUser(data: any) {
     const existing = await prisma.tbl_users.findUnique({ where: { username: data.username } });
-    if (existing) throw new Error("Username sudah terdaftar!");
+    
+    // 🔥 Pesan Error Dinamis & Profesional
+    if (existing) {
+      throw new Error(`Registration failed: Username '${data.username}' is already taken.`);
+    }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
@@ -68,16 +75,14 @@ export class UserService {
     if (data.name) payload.name = data.name;
     if (data.role) payload.role = data.role;
     
-    // 🔥 FIX: Logika untuk menerima dan memvalidasi ganti Username!
     if (data.username) {
-      // Cek apakah username yang baru dimasukkan sudah dipakai orang lain
       const existingUser = await prisma.tbl_users.findUnique({ 
         where: { username: data.username } 
       });
       
-      // Jika username ketemu, DAN yang punya username itu BUKAN dirinya sendiri (id berbeda)
+      // 🔥 Pesan Error Dinamis & Profesional untuk Update
       if (existingUser && existingUser.id_user !== BigInt(id)) {
-        throw new Error("Username sudah dipakai oleh pengguna lain.");
+        throw new Error(`Update failed: Username '${data.username}' is already in use by another account.`);
       }
       
       payload.username = data.username;
@@ -104,7 +109,10 @@ export class UserService {
 
   // --- 6. RESET PASSWORD ---
   static async resetPassword(id: number, newPasswordPlain: string) {
-    if (newPasswordPlain.length < 6) throw new Error("Password minimal 6 karakter");
+    // 🔥 Diubah ke bahasa Inggris profesional
+    if (newPasswordPlain.length < 6) {
+      throw new Error("Reset failed: Password must be at least 6 characters long.");
+    }
     
     const hashedPassword = await bcrypt.hash(newPasswordPlain, 10);
     

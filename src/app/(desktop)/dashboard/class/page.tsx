@@ -1,26 +1,36 @@
 "use client"
 
-import { useState } from "react";
-import Image from "next/image";
-import React from "react";
-// 🔥 TAMBAHAN: Import useRouter untuk navigasi Next.js
-import { useRouter } from "next/navigation"; 
-import { Search, QrCode, SearchX, ExternalLink, Filter, ChevronDown, X, BadgeCheck, MoreHorizontal } from "lucide-react"; 
+import React from "react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import {
+  Search,
+  QrCode,
+  SearchX,
+  ExternalLink,
+  Filter,
+  ChevronDown,
+  X,
+  BadgeCheck,
+  MoreHorizontal,
+  Printer,
+  Download,
+} from "lucide-react"
 
-// Shadcn UI Components
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+  DialogDescription,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 import {
   Pagination,
   PaginationContent,
@@ -28,387 +38,612 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { cn } from "@/lib/utils";
+} from "@/components/ui/pagination"
+import { Checkbox } from "@/components/ui/checkbox"
+import { cn } from "@/lib/utils"
 
-// Dummy Data
-const classesData = [
-  { id: 1, name: "X MIPA 1", wali: "Mr. Mulyono S.Pd.", batch: "X", Student: 32, period: 4, description: "A highly disciplined class focusing on advanced sciences and collaborative projects." },
-  { id: 2, name: "X MIPA 2", wali: "Mrs. Susi S.Pd.", batch: "X", Student: 31, period: 2, description: "Known for active participation in national physics Olympiads and teamwork." },
-  { id: 3, name: "XI MIPA 1", wali: "Mr. Budi S.Pd.", batch: "XI", Student: 30, period: 5, description: "Exceptional analytical skills with consistent top-tier academic performance." },
-  { id: 4, name: "XI IPS 1", wali: "Mrs. Ani S.Pd.", batch: "XI", Student: 29, period: 3, description: "Creative thinkers with a strong passion for sociology and economic debates." },
-  { id: 5, name: "XII MIPA 1", wali: "Mr. Joko S.Pd.", batch: "XII", Student: 34, period: 1, description: "Senior class currently focusing on intensive university entrance preparations." },
-  { id: 6, name: "XII MIPA 2", wali: "Mrs. Rina S.Pd.", batch: "XII", Student: 33, period: 6, description: "Driven by curiosity, this class excels in biological research and chemistry." },
-  { id: 7, name: "XII IPS 1", wali: "Mr. Tono S.Pd.", batch: "XII", Student: 32, period: 4, description: "Leaders in school organizational events and public speaking competitions." },
-  { id: 8, name: "XII IPS 2", wali: "Mrs. Sari S.Pd.", batch: "XII", Student: 31, period: 2, description: "A solid community of students passionate about history and global geography." },
-  { id: 9, name: "X MIPA 3", wali: "Mr. Ahmad S.Pd.", batch: "X", Student: 32, period: 7, description: "Enthusiastic learners with a growing interest in technology and coding." },
-  { id: 10, name: "X IPS 1", wali: "Mrs. Linda S.Pd.", batch: "X", Student: 30, period: 3, description: "Expressive and dynamic class, frequently winning inter-class art festivals." },
-  { id: 11, name: "X IPS 2", wali: "Mr. Eko S.Pd.", batch: "X", Student: 31, period: 0, description: "Highly interactive environment with a focus on modern social studies." },
-  { id: 12, name: "X IPS 3", wali: "Mrs. Maya S.Pd.", batch: "X", Student: 28, period: 5, description: "Friendly and collaborative, with strong literacy and storytelling skills." },
-  { id: 13, name: "XI MIPA 2", wali: "Mr. Gunawan S.Pd.", batch: "XI", Student: 33, period: 2, description: "Competitive yet supportive, achieving great milestones in mathematics." },
-  { id: 14, name: "XI MIPA 3", wali: "Mrs. Dewi S.Pd.", batch: "XI", Student: 32, period: 4, description: "Dedicated to continuous improvement and environmental science projects." },
-  { id: 15, name: "XI IPS 2", wali: "Mr. Rahman S.Pd.", batch: "XI", Student: 30, period: 1, description: "Critical thinkers actively engaged in analyzing contemporary global issues." },
-  { id: 16, name: "XI IPS 3", wali: "Mrs. Siti S.Pd.", batch: "XI", Student: 29, period: 6, description: "A cheerful class with a balanced approach to academics and extracurriculars." },
-  { id: 17, name: "XII MIPA 3", wali: "Mr. Yusuf S.Pd.", batch: "XII", Student: 35, period: 3, description: "Future engineers and doctors preparing rigorously for their final exams." },
-  { id: 18, name: "XII IPS 3", wali: "Mrs. Mega S.Pd.", batch: "XII", Student: 31, period: 5, description: "Strong entrepreneurial spirit with numerous student-led business initiatives." },
-  { id: 19, name: "XII IPS 4", wali: "Mr. Andi S.Pd.", batch: "XII", Student: 30, period: 2, description: "Diligent and articulate, dominating the school's debate and language clubs." },
-  { id: 20, name: "X MIPA 4", wali: "Mrs. Ratna S.Pd.", batch: "X", Student: 32, period: 4, description: "A fresh batch showing remarkable discipline and adaptability in sciences." },
-  { id: 21, name: "XI MIPA 4", wali: "Mr. Surya S.Pd.", batch: "XI", Student: 31, period: 1, description: "A harmonious class setting high standards in laboratory experimentations." },
-  { id: 22, name: "XII MIPA 4", wali: "Mrs. Lilis S.Pd.", batch: "XII", Student: 33, period: 7, description: "Highly motivated seniors leaving a strong legacy of academic excellence." },
-  { id: 23, name: "XII IPS 5", wali: "Mr. Farhan S.Pd.", batch: "XII", Student: 29, period: 0, description: "Tight-knit group prioritizing cultural studies and social awareness." },
-];
+// 🔥 Panggil Logic dari Hook
+import { useClass } from "@/hooks/class/use-class"
 
 export default function ClassPage() {
-  const router = useRouter(); 
+  const router = useRouter()
 
-  const [keyword, setKeyword] = useState("");
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const {
+    keyword,
+    handleSearchChange,
+    activeFilter,
+    handleFilterChange,
+    currentPage,
+    setCurrentPage,
+    StudentPages,
+    visiblePages,
+    paginatedClasses,
+    qrModalClass,
+    openQrModal,
+    closeQrModal,
+    dummyStudentsQR,
+    selectedQRStudents,
+    handleToggleQRStudent,
+    handleSelectAllQR,
+    handlePrint,
+  } = useClass()
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setKeyword(e.target.value);
-    setCurrentPage(1);
-  };
+  const visibleCards = dummyStudentsQR
+    .filter((s) => selectedQRStudents.includes(s.id))
+    .slice(0, 3)
+  const len = visibleCards.length
 
-  const handleFilterChange = (value: string) => {
-    setActiveFilter(value);
-    setCurrentPage(1);
-  };
+  const handleCloseModal = () => {
+    closeQrModal()
+    setTimeout(() => {
+      document.body.style.pointerEvents = "auto"
+      document.body.style.overflow = "auto"
+      document.body.removeAttribute("data-scroll-locked")
+    }, 200)
+  }
 
-  const filteredClasses = classesData.filter((kelas) => {
-    const matchTab = activeFilter === "all" ? true : kelas.batch === activeFilter;
-    const matchSearch =
-      kelas.name.toLowerCase().includes(keyword.toLowerCase()) ||
-      kelas.wali.toLowerCase().includes(keyword.toLowerCase());
-    return matchTab && matchSearch;
-  });
-
-  const StudentPages = Math.ceil(filteredClasses.length / itemsPerPage);
-  const paginatedClasses = filteredClasses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const generatePagination = () => {
-    if (StudentPages <= 4) {
-      return Array.from({ length: StudentPages }, (_, i) => i + 1);
-    }
-    
-    if (currentPage <= 2) {
-      return [1, 2, 3, '...', StudentPages];
-    }
-    
-    if (currentPage >= StudentPages - 1) {
-      return [1, '...', StudentPages - 2, StudentPages - 1, StudentPages];
-    }
-    
-    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', StudentPages];
-  };
-
-  const visiblePages = generatePagination();
-
-  // 🔥 WADAH DIHILANGKAN, DIGANTI FRAGMENT
   return (
     <>
-      <header className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-foreground">
-              Class Management
-            </h1>
-            <p className="text-sm text-muted-foreground max-w-xl leading-relaxed">
-              Centralized control and comprehensive monitoring of academic class data.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-            
-            <div className={cn("flex items-center transition-all duration-300", activeFilter !== "all" && "h-9 rounded-md border border-border bg-card shadow-sm animate-in fade-in slide-in-from-right-2")}>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  {activeFilter === "all" ? (
-                    <Button suppressHydrationWarning variant="outline" className="h-9 gap-2 border-border bg-card hover:bg-accent text-foreground transition-all px-3">
-                      <Filter className="size-3.5 text-muted-foreground" />
-                      <span className="text-xs font-medium">Filter</span>
-                      <ChevronDown className="size-3.5 text-muted-foreground opacity-70" />
-                    </Button>
-                  ) : (
-                    <Button suppressHydrationWarning variant="ghost" className="h-full rounded-none rounded-l-md border-r border-border px-3 gap-2 hover:bg-accent text-foreground transition-all focus-visible:ring-0">
-                      <Filter className="size-3.5 text-muted-foreground" />
-                      <span className="text-xs font-medium">Filter</span>
-                      <div className="h-4 w-px bg-border mx-1" />
-                      <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
-                        {activeFilter}
-                      </span>
-                    </Button>
-                  )}
-                </DropdownMenuTrigger>
-                
-                <DropdownMenuContent align="end" className="w-32 bg-card border-border shadow-xl rounded-lg origin-top-right data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2">
-                  {['X', 'XI', 'XII'].map(batch => (
-                    <DropdownMenuItem 
-                      key={batch} 
-                      onClick={() => handleFilterChange(batch)} 
-                      className={cn(
-                        "cursor-pointer text-xs font-medium focus:bg-accent transition-colors",
-                        activeFilter === batch ? "text-primary" : "text-foreground"
-                      )}
-                    >
-                      Grade {batch}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {activeFilter !== "all" && (
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleFilterChange("all");
-                  }} 
-                  className="h-full px-2.5 flex items-center justify-center hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-colors rounded-r-md outline-none focus-visible:bg-destructive/10 focus-visible:text-destructive"
-                  aria-label="Clear filter"
-                >
-                  <X className="size-3.5" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative group w-full sm:w-56 sm:focus-within:w-64 transition-all duration-500 ease-out">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 size-4" />
-              <Input
-                placeholder="Search class or teacher..."
-                spellCheck={false}
-                autoComplete="off"
-                className="pl-9 pr-9 h-9 bg-muted/30 border-border hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:ring-0 focus-visible:bg-transparent transition-all text-[13px] rounded-md text-foreground placeholder:text-muted-foreground shadow-sm"
-                value={keyword}
-                onChange={handleSearchChange}
-              />
-              {keyword && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setKeyword("");
-                    setCurrentPage(1);
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground hover:bg-destructive/10 rounded-full transition-all animate-in fade-in zoom-in-75 duration-200 outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
-                  aria-label="Clear search"
-                >
-                  <X className="size-3.5" />
-                </button>
-              )}
-            </div>
-          </div>
+      {/* =====================================================================
+          🔥 PRINTABLE AREA (HANYA MUNCUL DI KERTAS SAAT CTRL+P / CMD+P) 🔥 
+          ===================================================================== */}
+      <div className="fixed inset-0 z-9999 hidden overflow-visible bg-white p-8 print:block">
+        <h2 className="font-jakarta mb-6 text-center text-xl font-bold text-black">
+          QR Code ID Card - {qrModalClass?.name}
+        </h2>
+        <div className="grid grid-cols-5 place-items-center gap-x-4 gap-y-8">
+          {dummyStudentsQR
+            .filter((s) => selectedQRStudents.includes(s.id))
+            .map((student) => (
+              <div key={student.id} className="flex flex-col items-center">
+                <div className="flex h-[3.5cm] w-[3.5cm] items-center justify-center rounded-md border border-gray-400 bg-white p-2">
+                  <QrCode
+                    className="h-full w-full text-black"
+                    strokeWidth={1}
+                  />
+                </div>
+                <p className="font-inter mt-1.5 w-[3.5cm] truncate px-1 text-center text-[10px] font-bold tracking-tight text-black uppercase">
+                  {student.name}
+                </p>
+                <p className="font-mono text-[8px] tracking-widest text-gray-500 uppercase">
+                  {student.icode}
+                </p>
+              </div>
+            ))}
         </div>
+      </div>
 
-        <div className="h-px w-full bg-linear-to-r from-border via-border/50 to-transparent" />
-      </header>
+      {/* =====================================================================
+          TAMPILAN UI NORMAL DASHBOARD
+          ===================================================================== */}
+      <div className="print:hidden">
+        <header className="space-y-6">
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
+                Class Management
+              </h1>
+              <p className="text-muted-foreground max-w-xl text-sm leading-relaxed">
+                Centralized control and comprehensive monitoring of academic
+                class data.
+              </p>
+            </div>
 
-      <main className="flex-1 w-full pb-8">
-        {paginatedClasses.length > 0 ? (
-          <div className="flex flex-wrap justify-center items-start gap-6 xl:gap-8 mt-4">
-            {paginatedClasses.map((kelas) => {
-              // 🔥 TAMBAHAN: Logika Slugifikasi Nama Kelas ("X MIPA 1" -> "x-mipa-1")
-              const classSlug = kelas.name.toLowerCase().replace(/\s+/g, '-');
+            <div className="flex w-full flex-col items-center gap-3 sm:flex-row md:w-auto">
+              <div
+                className={cn(
+                  "flex items-center transition-all duration-300",
+                  activeFilter !== "all" &&
+                    "border-border bg-card animate-in fade-in slide-in-from-right-2 h-9 rounded-md border shadow-sm"
+                )}
+              >
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    {activeFilter === "all" ? (
+                      <Button
+                        suppressHydrationWarning
+                        variant="outline"
+                        className="border-border bg-card hover:bg-accent text-foreground h-9 gap-2 px-3 transition-all"
+                      >
+                        <Filter className="text-muted-foreground size-3.5" />
+                        <span className="text-xs font-medium">Filter</span>
+                        <ChevronDown className="text-muted-foreground size-3.5 opacity-70" />
+                      </Button>
+                    ) : (
+                      <Button
+                        suppressHydrationWarning
+                        variant="ghost"
+                        className="border-border hover:bg-accent text-foreground h-full gap-2 rounded-none rounded-l-md border-r px-3 transition-all focus-visible:ring-0"
+                      >
+                        <Filter className="text-muted-foreground size-3.5" />
+                        <span className="text-xs font-medium">Filter</span>
+                        <div className="bg-border mx-1 h-4 w-px" />
+                        <span className="bg-primary/10 text-primary rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider uppercase">
+                          {activeFilter}
+                        </span>
+                      </Button>
+                    )}
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="bg-card border-border w-32 rounded-lg shadow-xl"
+                  >
+                    {["X", "XI", "XII"].map((batch) => (
+                      <DropdownMenuItem
+                        key={batch}
+                        onClick={() => handleFilterChange(batch)}
+                        className={cn(
+                          "focus:bg-accent cursor-pointer text-xs font-medium transition-colors",
+                          activeFilter === batch
+                            ? "text-primary"
+                            : "text-foreground"
+                        )}
+                      >
+                        Grade {batch}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
-              return (
+                {activeFilter !== "all" && (
+                  <button
+                    onClick={() => handleFilterChange("all")}
+                    className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-full items-center justify-center rounded-r-md px-2.5 transition-colors outline-none"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="group relative w-full transition-all duration-500 ease-out sm:w-56 sm:focus-within:w-64">
+                <Search className="text-muted-foreground group-focus-within:text-primary absolute top-1/2 left-3 size-4 -translate-y-1/2 transition-colors duration-300" />
+                <Input
+                  placeholder="Search class or teacher..."
+                  spellCheck={false}
+                  autoComplete="off"
+                  className="bg-muted/30 border-border hover:border-foreground/30 focus-visible:border-foreground/50 text-foreground placeholder:text-muted-foreground h-9 rounded-md pr-9 pl-9 text-[13px] shadow-sm transition-all focus-visible:bg-transparent focus-visible:ring-0"
+                  value={keyword}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                />
+                {keyword && (
+                  <button
+                    type="button"
+                    onClick={() => handleSearchChange("")}
+                    className="text-muted-foreground hover:text-foreground hover:bg-destructive/10 animate-in fade-in zoom-in-75 absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 transition-all duration-200"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="from-border via-border/50 h-px w-full bg-linear-to-r to-transparent" />
+        </header>
+
+        <main className="w-full flex-1 pb-8">
+          {paginatedClasses.length > 0 ? (
+            <div className="mt-4 flex flex-wrap items-start justify-center gap-6 xl:gap-8">
+              {paginatedClasses.map((kelas) => (
                 <div
                   key={kelas.id}
-                  className="group relative w-63.5 h-91 bg-card border border-border rounded-3xl flex flex-col transition-all duration-300 hover:border-white/20 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+                  className="group bg-card border-border hover:shadow-primary/5 relative flex h-91 w-63.5 flex-col rounded-3xl border transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-xl"
                 >
-                  {/* Banner */}
-                  <div className="relative w-full h-28 shrink-0 bg-muted overflow-hidden rounded-t-3xl">
+                  <div className="bg-muted relative h-28 w-full shrink-0 overflow-hidden rounded-t-3xl">
                     <Image
                       src="/bg-banner.jpeg"
-                      alt="Class Banner"
+                      alt="Banner"
                       fill
                       className="object-cover opacity-70 transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/80" />
-                    <div className="absolute top-4 right-4 flex items-center px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 z-10 shadow-sm max-w-40">
-                      <span className="font-inter text-[10px] font-semibold text-white tracking-wide truncate">
+                    <div className="absolute top-4 right-4 z-10 flex max-w-40 items-center rounded-full border border-white/10 bg-black/70 px-3 py-1.5 shadow-sm backdrop-blur-md">
+                      <span className="font-inter truncate text-[10px] font-semibold tracking-wide text-white">
                         {kelas.wali}
                       </span>
                     </div>
                   </div>
 
-                  {/* Avatar */}
                   <div className="absolute top-21 left-5 z-20">
-                    <div className="relative size-14 rounded-full border-[3px] border-card bg-card flex items-center justify-center shadow-lg overflow-hidden">
-                      <div className="absolute inset-0 bg-linear-to-br from-primary/2 via-primary/8 to-transparent" />
-                      <span className="font-space font-bold text-foreground text-[15px] z-10 drop-shadow-md">
+                    <div className="border-card bg-card relative flex size-14 items-center justify-center overflow-hidden rounded-full border-[3px] shadow-lg">
+                      <div className="from-primary/2 via-primary/8 absolute inset-0 bg-linear-to-br to-transparent" />
+                      <span className="font-space text-foreground z-10 text-[15px] font-bold drop-shadow-md">
                         {kelas.batch}
                       </span>
                     </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="flex flex-col flex-1 p-5 pt-10">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <h3 className="font-jakarta font-bold text-[18px] text-foreground tracking-tight leading-none truncate">
+                  <div className="flex flex-1 flex-col p-5 pt-10">
+                    <div className="mb-0.5 flex items-center gap-1.5">
+                      <h3 className="font-jakarta text-foreground truncate text-[18px] leading-none font-bold tracking-tight">
                         {kelas.name}
                       </h3>
-                      <BadgeCheck className="size-4 text-blue-500 shrink-0" />
+                      <BadgeCheck className="size-4 shrink-0 text-blue-500" />
                     </div>
-
-                    <p className="font-mono text-[11px] text-muted-foreground tracking-tight">
-                      @{kelas.name.toLowerCase().replace(/\s+/g, '')}
+                    <p className="text-muted-foreground font-mono text-[11px] tracking-tight">
+                      @{kelas.name.toLowerCase().replace(/\s+/g, "")}
                     </p>
-
-                    <p className="font-inter text-[12px] text-foreground/70 leading-relaxed mt-2.5 line-clamp-2">
+                    <p className="font-inter text-foreground/70 mt-2.5 line-clamp-2 text-[12px] leading-relaxed">
                       {kelas.description}
                     </p>
 
-                    <div className="flex items-center justify-between mt-auto mb-4 font-inter text-[12px]">
+                    <div className="font-inter mt-auto mb-4 flex items-center justify-between text-[12px]">
                       <div className="flex flex-col">
-                        <span className="font-bold text-foreground leading-none mb-1">{kelas.Student}</span>
-                        <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Students</span>
+                        <span className="text-foreground mb-1 leading-none font-bold">
+                          {kelas.Student}
+                        </span>
+                        <span className="text-muted-foreground text-[9px] tracking-wider uppercase">
+                          Students
+                        </span>
                       </div>
-                      <div className="h-5 w-px bg-border" />
+                      <div className="bg-border h-5 w-px" />
                       <div className="flex flex-col">
-                        <span className="font-bold text-foreground leading-none mb-1">{kelas.period}</span>
-                        <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Period</span>
+                        <span className="text-foreground mb-1 leading-none font-bold">
+                          {kelas.period}
+                        </span>
+                        <span className="text-muted-foreground text-[9px] tracking-wider uppercase">
+                          Period
+                        </span>
                       </div>
-                      <div className="h-5 w-px bg-border" />
+                      <div className="bg-border h-5 w-px" />
                       <div className="flex flex-col">
-                        <span className="font-bold text-foreground leading-none mb-1">{kelas.batch}</span>
-                        <span className="text-muted-foreground text-[9px] uppercase tracking-wider">Grade</span>
+                        <span className="text-foreground mb-1 leading-none font-bold">
+                          {kelas.batch}
+                        </span>
+                        <span className="text-muted-foreground text-[9px] tracking-wider uppercase">
+                          Grade
+                        </span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <Button
-                        // 🔥 TAMBAHAN: Navigasi ke URL dinamis saat diklik
-                        onClick={() => router.push(`/dashboard/class/${classSlug}`)}
-                        className="group/view flex-1 h-9 rounded-full bg-primary text-black hover:bg-primary/70 hover:-translate-y-0.5 font-bold text-[12px] transition-all active:scale-95 shadow-md"
+                        onClick={() =>
+                          router.push(`/dashboard/class/${kelas.id}`)
+                        }
+                        className="group/view bg-primary hover:bg-primary/70 h-9 flex-1 rounded-full text-[12px] font-bold text-black shadow-md transition-all hover:-translate-y-0.5 active:scale-95"
                       >
-                        <ExternalLink className="mr-1.5 size-3.5 group-hover/view:ar-bounce-x" />
+                        <ExternalLink className="group-hover/view:ar-bounce-x mr-1.5 size-3.5" />{" "}
                         View
                       </Button>
-
                       <Button
                         variant="outline"
                         size="icon"
-                        className="group/qr h-9 w-9 rounded-full border-border bg-card hover:bg-accent hover:border-white/20 hover:text-foreground transition-all active:scale-95 shadow-sm"
-                        onClick={() => setIsQRModalOpen(true)}
+                        onClick={() => openQrModal(kelas)}
+                        className="group/qr border-border bg-card hover:bg-accent hover:text-foreground h-9 w-9 rounded-full shadow-sm transition-all hover:border-white/20 active:scale-95"
                       >
-                        <QrCode className="size-4 transition-colors group-hover/qr:text-primary group-hover/qr:ar-shake-loop" />
+                        <QrCode className="group-hover/qr:text-primary group-hover/qr:ar-shake-loop size-4 transition-colors" />
                       </Button>
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="py-32 flex flex-col items-center justify-center opacity-30">
-            <SearchX className="size-16 text-muted-foreground/50" />
-            <p className="mt-4 font-bold tracking-widest uppercase text-xs text-center text-foreground">No classes found</p>
-          </div>
-        )}
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-32 opacity-30">
+              <SearchX className="text-muted-foreground/50 size-16" />
+              <p className="text-foreground mt-4 text-center text-xs font-bold tracking-widest uppercase">
+                No classes found
+              </p>
+            </div>
+          )}
 
-        {/* Pagination Tetap Sama */}
-        {StudentPages > 1 && (
-          <div className="mt-12 flex justify-center pb-12">
-            <Pagination className="mx-0 w-auto">
-              <PaginationContent className="flex items-center gap-2 sm:gap-3">
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage > 1) setCurrentPage(currentPage - 1);
-                    }}
-                    className={cn(
-                      "h-8 px-2 sm:px-3 rounded-lg border border-transparent transition-all duration-300 flex items-center gap-1 font-bold text-[11px] uppercase tracking-wider",
-                      currentPage === 1
-                        ? "pointer-events-none text-muted-foreground/30"
-                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-                    )}
-                  />
-                </PaginationItem>
-
-                <div className="flex items-center gap-1.5">
-                  {visiblePages.map((page, index) => {
-                    if (page === '...') {
-                      return (
+          {StudentPages > 1 && (
+            <div className="mt-12 flex justify-center pb-12">
+              <Pagination className="mx-0 w-auto">
+                <PaginationContent className="flex items-center gap-2 sm:gap-3">
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (currentPage > 1) setCurrentPage(currentPage - 1)
+                      }}
+                      className={cn(
+                        "flex h-8 items-center gap-1 rounded-lg border border-transparent px-2 text-[11px] font-bold tracking-wider uppercase transition-all sm:px-3",
+                        currentPage === 1
+                          ? "text-muted-foreground/30 pointer-events-none"
+                          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                      )}
+                    />
+                  </PaginationItem>
+                  <div className="flex items-center gap-1.5">
+                    {visiblePages.map((page, index) =>
+                      page === "..." ? (
                         <PaginationItem key={`ellipsis-${index}`}>
-                          <div className="h-8 w-8 flex items-center justify-center text-muted-foreground/40">
+                          <div className="text-muted-foreground/40 flex h-8 w-8 items-center justify-center">
                             <MoreHorizontal className="size-4" />
                           </div>
                         </PaginationItem>
-                      );
-                    }
-                    return (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          href="#"
-                          isActive={currentPage === page}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(Number(page));
-                          }}
-                          className={cn(
-                            "h-8 w-8 p-0 flex items-center justify-center font-bold text-xs rounded-lg transition-all duration-300",
-                            currentPage === page
-                              ? "bg-foreground/15 text-foreground border border-foreground/20 shadow-sm" 
-                              : "bg-transparent text-muted-foreground border border-transparent hover:bg-accent/50 hover:text-foreground"
-                          )}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
-                </div>
-
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage < StudentPages) setCurrentPage(currentPage + 1);
-                    }}
-                    className={cn(
-                      "h-8 px-2 sm:px-3 rounded-lg border border-transparent transition-all duration-300 flex items-center gap-1 font-bold text-[11px] uppercase tracking-wider",
-                      currentPage === StudentPages
-                        ? "pointer-events-none text-muted-foreground/30"
-                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                      ) : (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            href="#"
+                            isActive={currentPage === page}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              setCurrentPage(Number(page))
+                            }}
+                            className={cn(
+                              "flex h-8 w-8 items-center justify-center rounded-lg p-0 text-xs font-bold transition-all",
+                              currentPage === page
+                                ? "bg-foreground/15 text-foreground border-foreground/20 border shadow-sm"
+                                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground border border-transparent bg-transparent"
+                            )}
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )
                     )}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
-      </main>
-
-      {/* QR MODAL (Tetap Sama) */}
-      <Dialog open={isQRModalOpen} onOpenChange={setIsQRModalOpen}>
-        <DialogContent className="bg-card/95 backdrop-blur-2xl border-border sm:max-w-xs p-0 overflow-hidden rounded-4xl shadow-2xl">
-          <div className="p-8 flex flex-col items-center gap-6 text-center">
-            <div className="space-y-1">
-              <DialogTitle className="text-2xl font-black tracking-tighter uppercase leading-none text-foreground">Class QR</DialogTitle>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Collective Attendance</p>
+                  </div>
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (currentPage < StudentPages)
+                          setCurrentPage(currentPage + 1)
+                      }}
+                      className={cn(
+                        "flex h-8 items-center gap-1 rounded-lg border border-transparent px-2 text-[11px] font-bold tracking-wider uppercase transition-all sm:px-3",
+                        currentPage === StudentPages
+                          ? "text-muted-foreground/30 pointer-events-none"
+                          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                      )}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </div>
+          )}
+        </main>
+      </div>
 
-            <div className="relative p-6 bg-white rounded-4xl shadow-md">
-              <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-75 animate-pulse" />
-              <div className="relative w-40 h-40">
-                <QrCode className="w-full h-full text-black" strokeWidth={1.5} />
+      {/* 
+        =====================================================================
+        🔥 MODAL BULK QR GENERATOR (RESPONSIVE: MOBILE & DESKTOP) 🔥
+        =====================================================================
+      */}
+      <Dialog
+        open={!!qrModalClass}
+        onOpenChange={(open) => !open && handleCloseModal()}
+      >
+        <DialogContent className="flex h-[90vh] flex-col overflow-hidden rounded-2xl border-white/10 bg-[#0a0a0a] p-0 text-white selection:bg-white/20 selection:text-white sm:h-120 sm:max-w-2xl print:hidden">
+          <DialogDescription className="sr-only">
+            Modal for mass QR printing
+          </DialogDescription>
+
+          <div className="flex flex-1 flex-col overflow-hidden sm:flex-row">
+            {/* =====================================================================
+                KIRI: SELEKSI SISWI (Order-2 di HP, Order-1 di Desktop)
+                ===================================================================== */}
+            <div className="relative order-2 flex h-full w-full flex-1 flex-col border-white/10 bg-transparent sm:order-1 sm:w-[45%] sm:flex-none sm:border-r">
+              <div className="shrink-0 space-y-3 border-b border-white/10 p-4">
+                <DialogTitle className="text-foreground font-jakarta flex flex-wrap items-center gap-1.5 truncate text-[16px] leading-tight font-bold">
+                  Print QR
+                  <span className="bg-primary/10 text-primary rounded-md px-2.5 py-0.5 text-[13px] font-semibold tracking-wide">
+                    {qrModalClass?.name}
+                  </span>
+                </DialogTitle>
+
+                <div className="mt-2 flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5">
+                  <div
+                    className="flex cursor-pointer items-center gap-2"
+                    onClick={handleSelectAllQR}
+                  >
+                    <Checkbox
+                      checked={
+                        selectedQRStudents.length === dummyStudentsQR.length &&
+                        dummyStudentsQR.length > 0
+                      }
+                      className="data-[state=checked]:bg-primary size-3.5 rounded-lg border-white/20 data-[state=checked]:text-black"
+                    />
+                    <span className="text-[11px] font-medium text-white select-none">
+                      Select All
+                    </span>
+                  </div>
+                  <span className="text-primary bg-primary/10 border-primary/20 rounded border px-1.5 py-0.5 font-mono text-[9px]">
+                    {selectedQRStudents.length} / {dummyStudentsQR.length}
+                  </span>
+                </div>
+              </div>
+
+              {/* LIST SCROLL */}
+              <div className="group/list relative flex-1 overflow-hidden">
+                <div className="absolute inset-0 space-y-1 overflow-y-auto p-2 pr-3 pb-6 transition-all [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-transparent group-hover/list:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-track]:mb-3 [&::-webkit-scrollbar-track]:bg-transparent">
+                  {dummyStudentsQR.map((student) => (
+                    <div
+                      key={student.id}
+                      onClick={() => handleToggleQRStudent(student.id)}
+                      className={cn(
+                        "flex cursor-pointer items-center justify-between rounded-lg border p-2 transition-all",
+                        selectedQRStudents.includes(student.id)
+                          ? "bg-primary/10 border-primary/30"
+                          : "border-transparent bg-transparent hover:bg-white/5"
+                      )}
+                    >
+                      <div className="flex min-w-0 flex-1 items-center gap-2.5 pr-2">
+                        <Checkbox
+                          checked={selectedQRStudents.includes(student.id)}
+                          className="data-[state=checked]:bg-primary size-3.5 shrink-0 rounded-lg border-white/20 data-[state=checked]:text-black"
+                        />
+                        <span className="truncate text-[11px] font-medium text-white">
+                          {student.name}
+                        </span>
+                      </div>
+                      <span className="text-muted-foreground shrink-0 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[9px]">
+                        {student.icode}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pointer-events-none absolute bottom-0 left-0 h-10 w-[calc(100%-10px)] bg-linear-to-t from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent" />
               </div>
             </div>
 
-            <p className="text-[11px] font-bold text-muted-foreground/80 leading-relaxed px-6 italic">
-              &quot;Use the ARDEN mobile scanner to process attendance for all students automatically.&quot;
-            </p>
+            {/* =====================================================================
+                KANAN: PREVIEW QR + DESKTOP FOOTER
+                ===================================================================== */}
+            <div className="relative order-1 flex h-64 w-full shrink-0 flex-col overflow-hidden border-b border-white/5 bg-transparent sm:order-2 sm:h-full sm:w-[55%] sm:border-b-0">
+              <div className="relative flex h-full w-full flex-1 flex-col items-center justify-center">
+                {selectedQRStudents.length === 0 ? (
+                  <div className="flex flex-col items-center text-center opacity-30">
+                    <QrCode
+                      className="text-muted-foreground mb-2 size-10"
+                      strokeWidth={1.5}
+                    />
+                    <p className="text-[10px] font-bold tracking-wider uppercase">
+                      Select Students
+                    </p>
+                  </div>
+                ) : (
+                  <div className="relative flex h-full w-full items-center justify-center sm:-mt-12 sm:perspective-[1000px]">
+                    {/* TAMPILAN MOBILE (HP) -> Single Card Statis di Tengah */}
+                    <div className="flex flex-col items-center sm:hidden">
+                      <div className="relative flex w-28 flex-col items-center rounded-2xl border border-white/10 bg-[#111] p-3 shadow-2xl">
+                        <div className="from-primary/10 pointer-events-none absolute top-0 left-0 h-10 w-full rounded-t-2xl bg-linear-to-b to-transparent" />
+                        <div className="relative z-10 aspect-square w-full rounded-xl border border-gray-200 bg-white p-1.5 shadow-sm">
+                          <QrCode
+                            className="size-full text-black"
+                            strokeWidth={1}
+                          />
+                        </div>
+                        <div className="relative z-10 mt-3 w-full px-1 text-center">
+                          <p className="font-jakarta truncate text-[10px] leading-relaxed font-semibold tracking-wide text-white/95 uppercase antialiased">
+                            {visibleCards[0]?.name}
+                          </p>
+                          <p className="text-primary mt-0.5 font-mono text-[8px] font-medium tracking-widest antialiased">
+                            {visibleCards[0]?.icode}
+                          </p>
+                        </div>
+                      </div>
 
-            <Button className="w-full rounded-xl h-12 font-black tracking-widest text-[10px] bg-secondary text-secondary-foreground hover:bg-secondary/80">
-              GENERATE NEW CODE
+                      {/* Lencana OTHERS di Mobile (muncul rapi tepat di bawah card tunggal) */}
+                      {selectedQRStudents.length > 1 && (
+                        <div className="animate-in fade-in zoom-in-95 mt-3 rounded-full border border-white/10 bg-black/80 px-3 py-1 backdrop-blur-md">
+                          <p className="text-[9px] font-bold tracking-widest text-white">
+                            + {selectedQRStudents.length - 1} OTHERS
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* TAMPILAN DESKTOP (TABLET/PC) -> Kipas Tangan 3D */}
+                    <div className="relative hidden h-full w-full items-center justify-center sm:flex">
+                      {visibleCards.map((student, index) => {
+                        let angle = 0
+                        if (len === 2) angle = index === 0 ? -12 : 12
+                        if (len === 3)
+                          angle = index === 0 ? -18 : index === 1 ? 0 : 18
+                        const isCenter = angle === 0
+
+                        return (
+                          <div
+                            key={student.id}
+                            className="absolute flex w-30 flex-col items-center rounded-2xl border border-white/10 bg-[#111] p-3 shadow-2xl transition-transform duration-500 ease-out"
+                            style={{
+                              transformOrigin: "50% 150%",
+                              transform: `rotate(${angle}deg)`,
+                              zIndex: isCenter ? 10 : 5,
+                            }}
+                          >
+                            <div className="from-primary/10 pointer-events-none absolute top-0 left-0 h-10 w-full rounded-t-2xl bg-linear-to-b to-transparent" />
+                            <div className="relative z-10 aspect-square w-full rounded-xl border border-gray-200 bg-white p-1.5 shadow-sm">
+                              <QrCode
+                                className="size-full text-black"
+                                strokeWidth={1}
+                              />
+                            </div>
+                            <div className="relative z-10 mt-3 w-full text-center">
+                              <p className="truncate text-[10px] leading-none font-bold tracking-tight text-white uppercase">
+                                {student.name}
+                              </p>
+                              <p className="text-primary/80 mt-1 font-mono text-[8px]">
+                                {student.icode}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      })}
+
+                      {selectedQRStudents.length > 3 && (
+                        <div className="animate-in fade-in zoom-in-95 absolute -bottom-3 z-50 rounded-full border border-white/10 bg-black/80 px-3 py-1 backdrop-blur-md">
+                          <p className="text-[9px] font-bold tracking-widest text-white">
+                            + {selectedQRStudents.length - 3} OTHERS
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 🔥 FIX: DESKTOP FOOTER DENGAN PADDING LEBIH LEGA AGAR TIDAK MEPET GARIS KANAN */}
+              <div className="z-10 hidden w-full shrink-0 items-center justify-between gap-2 border-t border-white/10 bg-transparent px-5 py-4 sm:flex">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 border-white/10 bg-transparent px-3 text-[10px] text-gray-300 transition-colors hover:bg-white/5 hover:text-white"
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 border-white/10 bg-white/5 px-2 text-[10px] text-white hover:bg-white/10"
+                    disabled={selectedQRStudents.length === 0}
+                  >
+                    <Download className="size-3" /> PDF
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-primary hover:bg-primary/90 h-8 gap-1.5 px-3 text-[10px] font-bold text-black"
+                    disabled={selectedQRStudents.length === 0}
+                    onClick={handlePrint}
+                  >
+                    <Printer className="size-3" /> Print
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* =====================================================================
+              MOBILE FOOTER (Hanya muncul di HP, diletakkan paling bawah)
+              ===================================================================== */}
+          <div className="relative z-20 order-3 flex w-full shrink-0 items-center justify-between gap-2 border-t border-white/10 bg-[#0a0a0a] px-5 py-4 sm:hidden">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 border-white/10 bg-transparent px-3 text-[10px] text-gray-300 transition-colors hover:bg-white/5 hover:text-white"
+              onClick={handleCloseModal}
+            >
+              Cancel
             </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1.5 border-white/10 bg-white/5 px-2 text-[10px] text-white hover:bg-white/10"
+                disabled={selectedQRStudents.length === 0}
+              >
+                <Download className="size-3" /> PDF
+              </Button>
+              {/* TOMBOL PRINT MATI SAAT DI HP */}
+              <Button
+                size="sm"
+                className="bg-primary hover:bg-primary/90 h-8 gap-1.5 px-3 text-[10px] font-bold text-black max-sm:pointer-events-none max-sm:opacity-30"
+                disabled={selectedQRStudents.length === 0}
+                onClick={handlePrint}
+              >
+                <Printer className="size-3" /> Print
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

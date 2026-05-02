@@ -15,9 +15,12 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     
-    // 🔥 FIX: Validasi 3 kolom wajib
-    if (!body.class_name || !body.grade_level || !body.academic_year) { 
-      return NextResponse.json({ status: 'fail', message: 'Tingkatan, Nama Kelas, dan Tahun Ajaran wajib diisi' }, { status: 400 });
+    // 🔥 FIX: Advisor (Wali Kelas) sekarang WAJIB secara sistem
+    if (!body.class_name || !body.grade_level || !body.academic_year || !body.advisor) { 
+      return NextResponse.json({ 
+        status: 'fail', 
+        message: 'Grade, Class Name, Academic Year, and Advisor are required.' 
+      }, { status: 400 });
     }
 
     const data = await ClassService.createClass(body);
@@ -30,8 +33,8 @@ export async function POST(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();
-    if (!body.id_class) { // 🔥 FIX
-      return NextResponse.json({ status: 'fail', message: 'Class ID is required' }, { status: 400 });
+    if (!body.id_class) { 
+      return NextResponse.json({ status: 'fail', message: 'Class ID is required.' }, { status: 400 });
     }
 
     const data = await ClassService.updateClass(Number(body.id_class), body);
@@ -46,12 +49,16 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
-    if (!id) return NextResponse.json({ status: 'fail', message: 'ID is required' }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ status: 'fail', message: 'Class ID is required.' }, { status: 400 });
+    }
 
     await ClassService.deleteClassWithStudents(Number(id));
-    return NextResponse.json({ status: 'success', message: 'Class and all its students have been deleted successfully' });
+    return NextResponse.json({ 
+      status: 'success', 
+      message: 'Class and its students successfully deleted.' 
+    });
   } catch (err: any) {
     return NextResponse.json({ status: 'fail', message: err.message }, { status: 500 });
   }
 }
-
