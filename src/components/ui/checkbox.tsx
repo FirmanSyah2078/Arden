@@ -14,16 +14,20 @@ function Checkbox({
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "peer size-4 shrink-0 rounded-[4px] border border-input shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary",
+        // 1. Ubah rounded-lg jadi rounded-[3px] agar bentuknya kotak tegas
+        // 2. Hapus semua class 'bg-primary' agar background tetap transparan
+        // 3. Centang (text color) akan mengikuti warna foreground
+        "peer size-4 shrink-0 rounded-[3px] border border-input shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40 data-[state=checked]:border-foreground/60 data-[state=checked]:text-foreground",
         className
       )}
       {...props}
     >
       <CheckboxPrimitive.Indicator
         data-slot="checkbox-indicator"
-        className="grid place-content-center text-current transition-none"
+        className="flex items-center justify-center text-current transition-none"
       >
-        <CheckIcon className="size-3.5" />
+        {/* Stroke dipertebal (stroke-[3px]) agar centangnya kelihatan tegas tanpa background */}
+        <CheckIcon className="size-3.5 stroke-[3px]" />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )

@@ -77,7 +77,7 @@ export function CityCombobox({
         placeholder="Search or type city..."
         autoComplete="off"
         spellCheck="false"
-        className={cn(className, "pr-12")}
+        className={cn(className, "pr-12 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0")}
       />
       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
         {isSearching && <Loader2 className="size-3.5 animate-spin text-primary" />}

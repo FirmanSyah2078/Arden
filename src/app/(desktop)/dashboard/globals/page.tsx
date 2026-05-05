@@ -1,11 +1,11 @@
 // src/app/(desktop)/dashboard/globals/page.tsx
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 
 // Import Hooks
 import { usegeographic } from "@/hooks/globals/use-geographic";
-import { useGenerate } from "@/hooks/globals/use-generate"; 
+import { useGenerate } from "@/hooks/globals/use-generate";
 
 // Import UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,94 +21,19 @@ import { CityCombobox } from "@/components/dashboard/globals/city-combobox";
 // 🔥 DESIGN TOKENS
 // =====================================================================
 const fieldClass =
-  "flex h-11 w-full rounded-xl border border-border/50 bg-background/60 shadow-inner transition-all duration-300 hover:border-foreground/30 focus-within:border-foreground/40";
+  "flex h-9 w-full items-center rounded-xl border border-border/50 bg-background/60 shadow-inner transition-all duration-300 hover:border-foreground/30 focus-within:border-foreground/40";
 
+// 🔥 FIX 1: Matikan ring saat klik (focus:ring-0), hanya nyalakan untuk tab keyboard (focus-visible:ring-2)
 const triggerClass =
-  "flex h-11 w-full items-center justify-between rounded-xl border border-border/50 bg-background/60 px-3 text-[13px] font-medium shadow-inner transition-all duration-300 hover:border-foreground/30 focus:border-foreground/40";
+  "flex h-9 w-full items-center justify-between rounded-xl border border-border/50 bg-background/60 px-3 text-[13px] font-medium shadow-inner transition-all duration-300 hover:border-foreground/30 focus:outline-none focus:border-foreground/40 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-foreground/40";
 
 const fieldInputClass =
-  "flex h-full w-full items-center border-0 bg-transparent p-0 text-[13px] font-medium leading-none text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50";
+  "flex h-full w-full items-center border-0 bg-transparent p-0 text-[13px] font-medium leading-none text-foreground outline-none focus:outline-none focus:ring-0 placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50";
 
 
 export default function GlobalsPage() {
   const geo = usegeographic();
-  const gen = useGenerate();
-
-  const qrRef = useRef<HTMLDivElement>(null);
-  const qrCode = useRef<any>(null);
-
-  const finalBgColor = gen.settings.isBgTransparent ? "transparent" : (gen.settings.bgColor || "#ffffff");
-
-  // =====================================================================
-  // 🔥 ENGINE: INIT & UPDATE QR CODE PREVIEW
-  // =====================================================================
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const QRCodeStyling = require("qr-code-styling");
-      
-      qrCode.current = new QRCodeStyling({
-        width: 180,
-        height: 180,
-        type: "svg", 
-        data: "https://arden.app/scan/ARD-XMP1-001",
-        ...(gen.settings.qrIcon ? { image: gen.settings.qrIcon } : {}), 
-        qrOptions: {
-          errorCorrectionLevel: gen.settings.errorLevel || "Q"
-        },
-        dotsOptions: {
-          color: gen.settings.qrColor || "#000000",
-          type: gen.settings.qrPattern || "square",
-        },
-        backgroundOptions: {
-          color: finalBgColor,
-        },
-        cornersSquareOptions: {
-          type: gen.settings.cornerSquare || "square",
-        },
-        cornersDotOptions: {
-          type: gen.settings.cornerDot || "square",
-        },
-        imageOptions: {
-          crossOrigin: "anonymous",
-          margin: gen.settings.iconMargin || 5,
-          hideBackgroundDots: gen.settings.hideDotsBg ?? true
-        }
-      });
-
-      if (qrRef.current) {
-        qrRef.current.innerHTML = "";
-        qrCode.current.append(qrRef.current);
-      }
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Live Update: Dependency array sekarang konsisten panjangnya
-  useEffect(() => {
-    if (qrCode.current) {
-      qrCode.current.update({
-        ...(gen.settings.qrIcon ? { image: gen.settings.qrIcon } : { image: "" }), 
-        qrOptions: { errorCorrectionLevel: gen.settings.errorLevel },
-        dotsOptions: { color: gen.settings.qrColor, type: gen.settings.qrPattern },
-        backgroundOptions: { color: finalBgColor },
-        cornersSquareOptions: { type: gen.settings.cornerSquare },
-        cornersDotOptions: { type: gen.settings.cornerDot },
-        imageOptions: {
-          margin: gen.settings.iconMargin,
-          hideBackgroundDots: gen.settings.hideDotsBg
-        }
-      });
-    }
-  }, [
-    gen.settings.qrColor, 
-    finalBgColor, 
-    gen.settings.qrPattern, 
-    gen.settings.errorLevel, 
-    gen.settings.cornerSquare, 
-    gen.settings.cornerDot,
-    gen.settings.qrIcon,
-    gen.settings.iconMargin,
-    gen.settings.hideDotsBg
-  ]);
+  const gen = useGenerate(); // Mengambil seluruh logika dan state dari hook
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">
@@ -122,13 +47,13 @@ export default function GlobalsPage() {
 
       <main className="flex-1 w-full pb-8">
         <div className="mx-auto max-w-4xl w-full space-y-8">
-          
+
           {/* =====================================================================
               KARTU 1: GEOGRAPHIC CORE
               ===================================================================== */}
           <form onSubmit={geo.handleSave}>
-            <Card className="rounded-3xl border border-border/60 bg-card shadow-lg overflow-hidden pb-4">
-              <CardHeader className="border-b border-border/40 bg-muted/5 pb-4">
+            <Card className="rounded-3xl border border-border/60 bg-card shadow-lg pb-4">
+              <CardHeader className="border-b border-border/40 bg-muted/5 pb-4 rounded-t-3xl">
                 <CardTitle className="text-[16px] font-bold flex items-center gap-2"><Globe className="size-4 text-primary" /> Geographic Core</CardTitle>
                 <CardDescription className="text-[12px]">Location parameters for calculating external endpoints (e.g. Astronomy).</CardDescription>
               </CardHeader>
@@ -176,46 +101,52 @@ export default function GlobalsPage() {
               KARTU 2: GENERATOR ENGINE (QR CODE)
               ===================================================================== */}
           <form onSubmit={gen.handleSave}>
-            <Card className="rounded-3xl border border-border/60 bg-card shadow-lg overflow-hidden pb-4">
-              <CardHeader className="border-b border-border/40 bg-muted/5 pb-4">
+            <Card className="rounded-3xl border border-border/60 bg-card shadow-lg pb-4 relative z-10">
+              <CardHeader className="border-b border-border/40 bg-muted/5 pb-4 rounded-t-3xl">
                 <CardTitle className="text-[16px] font-bold flex items-center gap-2"><QrCode className="size-4 text-primary" /> Generator Engine</CardTitle>
                 <CardDescription className="text-[12px]">Advanced templates and styling parameters for system-generated QR Codes.</CardDescription>
               </CardHeader>
-              
+
               <CardContent className="pt-6 pb-2">
                 <div className="flex flex-col md:flex-row gap-8 items-start">
-                  
+
                   {/* KIRI: LIVE PREVIEW AREA */}
                   <div className="w-full md:w-[35%] lg:w-[30%] flex flex-col items-center justify-center p-6 bg-muted/20 border border-border/40 rounded-2xl relative overflow-hidden shrink-0">
                     <div className="absolute inset-0 bg-size-[14px_14px] mask-[radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)] bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)]" />
-                    
-                    <div 
-                      className="relative z-10 size-45 overflow-hidden rounded-md shadow-xl ring-1 ring-border/20 transition-all duration-300" 
-                      style={{ 
+
+                    <div
+                      className="relative z-10 size-45 overflow-hidden rounded-md shadow-xl ring-1 ring-border/20 transition-all duration-300"
+                      style={{
                         backgroundColor: gen.settings.isBgTransparent ? "transparent" : (gen.settings.bgColor || "transparent"),
                         backgroundImage: gen.settings.isBgTransparent ? `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHJlY3Qgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzNmM2Y0NiIgZmlsbC1vcGFjaXR5PSIwLjQiIC8+PHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzNmM2Y0NiIgZmlsbC1vcGFjaXR5PSIwLjQiIC8+PC9zdmc+')` : "none"
                       }}
                     >
-                      <div ref={qrRef} className="size-full pointer-events-none" />
+                      <div ref={gen.qrRef} className="size-full pointer-events-none" />
                     </div>
-                    
-                    <div className="mt-5 flex items-center gap-2 relative z-10 opacity-70">
-                      <Scan className="size-3.5" />
-                      <span className="text-[10px] font-bold tracking-widest uppercase">Live Preview</span>
+
+                    {/* 🔥 REVISI: Payload Data (Desain Inline Badge yang lebih sleek) */}
+                    <div className="mt-6 flex justify-center relative z-10 w-full px-2 opacity-80 hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-lg border border-border/40 bg-background/50 backdrop-blur-md shadow-sm max-w-full">
+                        <Scan className="size-3.5 text-muted-foreground shrink-0" />
+                        <div className="w-px h-3.5 bg-border/60 shrink-0" /> {/* Garis pemisah estetik */}
+                        <code className="text-[11px] font-mono font-semibold text-foreground tracking-widest truncate">
+                          {gen.previewPayload}
+                        </code>
+                      </div>
                     </div>
                   </div>
 
                   {/* KANAN: PARAMETER SETTINGS */}
                   <div className="w-full md:w-[65%] lg:w-[70%] grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-6">
-                    
+
                     {/* Primary Color */}
                     <div className="space-y-2">
                       <Label className="text-[12.5px] font-semibold flex items-center gap-2"><Palette className="size-4" /> Dot Color</Label>
-                      <div className={cn(fieldClass, "flex items-center gap-2.5 px-2.5", gen.isLoading && "animate-pulse")}>
+                      <div className={cn(fieldClass, "gap-2.5 px-2.5", gen.isLoading && "animate-pulse")}>
                         <div className="relative size-5.5 shrink-0 overflow-hidden rounded-lg border border-border/60 shadow-sm transition-transform active:scale-95">
                           <input type="color" value={gen.settings.qrColor} onChange={(e) => gen.handleChange("qrColor", e.target.value)} disabled={gen.isLoading} className="absolute -top-2 -left-2 size-10 cursor-pointer border-0 p-0" />
                         </div>
-                        <input type="text" value={gen.settings.qrColor} onChange={(e) => gen.handleChange("qrColor", e.target.value)} disabled={gen.isLoading} maxLength={7} spellCheck={false} className={cn(fieldInputClass, "h-full uppercase")} />
+                        <input type="text" value={gen.settings.qrColor} onChange={(e) => gen.handleChange("qrColor", e.target.value)} disabled={gen.isLoading} maxLength={7} spellCheck={false} className={cn(fieldInputClass, "uppercase")} />
                       </div>
                     </div>
 
@@ -224,22 +155,21 @@ export default function GlobalsPage() {
                       <div className="flex items-center justify-between">
                         <Label className="text-[12.5px] font-semibold flex items-center gap-2"><PaintBucket className="size-4" /> Background</Label>
                         <Label htmlFor="transparent-bg" className="flex items-center gap-1.5 cursor-pointer group">
-                           {/* 🔥 FIX: Memastikan border radius menjadi kotak dengan 'rounded-sm' */}
-                           <Checkbox 
-                             id="transparent-bg" 
-                             checked={gen.settings.isBgTransparent} 
-                             onCheckedChange={(checked) => gen.handleChange("isBgTransparent", !!checked)}
-                             className="size-3.5 rounded-sm cursor-pointer data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" 
-                           />
-                           <span className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors select-none cursor-pointer">Transparent</span>
+                          <Checkbox
+                            id="transparent-bg"
+                            checked={gen.settings.isBgTransparent}
+                            onCheckedChange={(checked) => gen.handleChange("isBgTransparent", !!checked)}
+                            className="cursor-pointer"
+                          />
+                          <span className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors select-none cursor-pointer">Transparent</span>
                         </Label>
                       </div>
-                      
-                      <div className={cn(fieldClass, "flex items-center gap-2.5 px-2.5 transition-all duration-300", gen.isLoading && "animate-pulse", gen.settings.isBgTransparent && "opacity-40 pointer-events-none")}>
+
+                      <div className={cn(fieldClass, "gap-2.5 px-2.5", gen.isLoading && "animate-pulse", gen.settings.isBgTransparent && "opacity-40 pointer-events-none")}>
                         <div className="relative size-5.5 shrink-0 overflow-hidden rounded-lg border border-border/60 shadow-sm transition-transform active:scale-95">
                           <input type="color" value={gen.settings.bgColor} onChange={(e) => gen.handleChange("bgColor", e.target.value)} disabled={gen.isLoading || gen.settings.isBgTransparent} className="absolute -top-2 -left-2 size-10 cursor-pointer border-0 p-0" />
                         </div>
-                        <input type="text" value={gen.settings.bgColor} onChange={(e) => gen.handleChange("bgColor", e.target.value)} disabled={gen.isLoading || gen.settings.isBgTransparent} maxLength={7} spellCheck={false} className={cn(fieldInputClass, "h-full uppercase")} />
+                        <input type="text" value={gen.settings.bgColor} onChange={(e) => gen.handleChange("bgColor", e.target.value)} disabled={gen.isLoading || gen.settings.isBgTransparent} maxLength={7} spellCheck={false} className={cn(fieldInputClass, "uppercase")} />
                       </div>
                     </div>
 
@@ -306,76 +236,78 @@ export default function GlobalsPage() {
                         ========================================== */}
                     <div className="space-y-4 sm:col-span-2 mt-2 pt-6 border-t border-border/40">
                       <Label className="text-[12.5px] font-semibold flex items-center gap-2"><ImageIcon className="size-4 text-primary" /> Center Logo / Icon Injection</Label>
-                      
-                      {/* 🔥 FIX: Mengubah form uploader dan opsinya agar setema dengan Select (h-11) */}
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
-                        
+
                         {/* Area 1: File Uploader */}
                         <div className="space-y-2">
-                           <Label className="text-[11.5px] text-muted-foreground font-medium">Upload Image</Label>
-                           <div className="flex items-center gap-3">
-                              {/* Preview Mini */}
-                              {gen.settings.qrIcon ? (
-                                <div className="relative size-11 rounded-xl border border-border/50 bg-background shadow-inner p-1.5 flex items-center justify-center shrink-0">
-                                  <img src={gen.settings.qrIcon} alt="Logo" className="max-w-full max-h-full object-contain" />
-                                  <button 
-                                    type="button" 
-                                    onClick={() => gen.handleChange("qrIcon", "")}
-                                    className="absolute -top-1.5 -right-1.5 size-4 bg-destructive text-white rounded-full flex items-center justify-center shadow hover:scale-110 transition-transform"
-                                  >
-                                    <X className="size-2.5" />
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="size-11 rounded-xl border border-dashed border-border/60 bg-muted/10 flex items-center justify-center shrink-0">
-                                  <ImageIcon className="size-4 text-muted-foreground/50" />
-                                </div>
-                              )}
-
-                              {/* Input File setema fieldClass */}
-                              <div className={cn(fieldClass, "flex-1 px-1.5 transition-all overflow-hidden", gen.isLoading && "animate-pulse")}>
-                                <input 
-                                  type="file" 
-                                  accept="image/png, image/jpeg, image/svg+xml"
-                                  onChange={gen.handleImageUpload}
-                                  disabled={gen.isLoading}
-                                  className={cn(fieldInputClass, "file:cursor-pointer file:mr-3 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-[11.5px] file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer text-muted-foreground")}
-                                />
+                          <Label className="text-[11.5px] text-muted-foreground font-medium">Upload Image</Label>
+                          <div className="flex items-center gap-3">
+                            {/* Preview Mini */}
+                            {gen.settings.qrIcon ? (
+                              <div className="relative size-9 rounded-xl border border-border/50 bg-background shadow-inner p-1 flex items-center justify-center shrink-0">
+                                <img src={gen.settings.qrIcon} alt="Logo" className="max-w-full max-h-full object-contain" />
+                                <button
+                                  type="button"
+                                  onClick={() => gen.handleChange("qrIcon", "")}
+                                  className="absolute -top-1.5 -right-1.5 size-4 bg-destructive text-white rounded-full flex items-center justify-center shadow hover:scale-110 transition-transform focus:outline-none"
+                                >
+                                  <X className="size-2.5" />
+                                </button>
                               </div>
-                           </div>
+                            ) : (
+                              <div className="size-9 rounded-xl border border-dashed border-border/60 bg-muted/10 flex items-center justify-center shrink-0">
+                                <ImageIcon className="size-3.5 text-muted-foreground/50" />
+                              </div>
+                            )}
+
+                            {/* 🔥 FIX 2: File Input Styling (Perfect Centering inside h-9) */}
+                            <div className={cn(fieldClass, "flex-1 px-1", gen.isLoading && "animate-pulse")}>
+                              <input
+                                type="file"
+                                accept="image/png, image/jpeg, image/svg+xml"
+                                onChange={gen.handleImageUpload}
+                                disabled={gen.isLoading}
+                                // Styling spesifik agar "Choose File" rapi dan terpusat
+                                className="w-full text-[11px] text-muted-foreground cursor-pointer focus:outline-none file:cursor-pointer file:h-7 file:px-3 file:mr-3 file:rounded-md file:border-0 file:bg-foreground/5 file:text-foreground hover:file:bg-foreground/10 file:font-semibold file:transition-colors"
+                              />
+                            </div>
+                          </div>
                         </div>
 
                         {/* Area 2: Opsi Logo (Margin & Clear Dots) */}
                         <div className="space-y-2">
                           <Label className="text-[11.5px] text-muted-foreground font-medium">Image Adjustments</Label>
-                          <div className="flex items-center gap-4 h-11">
-                             
-                             {/* Select Margin - Disesuaikan agar sama seperti Select lain tapi porsi lebih kecil */}
-                             <div className="w-1/2">
-                               <Select value={gen.settings.iconMargin.toString()} onValueChange={(v) => gen.handleChange("iconMargin", parseInt(v))} disabled={gen.isLoading || !gen.settings.qrIcon}>
-                                 <SelectTrigger className={cn(triggerClass, (gen.isLoading || !gen.settings.qrIcon) && "opacity-50")}>
-                                   <SelectValue placeholder="Margin" />
-                                 </SelectTrigger>
-                                 <SelectContent>
-                                   <SelectItem value="0">Tight (0px)</SelectItem>
-                                   <SelectItem value="5">Normal (5px)</SelectItem>
-                                   <SelectItem value="10">Loose (10px)</SelectItem>
-                                 </SelectContent>
-                               </Select>
-                             </div>
+                          <div className="flex items-center gap-4 h-9">
 
-                             {/* Checkbox Clear Behind Logo - Dibuat sepadan tingginya dengan h-11 */}
-                             <div className={cn("w-1/2 h-11 rounded-xl border border-border/50 bg-background/60 px-3 flex items-center justify-between shadow-inner transition-colors", (!gen.settings.qrIcon || gen.isLoading) && "opacity-50 pointer-events-none")}>
-                                <Label htmlFor="hide-dots" className="text-[12.5px] font-medium text-foreground cursor-pointer select-none truncate">
-                                   Clear BG
-                                </Label>
-                                <Checkbox 
-                                  id="hide-dots" 
-                                  checked={gen.settings.hideDotsBg} 
-                                  onCheckedChange={(checked) => gen.handleChange("hideDotsBg", !!checked)}
-                                  className="size-4 rounded-sm cursor-pointer data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                                />
-                             </div>
+                            {/* Select Margin */}
+                            {/* 🔥 REVISI: Bungkus dengan pointer-events-none agar tidak memunculkan kursor not-allowed */}
+                            <div className={cn("w-1/2", (!gen.settings.qrIcon || gen.isLoading) && "opacity-50 pointer-events-none")}>
+                              <Select value={gen.settings.iconMargin.toString()} onValueChange={(v) => gen.handleChange("iconMargin", parseInt(v))} disabled={gen.isLoading || !gen.settings.qrIcon}>
+                                <SelectTrigger className={triggerClass}>
+                                  <SelectValue placeholder="Margin" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="0">Tight (0px)</SelectItem>
+                                  <SelectItem value="5">Normal (5px)</SelectItem>
+                                  <SelectItem value="10">Loose (10px)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Checkbox Clear Behind Logo */}
+                            {/* 🔥 REVISI: Hapus cursor-pointer pada saat sedang disabled/pointer-events-none */}
+                            <div className={cn("w-1/2 h-9 rounded-xl border border-border/50 bg-background/60 px-3 flex items-center justify-between shadow-inner transition-colors", (!gen.settings.qrIcon || gen.isLoading) && "opacity-50 pointer-events-none")}>
+                              <Label htmlFor="hide-dots" className="text-[12.5px] font-medium text-foreground select-none truncate">
+                                Clear BG
+                              </Label>
+                              <Checkbox
+                                id="hide-dots"
+                                checked={gen.settings.hideDotsBg}
+                                onCheckedChange={(checked) => gen.handleChange("hideDotsBg", !!checked)}
+                                disabled={gen.isLoading || !gen.settings.qrIcon}
+                              />
+                            </div>
 
                           </div>
                         </div>
