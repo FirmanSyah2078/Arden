@@ -1,16 +1,11 @@
-// src/hooks/schedules/use-schedules.ts
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { DailyPrayer } from "@/types/api";
-
-export interface DaySchedule {
-  day: string;
-  isActive: boolean;
-  trackedPrayers: DailyPrayer[];
-}
+import { DailyPrayer, DayScheduleData } from "@/types/api";
 
 export function useRoutine() {
-  const defaultWeekly: DaySchedule[] = [
+  const prayerList: DailyPrayer[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+  
+  const defaultWeekly: DayScheduleData[] = [
     { day: "Monday", isActive: true, trackedPrayers: ["Dhuhr", "Asr"] },
     { day: "Tuesday", isActive: true, trackedPrayers: ["Dhuhr", "Asr"] },
     { day: "Wednesday", isActive: true, trackedPrayers: ["Dhuhr", "Asr"] },
@@ -20,8 +15,8 @@ export function useRoutine() {
     { day: "Sunday", isActive: false, trackedPrayers: [] },
   ];
 
-  const [weeklySchedule, setWeeklySchedule] = useState<DaySchedule[]>(defaultWeekly);
-  const [savedWeeklySchedule, setSavedWeeklySchedule] = useState<DaySchedule[]>(defaultWeekly);
+  const [weeklySchedule, setWeeklySchedule] = useState<DayScheduleData[]>(defaultWeekly);
+  const [savedWeeklySchedule, setSavedWeeklySchedule] = useState<DayScheduleData[]>(defaultWeekly);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -85,5 +80,5 @@ export function useRoutine() {
 
   const isDraftModified = JSON.stringify(weeklySchedule) !== JSON.stringify(savedWeeklySchedule);
 
-  return { weeklySchedule, isLoading, isSaving, isDraftModified, toggleDayActive, togglePrayerTracked, handleSave };
+  return { weeklySchedule, prayerList, isLoading, isSaving, isDraftModified, toggleDayActive, togglePrayerTracked, handleSave };
 }

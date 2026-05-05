@@ -21,8 +21,11 @@ export async function POST(req: Request) {
     const body = await req.json();
     const payload = body.dtnew || body;
 
-    const validWaktu = ['Dhuhr', 'Asr'];
-    if (!validWaktu.includes(payload.time)) throw new Error(`Hanya menerima Dhuhr/Asr.`);
+    // 🔥 FIX: Sesuaikan dengan 5 Waktu
+    const validWaktu = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+    if (!validWaktu.includes(payload.time)) {
+      throw new Error(`Invalid prayer session. Hanya menerima ${validWaktu.join(', ')}.`);
+    }
 
     const data = await MobileAttendanceService.submitAttendance(payload);
     return NextResponse.json({ status: 'success', message: 'Absen berhasil', data });

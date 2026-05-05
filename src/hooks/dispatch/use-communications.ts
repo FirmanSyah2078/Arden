@@ -1,29 +1,24 @@
-// src/hooks/communications/use-communications.ts
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
+import { CommunicationSettingsData } from "@/types/api";
 
-export const DEFAULT_WARNING_MESSAGE = "The menstrual period has exceeded the maximum limit. Please report if you have purified.";
-
-export interface CommunicationSettings {
-  isNotificationActive: boolean;
-  warningMessage: string;
-}
+const DEFAULT_WARNING_MESSAGE = "The menstrual period has exceeded the maximum limit. Please report if you have purified.";
 
 export function useCommunications() {
-  const [settings, setSettings] = useState<CommunicationSettings>({
+  const [settings, setSettings] = useState<CommunicationSettingsData>({
     isNotificationActive: true,
     warningMessage: DEFAULT_WARNING_MESSAGE,
   });
 
-  const [savedSettings, setSavedSettings] = useState<CommunicationSettings>({
+  const [savedSettings, setSavedSettings] = useState<CommunicationSettingsData>({
     isNotificationActive: true,
     warningMessage: DEFAULT_WARNING_MESSAGE,
   });
 
-  const [isLoading, setIsLoading] = useState(false); // Nanti diubah jadi true kalau narik API
+  const [isLoading, setIsLoading] = useState(false); 
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleChange = (field: keyof CommunicationSettings, value: any) => {
+  const handleChange = (field: keyof CommunicationSettingsData, value: any) => {
     setSettings((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -31,8 +26,7 @@ export function useCommunications() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      // TODO: Fetch ke API untuk save data (Belum dibuat DB-nya)
-      await new Promise((resolve) => setTimeout(resolve, 800)); // Simulasi Delay
+      await new Promise((resolve) => setTimeout(resolve, 800)); 
       setSavedSettings(settings);
       toast.success("Warning format updated successfully!");
     } catch (error: any) {
@@ -49,5 +43,5 @@ export function useCommunications() {
     );
   }, [settings, savedSettings]);
 
-  return { settings, isLoading, isSaving, isDraftModified, handleChange, handleSave };
+  return { settings, isLoading, isSaving, isDraftModified, handleChange, handleSave, defaultMessage: DEFAULT_WARNING_MESSAGE };
 }

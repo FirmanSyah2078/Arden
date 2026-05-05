@@ -1,4 +1,3 @@
-// src/app/(desktop)/dashboard/bridges/page.tsx
 "use client";
 
 import { usealadhan } from "@/hooks/bridges/use-aladhan";
@@ -7,12 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Wifi, WifiOff, RefreshCw, Database, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DailyPrayer } from "@/types/api";
-
-const PRAYER_LIST: DailyPrayer[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
 export default function BridgesPage() {
-  const { syncEnabled, isLoading, apiStatus, prayerRanges, bannerState, toggleApiState } = usealadhan();
+  const aladhan = usealadhan();
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">
@@ -33,9 +29,9 @@ export default function BridgesPage() {
                   <CardTitle className="text-[16px] font-bold flex items-center gap-2"><Database className="size-4 text-primary" /> Aladhan.com Integration</CardTitle>
                   <CardDescription className="text-[12px] mt-1">Astronomy API endpoints for daily schedule generation.</CardDescription>
                 </div>
-                <div className={cn("flex items-center w-fit gap-1.5 px-3 py-1.5 rounded-full border text-[11px] font-bold", isLoading || apiStatus === "syncing" ? "bg-muted/50 border-border/50 text-muted-foreground animate-pulse" : apiStatus === "connected" ? "bg-success/10 border-success/20 text-success" : "bg-destructive/10 border-destructive/20 text-destructive")}>
-                  {isLoading || apiStatus === "syncing" ? <RefreshCw className="size-3 animate-spin" /> : apiStatus === "connected" ? <Wifi className="size-3" /> : <WifiOff className="size-3" />}
-                  <span>{isLoading || apiStatus === "syncing" ? "SYNCING..." : apiStatus === "connected" ? "API CONNECTED" : "DISCONNECTED"}</span>
+                <div className={cn("flex items-center w-fit gap-1.5 px-3 py-1.5 rounded-full border text-[11px] font-bold", aladhan.isLoading || aladhan.apiStatus === "syncing" ? "bg-muted/50 border-border/50 text-muted-foreground animate-pulse" : aladhan.apiStatus === "connected" ? "bg-success/10 border-success/20 text-success" : "bg-destructive/10 border-destructive/20 text-destructive")}>
+                  {aladhan.isLoading || aladhan.apiStatus === "syncing" ? <RefreshCw className="size-3 animate-spin" /> : aladhan.apiStatus === "connected" ? <Wifi className="size-3" /> : <WifiOff className="size-3" />}
+                  <span>{aladhan.isLoading || aladhan.apiStatus === "syncing" ? "SYNCING..." : aladhan.apiStatus === "connected" ? "API CONNECTED" : "DISCONNECTED"}</span>
                 </div>
               </div>
             </CardHeader>
@@ -45,30 +41,30 @@ export default function BridgesPage() {
                   <span className="text-[13px] font-bold">API Endpoint</span>
                   <a href="https://aladhan.com" target="_blank" rel="noreferrer" className="text-[12px] font-mono text-primary flex items-center gap-1 hover:underline">https://api.aladhan.com/v1 <ExternalLink className="size-3" /></a>
                 </div>
-                <Switch checked={syncEnabled} disabled={isLoading} onCheckedChange={(val) => toggleApiState(val)} className="data-[state=unchecked]:bg-destructive" />
+                <Switch checked={aladhan.syncEnabled} disabled={aladhan.isLoading} onCheckedChange={(val) => aladhan.toggleApiState(val)} className="data-[state=unchecked]:bg-destructive" />
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-4 mt-10 px-4">
-                {PRAYER_LIST.map((prayer) => (
+                {aladhan.prayerList.map((prayer) => (
                   <div key={prayer} className="flex flex-col items-center gap-1">
                     <span className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">{prayer}</span>
-                    {isLoading || apiStatus === "syncing" ? <div className="h-5 w-20 bg-muted/50 rounded animate-pulse" /> : <span className="text-[13px] font-mono font-medium">{prayerRanges ? prayerRanges[prayer] : "--:-- - --:--"}</span>}
+                    {aladhan.isLoading || aladhan.apiStatus === "syncing" ? <div className="h-5 w-20 bg-muted/50 rounded animate-pulse" /> : <span className="text-[13px] font-mono font-medium">{aladhan.prayerRanges ? aladhan.prayerRanges[prayer] : "--:-- - --:--"}</span>}
                   </div>
                 ))}
               </div>
 
-              <div className={cn("mt-10 p-3 px-4 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors", bannerState.variant === "muted" ? "bg-muted/5 border-border/40" : "bg-primary/5 border-primary/20")}>
+              <div className={cn("mt-10 p-3 px-4 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors", aladhan.bannerState.variant === "muted" ? "bg-muted/5 border-border/40" : "bg-primary/5 border-primary/20")}>
                 <div className="flex items-center gap-3">
-                  <div className={cn("p-1.5 rounded-md", bannerState.variant === "muted" ? "bg-background border border-border/50" : "bg-primary/10 text-primary")}>
-                    <bannerState.icon className={cn("size-4", bannerState.spin && "animate-spin")} />
+                  <div className={cn("p-1.5 rounded-md", aladhan.bannerState.variant === "muted" ? "bg-background border border-border/50" : "bg-primary/10 text-primary")}>
+                    <aladhan.bannerState.icon className={cn("size-4", aladhan.bannerState.spin && "animate-spin")} />
                   </div>
                   <div className="flex flex-col">
-                    <span className={cn("text-[13px] font-bold", bannerState.variant === "muted" ? "text-foreground" : "text-primary")}>{bannerState.title}</span>
-                    <span className="text-[11px] text-muted-foreground">{bannerState.desc}</span>
+                    <span className={cn("text-[13px] font-bold", aladhan.bannerState.variant === "muted" ? "text-foreground" : "text-primary")}>{aladhan.bannerState.title}</span>
+                    <span className="text-[11px] text-muted-foreground">{aladhan.bannerState.desc}</span>
                   </div>
                 </div>
-                <Button type="button" onClick={bannerState.action} disabled={bannerState.variant === "muted" || isLoading} className={cn("h-9 px-4 rounded-lg font-bold text-[12px]", bannerState.variant === "muted" || isLoading ? "bg-muted text-muted-foreground pointer-events-none" : "bg-primary text-primary-foreground")}>
-                  <bannerState.btnIcon className="size-3.5 mr-2" />{bannerState.btnText}
+                <Button type="button" onClick={aladhan.bannerState.action} disabled={aladhan.bannerState.variant === "muted" || aladhan.isLoading} className={cn("h-9 px-4 rounded-lg font-bold text-[12px]", aladhan.bannerState.variant === "muted" || aladhan.isLoading ? "bg-muted text-muted-foreground pointer-events-none" : "bg-primary text-primary-foreground")}>
+                  <aladhan.bannerState.btnIcon className="size-3.5 mr-2" />{aladhan.bannerState.btnText}
                 </Button>
               </div>
             </CardContent>

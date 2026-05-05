@@ -165,11 +165,23 @@ export interface AttendanceDataMobile {
 // 3. TYPE DEFINITIONS CONFIGURATION (ARDEN)
 // ==========================================
 
+// 🔥 FIX TIME BOMB: Menggunakan snake_case mutlak sesuai skema Prisma
 export interface PeriodSettingsData {
-  minDuration: number;
-  standardDuration: number;
-  maxDuration: number;
-  overLimit: number;
+  min_duration: number;
+  standard_duration: number;
+  max_duration: number;
+  over_limit: number;
+}
+
+export interface CommunicationSettingsData {
+  isNotificationActive: boolean;
+  warningMessage: string;
+}
+
+export interface DayScheduleData {
+  day: string;
+  isActive: boolean;
+  trackedPrayers: DailyPrayer[];
 }
 
 // ==========================================

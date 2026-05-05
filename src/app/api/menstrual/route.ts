@@ -1,4 +1,3 @@
-// src/app/api/menstrual/route.ts
 import { NextResponse } from "next/server";
 import { getPeriodSettings, upsertPeriodSettings } from "@/db/menstrual/menstrual.service";
 import { ApiSuccess, ApiFail, PeriodSettingsData } from "@/types/api";
@@ -16,9 +15,12 @@ export async function GET() {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json() as PeriodSettingsData;
-    if (!body || body.minDuration === undefined || body.standardDuration === undefined) {
+    
+    // 🔥 FIX: Validasi disinkronkan menggunakan snake_case mutlak!
+    if (!body || body.min_duration === undefined || body.standard_duration === undefined) {
       return NextResponse.json(new ApiFail("Invalid Payload", "Incomplete parameters"), { status: 400 });
     }
+    
     await upsertPeriodSettings(body);
     return NextResponse.json(new ApiSuccess("Settings updated successfully", body));
   } catch (error: any) {

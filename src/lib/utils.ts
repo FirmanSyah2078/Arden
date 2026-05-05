@@ -47,8 +47,12 @@ export const formatDMY = (d: Date) => {
   return `${day}-${month}-${year}`;
 };
 
-export function checkTimeShoolat(sholat: DailyPrayer): string {
-  if (sholat === 'Dhuhr') return 'Dhuhr';
-  if (sholat === 'Asr') return 'Asr';
-  return 'NaV';
+export function checkTimeShoolat(sholat: string): string {
+  // 🔥 FIX: Validasi dinamis untuk 5 waktu sholat
+  const validPrayers: DailyPrayer[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+  
+  if (validPrayers.includes(sholat as DailyPrayer)) {
+    return sholat;
+  }
+  return 'NaV'; // Not a Valid time
 }

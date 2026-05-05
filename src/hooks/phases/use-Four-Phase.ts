@@ -1,19 +1,15 @@
-// src/hooks/menstrual/use-menstrual.ts
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { PeriodSettingsData, ApiResponse } from "@/types/api";
 import { RefreshCw, Lightbulb, CheckCircle2, Save } from "lucide-react";
 
-export interface MenstrualSettings {
-  minDuration: number | string;
-  standardDuration: number | string;
-  maxDuration: number | string;
-  overLimit: number | string;
-}
+type SettingsState = {
+  [K in keyof PeriodSettingsData]: number | string;
+};
 
 export function useFourPhase() {
-  const [settings, setSettings] = useState<MenstrualSettings>({
-    minDuration: 5, standardDuration: 7, maxDuration: 10, overLimit: 30,
+  const [settings, setSettings] = useState<SettingsState>({
+    min_duration: 5, standard_duration: 7, max_duration: 10, over_limit: 30,
   });
 
   const [savedSettings, setSavedSettings] = useState<PeriodSettingsData | null>(null);
@@ -35,50 +31,77 @@ export function useFourPhase() {
     fetchData();
   }, []);
 
-  const handleChange = (field: keyof MenstrualSettings, value: any) => { setSettings((prev) => ({ ...prev, [field]: value })); };
+  const handleChange = (field: keyof PeriodSettingsData, value: any) => { setSettings((prev) => ({ ...prev, [field]: value })); };
 
-  const handleBlur = (field: keyof MenstrualSettings) => {
-    setSettings((prev) => {
-      let next = { ...prev };
-      if (next[field] === "") return next;
-      const numVal = Number(next[field]);
+  const handleBlur = (field: keyof PeriodSettingsData) => {
+    // 1. Ambil snapshot data saat ini
+    let next = { ...settings };
+    if (next[field] === "") return;
+    
+    const numVal = Number(next[field]);
+    let toastMessage = ""; // Siapkan wadah untuk pesan toast
 
-      if (field === "minDuration") {
-        if (numVal < 1) next.minDuration = 1;
-        else if (prev.standardDuration !== "" && numVal >= Number(prev.standardDuration)) {
-          next.minDuration = Number(prev.standardDuration) - 1; toast.info("Minimum auto-corrected", { duration: 1500 });
-        }
-      } else if (field === "standardDuration") {
-        if (prev.minDuration !== "" && numVal <= Number(prev.minDuration)) {
-          next.standardDuration = Number(prev.minDuration) + 1; toast.info("Standard auto-corrected", { duration: 1500 });
-        } else if (prev.maxDuration !== "" && numVal >= Number(prev.maxDuration)) {
-          next.standardDuration = Number(prev.maxDuration) - 1; toast.info("Standard auto-corrected", { duration: 1500 });
-        }
-      } else if (field === "maxDuration") {
-        if (prev.standardDuration !== "" && numVal <= Number(prev.standardDuration)) {
-          next.maxDuration = Number(prev.standardDuration) + 1; toast.info("Maximum auto-corrected", { duration: 1500 });
-        } else if (prev.overLimit !== "" && numVal >= Number(prev.overLimit)) {
-          next.maxDuration = Number(prev.overLimit) - 1; toast.info("Maximum auto-corrected", { duration: 1500 });
-        }
-      } else if (field === "overLimit") {
-        if (prev.maxDuration !== "" && numVal <= Number(prev.maxDuration)) {
-          next.overLimit = Number(prev.maxDuration) + 1; toast.info("Over limit auto-corrected", { duration: 1500 });
-        } else if (numVal > 30) {
-          next.overLimit = 30; toast.info("Over limit capped at 30 Days", { duration: 1500 });
-        }
+    // 2. Lakukan kalkulasi
+    if (field === "min_duration") {
+      if (numVal < 1) {
+        next.min_duration = 1;
+      } else if (settings.standard_duration !== "" && numVal >= Number(settings.standard_duration)) {
+        next.min_duration = Number(settings.standard_duration) - 1; 
+        toastMessage = "Minimum auto-corrected";
       }
-      return next;
-    });
+    } else if (field === "standard_duration") {
+      if (settings.min_duration !== "" && numVal <= Number(settings.min_duration)) {
+        next.standard_duration = Number(settings.min_duration) + 1; 
+        toastMessage = "Standard auto-corrected";
+      } else if (settings.max_duration !== "" && numVal >= Number(settings.max_duration)) {
+        next.standard_duration = Number(settings.max_duration) - 1; 
+        toastMessage = "Standard auto-corrected";
+      }
+    } else if (field === "max_duration") {
+      if (settings.standard_duration !== "" && numVal <= Number(settings.standard_duration)) {
+        next.max_duration = Number(settings.standard_duration) + 1; 
+        toastMessage = "Maximum auto-corrected";
+      } else if (settings.over_limit !== "" && numVal >= Number(settings.over_limit)) {
+        next.max_duration = Number(settings.over_limit) - 1; 
+        toastMessage = "Maximum auto-corrected";
+      }
+    } else if (field === "over_limit") {
+      if (settings.max_duration !== "" && numVal <= Number(settings.max_duration)) {
+        next.over_limit = Number(settings.max_duration) + 1; 
+        toastMessage = "Over limit auto-corrected";
+      } else if (numVal > 30) {
+        next.over_limit = 30; 
+        toastMessage = "Over limit capped at 30 Days";
+      }
+    }
+
+    // 3. Simpan state
+    setSettings(next);
+    
+    // 4. Panggil toast DILUAR fungsi setState agar aman dari efek pantul React Strict Mode!
+    if (toastMessage) {
+      toast.info(toastMessage, { duration: 1500 });
+    }
   };
+
+  const calculated = useMemo(() => {
+    let min = Number(settings.min_duration) || 1; 
+    let std = Number(settings.standard_duration) || (min + 1);
+    let max = Number(settings.max_duration) || (std + 1); 
+    let over = Number(settings.over_limit) || (max + 1);
+    
+    if (std <= min) std = min + 1; 
+    if (max <= std) max = std + 1; 
+    if (over <= max) over = max + 1;
+
+    const totalScale = over > 30 ? 30 : over;
+    return { min, std, max, over, totalScale };
+  }, [settings]);
 
   const handleSave = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault();
-    let min = Number(settings.minDuration) || 1; let std = Number(settings.standardDuration) || (min + 1);
-    let max = Number(settings.maxDuration) || (std + 1); let over = Number(settings.overLimit) || (max + 1);
-    if (std <= min) std = min + 1; if (max <= std) max = std + 1; if (over <= max) over = max + 1;
-
-    const hasEmpty = settings.minDuration === "" || settings.standardDuration === "" || settings.maxDuration === "" || settings.overLimit === "";
-    const payloadToSave: PeriodSettingsData = { minDuration: min, standardDuration: std, maxDuration: max, overLimit: over };
+    const hasEmpty = settings.min_duration === "" || settings.standard_duration === "" || settings.max_duration === "" || settings.over_limit === "";
+    const payloadToSave: PeriodSettingsData = { min_duration: calculated.min, standard_duration: calculated.std, max_duration: calculated.max, over_limit: calculated.over };
 
     setIsSaving(true);
     try {
@@ -94,7 +117,7 @@ export function useFourPhase() {
 
   const isDraftModified = useMemo(() => {
     if (!savedSettings) return false;
-    return (Number(settings.minDuration) !== savedSettings.minDuration || Number(settings.standardDuration) !== savedSettings.standardDuration || Number(settings.maxDuration) !== savedSettings.maxDuration || Number(settings.overLimit) !== savedSettings.overLimit);
+    return (Number(settings.min_duration) !== savedSettings.min_duration || Number(settings.standard_duration) !== savedSettings.standard_duration || Number(settings.max_duration) !== savedSettings.max_duration || Number(settings.over_limit) !== savedSettings.over_limit);
   }, [settings, savedSettings]);
 
   const bannerState = useMemo(() => {
@@ -103,5 +126,5 @@ export function useFourPhase() {
     return { variant: "muted", icon: CheckCircle2, spin: false, title: "Logic Saved", desc: "Current configuration is active and mapped to the attendance algorithm.", btnText: "Updated", btnIcon: CheckCircle2, action: () => {} };
   }, [isLoading, isSaving, isDraftModified, handleSave]);
 
-  return { settings, isLoading, isSaving, isDraftModified, bannerState, handleChange, handleBlur, handleSave };
+  return { settings, calculated, isLoading, isSaving, isDraftModified, bannerState, handleChange, handleBlur, handleSave };
 }

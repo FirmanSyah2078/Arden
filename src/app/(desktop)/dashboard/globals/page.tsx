@@ -33,7 +33,7 @@ const fieldInputClass =
 
 export default function GlobalsPage() {
   const geo = usegeographic();
-  const gen = useGenerate(); // Mengambil seluruh logika dan state dari hook
+  const gen = useGenerate();
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-primary/20">

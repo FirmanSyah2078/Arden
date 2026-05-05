@@ -1,7 +1,6 @@
-// src/hooks/integrations/use-integrations.ts
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "sonner";
-import { PrayerTimes, PrayerCacheData } from "@/types/api";
+import { PrayerTimes, PrayerCacheData, DailyPrayer } from "@/types/api";
 import { Database, CheckCircle2, RefreshCw, ShieldAlert, TriangleAlert, Copy, Save } from "lucide-react";
 
 const ALADHAN_API_URL = process.env.NEXT_PUBLIC_API_TIME_SHOLAT || "https://api.aladhan.com";
@@ -20,10 +19,11 @@ export function usealadhan() {
   const [schedule, setSchedule] = useState<ExtendedPrayerTimes | null>(null);
   const [cachedSchedule, setCachedSchedule] = useState<PrayerCacheData | null>(null);
 
+  const prayerList: DailyPrayer[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+
   const fetchJadwal = useCallback(async () => {
     setApiStatus("syncing"); setIsLoading(true);
     try {
-      // 1. Dapatkan config Geografis dari DB dulu
       const resGeo = await fetch("/api/prayers/geographic");
       const jsonGeo = await resGeo.json();
       let city = "Kota Blitar"; let country = "Indonesia"; let method = "20"; let isActive = true;
@@ -33,7 +33,6 @@ export function usealadhan() {
         setGeoConfig({ city, country, method }); setSyncEnabled(isActive);
       }
 
-      // 2. Tarik DB & API
       const now = new Date();
       const aladhanDateStr = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
       const dbDateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -60,7 +59,7 @@ export function usealadhan() {
     try {
       await fetch("/api/prayers/geographic", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ is_api_active: active }) });
       toast.success(active ? "API connection enabled!" : "API offline. System running on local cache.");
-      fetchJadwal(); // Refresh UI setelah toggle
+      fetchJadwal(); 
     } catch (err) { toast.error("Failed to update API state."); }
   };
 
@@ -104,5 +103,5 @@ export function usealadhan() {
     return { variant: "muted", icon: CheckCircle2, spin: false, title: "Automated Daily Sync Active", desc: "Today's schedule is safely secured in the local database.", btnText: "Synced Today", btnIcon: CheckCircle2, action: () => {} };
   }, [ isLoading, isSyncingDB, isCopyingYesterday, syncEnabled, cachedSchedule, isCacheSynced, handleCopyYesterday, handleSyncToDB ]);
 
-  return { syncEnabled, isLoading, apiStatus, prayerRanges, bannerState, toggleApiState };
+  return { syncEnabled, isLoading, apiStatus, prayerList, prayerRanges, bannerState, toggleApiState };
 }
