@@ -126,6 +126,25 @@ model tbl_geographic {
   updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 }
 
+model tbl_qr_generator {
+  id_setting          Int      @id @default(1)
+  qr_shape            String   @default("square")
+  qr_color            String   @default("#000000")
+  bg_color            String   @default("#ffffff")
+  is_bg_transparent   Boolean  @default(true)
+  qr_pattern          String   @default("square")
+  error_level         String   @default("Q")
+  corner_square       String   @default("square")
+  corner_square_color String   @default("#000000")
+  corner_dot          String   @default("square")
+  corner_dot_color    String   @default("#000000")
+  is_custom_color     Boolean  @default(false)
+  qr_icon             String?  @db.Text
+  image_size          Float    @default(0.4)
+  icon_margin         Int      @default(5)
+  hide_dots_bg        Boolean  @default(true)
+}
+
 model tbl_routine {
   day_name      String   @id @db.VarChar(15)
   is_active     Boolean  @default(true)

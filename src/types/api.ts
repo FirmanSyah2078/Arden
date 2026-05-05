@@ -211,20 +211,26 @@ export interface GeographicSettingsData {
 }
 
 // --- B. Generator Engine (QR Code) ---
+export type QRShape = "square" | "circle";
 export type QRErrorCorrectionLevel = "L" | "M" | "Q" | "H";
 export type QRDotType = "square" | "dots" | "rounded" | "extra-rounded" | "classy" | "classy-rounded";
 export type QRCornerSquareType = "dot" | "square" | "extra-rounded" | "rounded" | "classy" | "classy-rounded";
 export type QRCornerDotType = "dot" | "square";
 
 export interface GeneratorSettingsData {
+  qrShape: QRShape;
   qrColor: string;
   bgColor: string;
   isBgTransparent: boolean;
   qrPattern: QRDotType;
   errorLevel: QRErrorCorrectionLevel;
   cornerSquare: QRCornerSquareType;
+  cornerSquareColor: string;
   cornerDot: QRCornerDotType;
+  cornerDotColor: string;
+  isCustomColor: boolean;
   qrIcon: string;
+  imageSize: number;
   iconMargin: number;
   hideDotsBg: boolean;
 }
