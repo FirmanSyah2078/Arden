@@ -161,7 +161,6 @@ export interface AttendanceDataMobile {
   };
 }
 
-
 // ==========================================
 // 3. TYPE DEFINITIONS CONFIGURATION (ARDEN)
 // ==========================================
@@ -183,4 +182,37 @@ export interface PrayerCacheData {
   asr: string;
   maghrib: string;
   isha: string;
+}
+
+// ==========================================
+// 5. TYPE DEFINITIONS GLOBALS (ARDEN CONFIG)
+// ==========================================
+
+// --- A. Geographic Core ---
+export interface GeographicSettingsData {
+  id_setting?: number;
+  country: string;
+  city: string;
+  timezone: string;
+  method: string;
+  is_api_active?: boolean;
+}
+
+// --- B. Generator Engine (QR Code) ---
+export type QRErrorCorrectionLevel = "L" | "M" | "Q" | "H";
+export type QRDotType = "square" | "dots" | "rounded" | "extra-rounded" | "classy" | "classy-rounded";
+export type QRCornerSquareType = "dot" | "square" | "extra-rounded" | "rounded" | "classy" | "classy-rounded";
+export type QRCornerDotType = "dot" | "square";
+
+export interface GeneratorSettingsData {
+  qrColor: string;
+  bgColor: string;
+  isBgTransparent: boolean;
+  qrPattern: QRDotType;
+  errorLevel: QRErrorCorrectionLevel;
+  cornerSquare: QRCornerSquareType;
+  cornerDot: QRCornerDotType;
+  qrIcon: string;
+  iconMargin: number;
+  hideDotsBg: boolean;
 }

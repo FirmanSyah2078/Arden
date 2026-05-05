@@ -1,15 +1,18 @@
 // src/hooks/globals/use-generate.ts
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
-
-// 🔥 FIX TYPESCRIPT: Mendeklarasikan tipe union secara spesifik
-type ErrorCorrectionLevel = "L" | "M" | "Q" | "H";
-type DotType = "square" | "dots" | "rounded" | "extra-rounded" | "classy" | "classy-rounded";
-type CornerSquareType = "dot" | "square" | "extra-rounded" | "rounded" | "classy" | "classy-rounded";
-type CornerDotType = "dot" | "square";
+// 🔥 Import tipe dari file api.ts
+import { 
+  GeneratorSettingsData, 
+  QRErrorCorrectionLevel, 
+  QRDotType, 
+  QRCornerSquareType, 
+  QRCornerDotType 
+} from "@/types/api";
 
 export function useGenerate() {
-  const [settings, setSettings] = useState({ 
+  // 🔥 Langsung gunakan interface GeneratorSettingsData agar otomatis Type-Safe!
+  const [settings, setSettings] = useState<GeneratorSettingsData>({ 
     qrColor: "#000000", 
     bgColor: "#ffffff",
     isBgTransparent: true, 
@@ -22,7 +25,7 @@ export function useGenerate() {
     hideDotsBg: true 
   });
   
-  const [savedSettings, setSavedSettings] = useState(settings);
+  const [savedSettings, setSavedSettings] = useState<GeneratorSettingsData>(settings);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -73,22 +76,22 @@ export function useGenerate() {
           data: previewPayload,
           ...(settings.qrIcon ? { image: settings.qrIcon } : {}), 
           
-          // 🔥 FIX TYPESCRIPT: Penambahan `as Type` pada parameter
+          // 🔥 Gunakan tipe dari api.ts untuk Type Assertion
           qrOptions: {
-            errorCorrectionLevel: settings.errorLevel as ErrorCorrectionLevel
+            errorCorrectionLevel: settings.errorLevel as QRErrorCorrectionLevel
           },
           dotsOptions: {
             color: settings.qrColor || "#000000",
-            type: settings.qrPattern as DotType,
+            type: settings.qrPattern as QRDotType,
           },
           backgroundOptions: {
             color: finalBgColor,
           },
           cornersSquareOptions: {
-            type: settings.cornerSquare as CornerSquareType,
+            type: settings.cornerSquare as QRCornerSquareType,
           },
           cornersDotOptions: {
-            type: settings.cornerDot as CornerDotType,
+            type: settings.cornerDot as QRCornerDotType,
           },
           imageOptions: {
             crossOrigin: "anonymous",
@@ -114,20 +117,19 @@ export function useGenerate() {
         data: previewPayload,
         ...(settings.qrIcon ? { image: settings.qrIcon } : { image: "" }), 
         
-        // 🔥 FIX TYPESCRIPT: Lakukan hal yang sama di bagian update
         qrOptions: { 
-          errorCorrectionLevel: settings.errorLevel as ErrorCorrectionLevel 
+          errorCorrectionLevel: settings.errorLevel as QRErrorCorrectionLevel 
         },
         dotsOptions: { 
           color: settings.qrColor, 
-          type: settings.qrPattern as DotType 
+          type: settings.qrPattern as QRDotType 
         },
         backgroundOptions: { color: finalBgColor },
         cornersSquareOptions: { 
-          type: settings.cornerSquare as CornerSquareType 
+          type: settings.cornerSquare as QRCornerSquareType 
         },
         cornersDotOptions: { 
-          type: settings.cornerDot as CornerDotType 
+          type: settings.cornerDot as QRCornerDotType 
         },
         imageOptions: {
           margin: settings.iconMargin,
@@ -148,7 +150,8 @@ export function useGenerate() {
     isMounted 
   ]);
 
-  const handleChange = (field: string, value: string | boolean | number) => {
+  // 🔥 Mengunci param 'field' ke spesifik key yang ada di GeneratorSettingsData
+  const handleChange = (field: keyof GeneratorSettingsData, value: string | boolean | number) => {
     setSettings(prev => ({ ...prev, [field]: value }));
   };
 
