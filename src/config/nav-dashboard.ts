@@ -15,6 +15,7 @@ import {
   Hexagon       // Untuk Globals
 } from "lucide-react";
 import { type NavItemType } from "@/components/dashboard/nav-group";
+import { dummyClasses } from "@/lib/dumy-class";
 
 // ============================================================================
 // 1. DEFINISI ROLE ARDEN (SISTEM HIERARKI KASTA)
@@ -140,7 +141,7 @@ export function getDynamicMenus(pathname: string, roleName: string) {
 }
 
 // ============================================================================
-// 4. FUNGSI PINTAR PENCARI BREADCRUMB OTOMATIS (SUPPORT DYNAMIC SLUG)
+// 4. FUNGSI PINTAR PENCARI BREADCRUMB OTOMATIS (SUPPORT DYNAMIC SLUG & ID)
 // ============================================================================
 export function getActiveBreadcrumb(pathname: string, roleName: string) {
   const menus = roleMenus[roleName] || roleMenus["Pemantau"];
@@ -165,28 +166,37 @@ export function getActiveBreadcrumb(pathname: string, roleName: string) {
     }
   }
 
-  // LANGKAH 2: Logika Fallback Cerdas untuk Dynamic Route (Contoh: /dashboard/class/x-mipa-1)
-  // Memecah URL menjadi segmen array.
+  // LANGKAH 2: Logika Fallback Cerdas untuk Dynamic Route (Contoh: /dashboard/class/1)
   const segments = pathname.split('/').filter(Boolean);
 
-  // Jika URL memiliki minimal 3 bagian (contoh: dashboard -> class -> x-mipa-1)
   if (segments.length >= 3 && segments[0] === 'dashboard') {
     const parentPath = `/${segments[0]}/${segments[1]}`; // Menjadi "/dashboard/class"
-    const slug = segments[segments.length - 1]; // Mengambil "x-mipa-1"
+    const slugOrId = segments[segments.length - 1]; // Mengambil "1" (atau string)
 
     // Cari Menu Induk-nya
     for (const group of menus) {
       for (const item of group.items) {
         if (item.url === parentPath) {
-          // Format slug menjadi teks cantik ("x-mipa-1" -> "X Mipa 1")
-          const formattedSlug = slug
-            .replace(/-/g, ' ')
-            .replace(/\b\w/g, char => char.toUpperCase());
+          
+          let formattedSubTitle = slugOrId;
+
+          // 🔥 INTERVENSI DATABASE: Jika ini halaman Detail Kelas, panggil nama aslinya!
+          if (parentPath === "/dashboard/class" && !isNaN(Number(slugOrId))) {
+            const foundClass = dummyClasses.find(c => c.id === Number(slugOrId));
+            if (foundClass) {
+              formattedSubTitle = `${foundClass.name} (${foundClass.academic_year})`;
+            }
+          } else {
+            // Format slug biasa jika bukan ID (Contoh: "user-settings" -> "User Settings")
+            formattedSubTitle = slugOrId
+              .replace(/-/g, ' ')
+              .replace(/\b\w/g, char => char.toUpperCase());
+          }
 
           return {
             label: group.label,
             title: item.title,
-            subTitle: formattedSlug, // Slug dinamis otomatis jadi Sub-Title!
+            subTitle: formattedSubTitle, // Sub-Title pintar!
           };
         }
       }
