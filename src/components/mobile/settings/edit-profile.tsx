@@ -8,29 +8,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useProfile } from '@/hooks/settings/use-profile';
+import { useDock } from '@/context/dock-context';
 
-interface EditProfileProps {
-  isOpen: boolean;
-  setIsOpen: (value: boolean) => void;
-}
-
-export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
-  const { 
-    formData, 
-    isLoading, 
-    isSubmitting, 
-    isSaveDisabled, 
-    handleChange, 
-    handleSave, 
-    handleFileChange, 
-    fileInputRef, 
-    handleUploadClick 
+export default function EditProfile() {
+  const { isProfileOpen, setIsProfileOpen } = useDock();
+  const {
+    formData,
+    isLoading,
+    isSubmitting,
+    isSaveDisabled,
+    handleChange,
+    handleSave,
+    handleFileChange,
+    fileInputRef,
+    handleUploadClick
   } = useProfile();
 
   const [imageLoading, setImageLoading] = useState(true);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
       <DialogContent
         showCloseButton={false}
         className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl"
@@ -95,21 +92,21 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
         <div className="space-y-4 mb-8">
           <div className="space-y-2">
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Full Name</Label>
-            <Input
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
-              disabled={isLoading || isSubmitting}
-            />
+<Input
+  value={formData.name}
+  onChange={(e) => handleChange('name', e.target.value)}
+  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20"
+  disabled={isLoading || isSubmitting}
+/>
           </div>
           <div className="space-y-2">
             <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1">Username</Label>
-            <Input
-              value={formData.username}
-              onChange={(e) => handleChange('username', e.target.value)}
-              className="bg-[#1F1E23] border-white/5 text-white rounded-xl h-11 focus:ring-white/20"
-              disabled={isLoading || isSubmitting}
-            />
+<Input
+  value={formData.username}
+  onChange={(e) => handleChange('username', e.target.value)}
+  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20"
+  disabled={isLoading || isSubmitting}
+/>
           </div>
         </div>
 
@@ -118,7 +115,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
           <Button
             onClick={async () => {
               await handleSave();
-              setIsOpen(false);
+              setIsProfileOpen(false);
             }}
             disabled={isSaveDisabled}
             className="w-full h-12 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 font-bold transition-all active:scale-[0.98] shadow-lg border-none"
@@ -132,7 +129,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
           </Button>
 
           <Button
-            onClick={() => setIsOpen(false)}
+            onClick={() => setIsProfileOpen(false)}
             variant="outline"
             className="w-full h-12 rounded-2xl bg-[#1F1E23] text-white border-white/5 hover:bg-[#2A292F] font-semibold transition-all active:scale-[0.98]"
           >

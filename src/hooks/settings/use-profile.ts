@@ -26,6 +26,18 @@ export function useProfile() {
     createdAt: "-",
     lastUpdated: "-",
   })
+
+  const defaultProfile: UserProfileData = {
+    avatarUrl: null,
+    name: 'User',
+    username: 'user',
+    email: '',
+    role: 'User',
+    createdAt: '-',
+    lastUpdated: '-',
+  }
+
+  const profile = formData || defaultProfile;
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -87,6 +99,13 @@ export function useProfile() {
     if (originalData) {
       handleChange("avatarUrl", originalData.avatarUrl);
       setSelectedFile(null); 
+    }
+  }
+
+  const resetForm = () => {
+    if (originalData) {
+      setFormData(originalData);
+      setSelectedFile(null);
     }
   }
 
@@ -217,10 +236,10 @@ export function useProfile() {
   const isSaveDisabled = isSubmitting || !isDirty || !formData.name || !formData.username;
 
   return {
-    formData, originalData, isLoading, isSubmitting, isSaveDisabled, isDirty,
+    formData, profile, originalData, isLoading, isSubmitting, isSaveDisabled, isDirty,
     isAvatarRemoved, hasOriginalAvatar,
     getInitials, 
-    handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar,
+    handleChange, handleSave, handleRemoveAvatar, handleUndoAvatar, resetForm,
     handleFileChange,
     fileInputRef,       
     handleUploadClick   
