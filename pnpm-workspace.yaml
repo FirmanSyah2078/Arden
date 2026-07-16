@@ -1,6 +1,18 @@
 onlyBuiltDependencies:
+  - "@prisma/engines"
+  - "@tsparticles/engine"
   - bcrypt
-  - react-tsparticles
+  - prisma
   - sharp
-  - tsparticles-engine
   - unrs-resolver
+
+allowBuilds:
+  "@prisma/engines": true
+  "@tsparticles/engine": true
+  bcrypt: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true
+
+overrides:
+  "@eslint/plugin-kit": ">=0.3.4"
