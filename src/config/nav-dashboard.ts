@@ -1,7 +1,7 @@
 import {
   LayoutDashboard,
   BookUser,
-  School,
+  BookOpenText,
   FileText,
   BookOpen,
   ShieldAlert,
@@ -15,7 +15,7 @@ import {
   Hexagon,
   GraduationCap,
   Library,
-  UserCog
+  UserCog,
 } from "lucide-react";
 import { type NavItemType } from "@/components/dashboard/nav-group";
 import { dummyClasses } from "@/lib/dumy-class";
@@ -37,7 +37,7 @@ export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]
       label: "Workspace",
       items: [
         { title: "Home", url: "/dashboard", icon: LayoutDashboard, variant: "default" },
-        { title: "Classes", url: "/dashboard/class", icon: School, variant: "default" },
+        { title: "Academic", url: "/dashboard/academic", icon: BookOpenText, variant: "default" },
         {
           title: "Directory",
           url: "#",

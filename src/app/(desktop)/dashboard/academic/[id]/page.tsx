@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 // 🔥 Panggil Logic dari Hook
-import { useView } from "@/hooks/class/use-view";
+import { useView } from "@/hooks/academic/use-view";
 
 export default function ClassDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
