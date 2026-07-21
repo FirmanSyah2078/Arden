@@ -66,7 +66,6 @@ export default function UsersPage() {
   const uniformBadgeClass =
     "gap-1.5 border-white/5 bg-[#121212] hover:bg-[#1a1a1a] text-[10px] font-semibold text-gray-300 py-1 transition-colors"
 
-  // 🔥 FIX: Wajib dibungkus useMemo agar Search berfungsi & animasi sel tidak ngaco!
   const columns = React.useMemo<ColumnDef<User>[]>(() => [
     {
       id: "profile",
@@ -74,15 +73,22 @@ export default function UsersPage() {
       header: () => null,
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
-          <Avatar className="h-9 w-9 overflow-hidden rounded-lg border border-white/10 bg-transparent">
-            <AvatarImage
-              src={row.original.photo_url || ""}
-              className="h-full w-full object-cover"
-            />
-            <AvatarFallback className="flex items-center justify-center bg-transparent text-[10px] font-normal text-gray-500">
-              {row.original.name.substring(0, 1).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          {/* Tambahan class relative inline-block agar dot online menempel rapi */}
+          <div className="relative inline-block">
+            <Avatar className="h-9 w-9 overflow-hidden rounded-lg border border-white/10 bg-transparent">
+              <AvatarImage
+                src={row.original.photo_url || ""}
+                className="h-full w-full object-cover"
+              />
+              <AvatarFallback className="flex items-center justify-center bg-transparent text-[10px] font-normal text-gray-500">
+                {row.original.name.substring(0, 1).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {/* Titik hijau bersih tanpa efek shadow kotor */}
+            {row.original.is_online && (
+              <span className="absolute -bottom-1 -right-1 block h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-background" />
+            )}
+          </div>
         </div>
       ),
     },
@@ -150,7 +156,7 @@ export default function UsersPage() {
               className={cn(
                 "h-2.5 w-2.5 fill-current",
                 row.original.is_online
-                  ? "animate-pulse text-emerald-500"
+                  ? "text-emerald-500"
                   : "text-gray-600"
               )}
             />
@@ -174,11 +180,10 @@ export default function UsersPage() {
 
               if (isSelf) {
                 return (
-                  // 🔥 FIX: Animasi ledakan dibuang. Cukup Glowing saja!
                   <div className="flex justify-center">
                     <Badge
                       variant="outline"
-                      className="gap-1.5 border-indigo-500/30 bg-indigo-500/10 px-2 py-1 text-[10px] text-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.1)]"
+                      className="gap-1.5 border-indigo-500/30 bg-indigo-500/10 px-2 py-1 text-[10px] text-indigo-400"
                     >
                       <UserCog className="h-3.5 w-3.5" /> YOUR ACCOUNT
                     </Badge>
@@ -260,7 +265,7 @@ export default function UsersPage() {
             },
           },
         ]) as ColumnDef<User>[]),
-  ], [currentUser, isReadOnly, setEditUser, setDeleteUser, setResetUser]); // Dependensi
+  ], [currentUser, isReadOnly, setEditUser, setDeleteUser, setResetUser]);
 
   if (!isReady) return null
 

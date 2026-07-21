@@ -7,12 +7,15 @@ import {
   ShieldAlert,
   Eye,
   Inbox,
-  Terminal,  // Icon untuk Logs
-  GanttChart,   // Untuk Planning
-  Waves,        // Untuk Phases
-  Satellite,    // Untuk Dispatch
-  Waypoints,    // Untuk Bridges
-  Hexagon       // Untuk Globals
+  Terminal,
+  GanttChart,
+  Waves,
+  Satellite,
+  Waypoints,
+  Hexagon,
+  GraduationCap,
+  Library,
+  UserCog
 } from "lucide-react";
 import { type NavItemType } from "@/components/dashboard/nav-group";
 import { dummyClasses } from "@/lib/dumy-class";
@@ -41,9 +44,10 @@ export const roleMenus: Record<string, { label: string; items: NavItemType[] }[]
           icon: BookUser,
           variant: "collapsible",
           items: [
-            { title: "Students", url: "/dashboard/directory/students" },
-            { title: "Classes", url: "/dashboard/directory/classes" },
-            { title: "Users", url: "/dashboard/directory/users" },
+            // 🔥 FIX: Tambahkan ICON di masing-masing anak menu
+            { title: "Students", url: "/dashboard/directory/students", icon: GraduationCap },
+            { title: "Classes", url: "/dashboard/directory/classes", icon: Library },
+            { title: "Users", url: "/dashboard/directory/users", icon: UserCog },
           ]
         },
         { title: "Gatekeeper", url: "/dashboard/gatekeeper", icon: Inbox, variant: "default" },

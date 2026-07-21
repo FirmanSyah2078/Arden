@@ -3,43 +3,27 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { 
-  Users,
-  Droplets,
-  Compass,    
-  FileClock,
-  UserX,      
-  TrendingUp,
-  TrendingDown,
-  Activity,
-  BotMessageSquare,
-  Layers,
-  Filter,
-  ChevronDown,
-  X
+  Users, Droplets, Compass, FileClock, UserX, 
+  TrendingUp, TrendingDown, Activity, BotMessageSquare, 
+  Layers, Filter, ChevronDown, X
 } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+// 🔥 FIX: Tambahkan Legend dari recharts
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
-// ==========================================
-// DATA DUMMY STATISTIK ATAS
-// Logika: 980 (Suci) + 245 (Haid) + 15 (Izin) + 10 (Alpha) = 1250 (Total Siswi)
-// ==========================================
 const statsData = {
   totalSiswi: { value: 1250 }, 
-  siswiSuci: { value: 980, trend: 20 },  // Menggantikan "wajibSholat"
+  siswiSuci: { value: 980, trend: 20 }, 
   sedangHaid: { value: 245, trend: -5 },
   izinSakit: { value: 15, trend: 0 },
   alpha: { value: 10, trend: 1 },
 };
 
-// ==========================================
-// DATA DUMMY GRAFIK (12 KELAS PER ANGKATAN)
-// ==========================================
 type FilterType = "all" | "X" | "XI" | "XII";
 
 export interface ClassData {
   angkatan: "X" | "XI" | "XII";
   namaKelas: string;
-  suci: number; // Menggantikan "sholat"
+  suci: number;
   haid: number;
 }
 
@@ -88,7 +72,6 @@ const chartData: ClassData[] = [
 ];
 
 export default function HomePage() {
-  // --- STATE ANIMASI TYPEWRITER ---
   const [typedText, setTypedText] = useState("");
   const [cursorVisible, setCursorVisible] = useState(true);
   const [isTypingDone, setIsTypingDone] = useState(false);
@@ -115,8 +98,6 @@ export default function HomePage() {
     }
   }, [isTypingDone]);
 
-
-  // --- STATE GRAFIK & DROPDOWN ---
   const [filter, setFilter] = useState<FilterType>("all");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -131,7 +112,6 @@ export default function HomePage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Memproses data grafik berdasarkan filter
   const processedData = useMemo(() => {
     if (filter === "all") {
       return ["X", "XI", "XII"].map((angkatan) => {
@@ -155,8 +135,6 @@ export default function HomePage() {
   const isSummary = filter === "all";
   const chartWidth = isSummary ? "100%" : "850px";
 
-
-  // --- HELPER TREND (Kartu Statistik) ---
   const renderTrend = (trend: number, isInverse: boolean = false) => {
     if (trend === 0) {
       return (
@@ -179,10 +157,6 @@ export default function HomePage() {
     );
   };
 
-
-  // ==========================================
-  // RENDER TAMPILAN UTAMA
-  // ==========================================
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 bg-background selection:bg-white/20">
       <main className="flex-1 w-full pb-8">
@@ -237,7 +211,6 @@ export default function HomePage() {
         {/* --- C. STAT CARDS GRID --- */}
         <div className="px-2 md:px-8 mb-10">
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {/* MASTER */}
             <div className="group relative flex flex-col p-5 md:p-6 bg-transparent border border-white/5 rounded-2xl transition-all duration-500 hover:bg-white/2 hover:border-white/10 overflow-hidden">
               <div className="flex items-center gap-3 mb-6">
                 <Users className="size-4 opacity-50 group-hover:opacity-100 transition-opacity duration-500 text-foreground" />
@@ -245,14 +218,10 @@ export default function HomePage() {
               </div>
               <div className="flex items-end justify-between mt-auto">
                 <h2 className="font-jakarta text-2xl font-bold text-foreground tracking-tight">{statsData.totalSiswi.value}</h2>
-                <div className="flex items-center gap-1.5 text-[10px] font-bold mb-1 text-primary/40 uppercase tracking-wider">
-                  <Layers className="size-3" /><span>Base</span>
-                </div>
               </div>
               <div className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-700 ease-out bg-foreground" />
             </div>
 
-            {/* SUCI (Menggantikan Wajib Sholat) */}
             <div className="group relative flex flex-col p-5 md:p-6 bg-transparent border border-white/5 rounded-2xl transition-all duration-500 hover:bg-white/2 hover:border-white/10 overflow-hidden">
               <div className="flex items-center gap-3 mb-6">
                 <Compass className="size-4 opacity-50 group-hover:opacity-100 transition-opacity duration-500 text-emerald-500" />
@@ -265,7 +234,6 @@ export default function HomePage() {
               <div className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-700 ease-out bg-emerald-500" />
             </div>
 
-            {/* HAID */}
             <div className="group relative flex flex-col p-5 md:p-6 bg-transparent border border-white/5 rounded-2xl transition-all duration-500 hover:bg-white/2 hover:border-white/10 overflow-hidden">
               <div className="flex items-center gap-3 mb-6">
                 <Droplets className="size-4 opacity-50 group-hover:opacity-100 transition-opacity duration-500 text-pink-500" />
@@ -278,7 +246,6 @@ export default function HomePage() {
               <div className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-700 ease-out bg-pink-500" />
             </div>
 
-            {/* IZIN */}
             <div className="group relative flex flex-col p-5 md:p-6 bg-transparent border border-white/5 rounded-2xl transition-all duration-500 hover:bg-white/2 hover:border-white/10 overflow-hidden">
               <div className="flex items-center gap-3 mb-6">
                 <FileClock className="size-4 opacity-50 group-hover:opacity-100 transition-opacity duration-500 text-amber-500" />
@@ -291,7 +258,6 @@ export default function HomePage() {
               <div className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-700 ease-out bg-amber-500" />
             </div>
 
-            {/* ALPHA */}
             <div className="group relative flex flex-col p-5 md:p-6 bg-transparent border border-white/5 rounded-2xl transition-all duration-500 hover:bg-white/2 hover:border-white/10 overflow-hidden">
               <div className="flex items-center gap-3 mb-6">
                 <UserX className="size-4 opacity-50 group-hover:opacity-100 transition-opacity duration-500 text-red-500" />
@@ -357,34 +323,43 @@ export default function HomePage() {
 
             <div className="w-full overflow-x-auto overflow-y-hidden smooth-scrollbar">
               <div 
-                className="px-6 md:px-8 pb-8 pt-4" 
-                style={{ minWidth: chartWidth, height: "320px" }}
+                className="px-6 md:px-8 pb-8 pt-2" 
+                style={{ minWidth: chartWidth, height: "350px" }}
               >
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={processedData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.03)" strokeDasharray="3 3" />
+                    {/* 🔥 FIX: Grid diubah opacitynya agar grafik tidak terkesan melayang */}
+                    <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
                     
+                    {/* 🔥 FIX: Tambahkan Legend agar user paham warna apa melambangkan apa */}
+                    <Legend 
+                      verticalAlign="top" 
+                      align="right"
+                      iconType="circle" 
+                      wrapperStyle={{ paddingBottom: "20px", fontSize: "11px", fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.7)" }} 
+                    />
+
                     <XAxis 
                       dataKey="label" 
                       axisLine={false} 
                       tickLine={false} 
                       tickMargin={16} 
-                      tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11, fontWeight: 500, fontFamily: "var(--font-inter)" }}
+                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11, fontWeight: 500, fontFamily: "var(--font-inter)" }}
                     />
                     <YAxis 
                       axisLine={false} 
                       tickLine={false} 
                       allowDecimals={false} 
                       tickMargin={12} 
-                      tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 11, fontFamily: "var(--font-inter)" }}
+                      tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "var(--font-inter)" }}
                     />
 
                     <Tooltip 
-                      cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                      cursor={{ fill: "rgba(255,255,255,0.04)" }}
                       content={({ active, payload, label }) => {
                         if (active && payload && payload.length) {
                           return (
-                            <div className="bg-[#0a0a0c]/95 backdrop-blur-xl border border-white/10 p-3.5 rounded-2xl shadow-2xl min-w-35">
+                            <div className="bg-[#0a0a0c]/90 backdrop-blur-xl border border-white/10 p-3.5 rounded-2xl shadow-2xl min-w-35">
                               <p className="text-white/90 text-[13px] font-bold font-jakarta mb-3 pb-2 border-b border-white/10">
                                 {label}
                               </p>
@@ -392,8 +367,8 @@ export default function HomePage() {
                                 {payload.map((entry, index) => (
                                   <div key={index} className="flex items-center justify-between">
                                     <div className="flex items-center gap-2.5">
-                                      <div className="w-1 h-3.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                                      <span className="text-[11px] font-inter font-medium text-white/60 capitalize">
+                                      <div className="w-1.5 h-3.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                      <span className="text-[11px] font-inter font-medium text-white/70 capitalize">
                                         {entry.name}
                                       </span>
                                     </div>
@@ -410,14 +385,14 @@ export default function HomePage() {
                       }}
                     />
 
-                    {/* Stacked Bars: Suci + Haid */}
+                    {/* Stacked Bars: Suci + Haid (Radius diubah agar lebih luwes) */}
                     <Bar 
                       dataKey="suci" 
                       name="Status Suci" 
                       fill="#10b981" 
                       stackId="a" 
-                      radius={[0, 0, 0, 0]} 
-                      maxBarSize={45} 
+                      radius={[0, 0, 4, 4]} 
+                      maxBarSize={38} 
                     />
                     <Bar 
                       dataKey="haid" 
@@ -425,7 +400,7 @@ export default function HomePage() {
                       fill="#ec4899" 
                       stackId="a" 
                       radius={[4, 4, 0, 0]} 
-                      maxBarSize={45} 
+                      maxBarSize={38} 
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -436,7 +411,6 @@ export default function HomePage() {
         </div>
 
       </main>
-
     </div>
   );
 }
