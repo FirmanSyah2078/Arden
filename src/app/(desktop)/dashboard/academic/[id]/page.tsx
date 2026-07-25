@@ -1,30 +1,39 @@
 "use client";
 
+// 🔥 Page ini CUMA komposisi. Tidak ada dummy data, tidak ada perhitungan fase/kalender
+// di sini — semua itu ada di useView() (hooks/academic/use-view.ts) dan cycle-engine.ts.
+
 import { use } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, User, Search, Fingerprint, QrCode, Calendar as CalendarIcon, FileText, CheckCircle2, Clock } from "lucide-react";
+import { ArrowLeft, Calendar as CalendarIcon, Clock, QrCode, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-// 🔥 Panggil Logic dari Hook
 import { useView } from "@/hooks/academic/use-view";
+import { StudentListPanel } from "@/components/dashboard/academic/student-list-panel";
+import { StudentProfileCard } from "@/components/dashboard/academic/student-profile-card";
+import { StudentCalendarCard } from "@/components/dashboard/academic/student-calendar-card";
+import { StudentQrCard } from "@/components/dashboard/academic/student-qr-card";
+import { StudentHistoryTable } from "@/components/dashboard/academic/student-history-table";
 
 export default function ClassDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const resolvedParams = use(params);
-  
-  // Masukkan ID dari URL ke dalam Hook
+
   const {
-    dummyClassName, selectedStudentId, setSelectedStudentId,
-    searchQuery, setSearchQuery, rightTab, setRightTab,
-    filteredStudents, currentStudent
+    dummyClassName,
+    searchQuery, setSearchQuery, filteredStudents,
+    selectedStudentId, setSelectedStudentId, currentStudent,
+    rightTab, setRightTab,
+    viewYear, viewMonth, goToPrevMonth, goToNextMonth, calendarDays,
+    historyRows,
+    qrRevealed, qrConfirmOpen, requestQrReveal, confirmQrReveal, cancelQrReveal, hideQr,
   } = useView(resolvedParams.id);
 
   return (
     <>
       <header className="flex items-center gap-4 shrink-0">
-        <Button 
+        <Button
           variant="outline" size="icon" onClick={() => router.back()}
           className="rounded-full bg-card hover:bg-accent transition-all duration-300 hover:scale-105"
         >
@@ -41,97 +50,71 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
       </header>
 
       <main className="flex-1 w-full mt-6 flex flex-col lg:flex-row gap-8 min-h-0 lg:h-[calc(100vh-140px)]">
-        
-        {/* --- KIRI: DAFTAR SISWI --- */}
-        <div className="w-full lg:w-67.5 h-87.5 lg:h-full flex flex-col bg-card/20 border border-white/5 rounded-3xl overflow-hidden shadow-sm shrink-0">
-          <div className="p-5 border-b border-white/5 shrink-0 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-jakarta text-[14px] font-bold text-foreground">Daftar Siswi</h3>
-              <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                {filteredStudents.length} Siswi
-              </span>
-            </div>
-            <div className="relative group w-full transition-all duration-300">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 size-3.5" />
-              <Input
-                placeholder="Cari nama atau icode..." spellCheck={false} autoComplete="off"
-                className="pl-8 h-9 bg-black/20 border-white/10 text-[12px] rounded-xl text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary/50"
-                value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
+        <StudentListPanel
+          students={filteredStudents}
+          selectedStudentId={selectedStudentId}
+          onSelectStudent={setSelectedStudentId}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
-          <div 
-            className="flex-1 overflow-y-auto smooth-scrollbar px-2"
-            style={{ maskImage: 'linear-gradient(to bottom, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)' }}
-          >
-            <div className="py-4 flex flex-col gap-1">
-              {filteredStudents.map((student) => (
-                <button key={student.id} onClick={() => setSelectedStudentId(student.id)} className={cn("w-full text-left flex items-center gap-3.5 p-3 rounded-2xl transition-all duration-300 group", selectedStudentId === student.id ? "bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.05)]" : "bg-transparent border border-transparent hover:bg-white/3")}>
-                  <div className={cn("size-10 rounded-full flex items-center justify-center shrink-0 border transition-colors duration-300", selectedStudentId === student.id ? "bg-primary/20 border-primary/30" : "bg-white/5 border-white/10 group-hover:border-white/20")}>
-                    <User className={cn("size-4", selectedStudentId === student.id ? "text-primary" : "text-muted-foreground group-hover:text-white/80")} />
-                  </div>
-                  <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                    <span className={cn("font-jakarta text-[13px] font-bold truncate transition-colors", selectedStudentId === student.id ? "text-primary" : "text-white/90 group-hover:text-white")}>{student.name}</span>
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono">
-                      <Fingerprint size={10} className={selectedStudentId === student.id ? "text-primary/70" : "text-muted-foreground/60"}/>
-                      <span className={selectedStudentId === student.id ? "text-primary/80" : "text-muted-foreground"}>{student.icode}</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* --- KANAN: DETAIL SISWI --- */}
         <div className="flex-1 flex flex-col gap-8 overflow-y-auto smooth-scrollbar lg:pr-4 pb-12">
           {currentStudent ? (
             <>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-                <div className="flex flex-col sm:flex-row gap-5 pt-2 items-center sm:items-start w-full">
-                  <div className="shrink-0 size-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shadow-xl relative mt-1">
-                    <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-[spin_10s_linear_infinite]" />
-                    <User className="size-8 text-primary" />
-                  </div>
-                  <div className="flex flex-col gap-3 w-full text-center sm:text-left">
-                    <div className="flex flex-col gap-1">
-                      <h2 className="text-xl font-bold text-foreground font-jakarta leading-tight">{currentStudent.name}</h2>
-                      <div className="flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">NIS</span>
-                        <span className="text-[12px] font-mono text-primary/90 font-medium bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">{currentStudent.nis}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 bg-white/3 border border-white/5 p-3.5 rounded-2xl w-full">
-                      <FileText className="size-4 text-muted-foreground shrink-0 mt-0.5" />
-                      <p className="text-[12px] text-muted-foreground leading-relaxed italic text-left">{currentStudent.notes || "Tidak ada catatan khusus."}</p>
-                    </div>
-                  </div>
-                </div>
+                <StudentProfileCard
+                  name={currentStudent.name}
+                  nis={currentStudent.nis}
+                  notes={currentStudent.notes}
+                />
 
-                <div className="flex flex-col items-center gap-6 pt-2">
+                <div className="flex flex-col items-center gap-6 pt-2 w-full">
                   <div className="flex gap-3 w-fit">
-                    <Button variant="ghost" className={cn("h-10 px-5 sm:px-6 rounded-xl gap-2 font-bold text-xs transition-all", rightTab === "qr" ? "bg-primary text-black hover:bg-primary/90 shadow-lg" : "bg-white/3 border border-white/5 text-muted-foreground hover:bg-white/10 hover:text-white")} onClick={() => setRightTab("qr")}>
-                      <QrCode className="size-4" /> QR Code
-                    </Button>
-                    <Button variant="ghost" className={cn("h-10 px-5 sm:px-6 rounded-xl gap-2 font-bold text-xs transition-all", rightTab === "calendar" ? "bg-primary text-black hover:bg-primary/90 shadow-lg" : "bg-white/3 border border-white/5 text-muted-foreground hover:bg-white/10 hover:text-white")} onClick={() => setRightTab("calendar")}>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "h-10 px-5 sm:px-6 rounded-xl gap-2 font-bold text-xs transition-all",
+                        rightTab === "calendar"
+                          ? "bg-primary text-black hover:bg-primary/90 shadow-lg"
+                          : "bg-white/3 border border-white/5 text-muted-foreground hover:bg-white/10 hover:text-white"
+                      )}
+                      onClick={() => setRightTab("calendar")}
+                    >
                       <CalendarIcon className="size-4" /> Calendar
                     </Button>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "h-10 px-5 sm:px-6 rounded-xl gap-2 font-bold text-xs transition-all",
+                        rightTab === "qr"
+                          ? "bg-primary text-black hover:bg-primary/90 shadow-lg"
+                          : "bg-white/3 border border-white/5 text-muted-foreground hover:bg-white/10 hover:text-white"
+                      )}
+                      onClick={() => setRightTab("qr")}
+                    >
+                      <QrCode className="size-4" /> QR Code
+                    </Button>
                   </div>
 
-                  <div className="w-full flex items-center justify-center h-65">
-                    {rightTab === "qr" ? (
-                      <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-300">
-                        <div className="p-4 bg-white rounded-4xl shadow-2xl border-4 border-primary/20">
-                          <QrCode className="size-36 text-black" strokeWidth={1.5} />
-                        </div>
-                        <span className="text-[11px] font-bold font-mono text-muted-foreground tracking-widest uppercase bg-white/5 px-4 py-1.5 rounded-full border border-white/5">{currentStudent.icode}</span>
-                      </div>
+                  <div className="w-full flex items-center justify-center min-h-65">
+                    {rightTab === "calendar" ? (
+                      <StudentCalendarCard
+                        year={viewYear}
+                        month={viewMonth}
+                        days={calendarDays}
+                        onPrevMonth={goToPrevMonth}
+                        onNextMonth={goToNextMonth}
+                      />
                     ) : (
-                      <div className="w-full max-w-70 h-full p-6 border border-dashed border-white/10 rounded-4xl flex flex-col items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 bg-white/1">
-                        <CalendarIcon className="size-10 text-muted-foreground/30" />
-                        <p className="text-[11px] text-muted-foreground text-center font-medium leading-relaxed">Visualisasi kalender siklus biologis akan dirender di area ini.</p>
-                      </div>
+                      <StudentQrCard
+                        icode={currentStudent.icode}
+                        revealed={qrRevealed}
+                        confirmOpen={qrConfirmOpen}
+                        onRequestReveal={requestQrReveal}
+                        onConfirmReveal={confirmQrReveal}
+                        onCancelReveal={cancelQrReveal}
+                        onHide={hideQr}
+                      />
                     )}
                   </div>
                 </div>
@@ -142,37 +125,7 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
                   <Clock className="size-4 text-primary" />
                   <h3 className="font-jakarta text-sm font-bold text-foreground">Riwayat Siklus Biologis</h3>
                 </div>
-
-                <div className="w-full overflow-hidden rounded-2xl border border-white/5 bg-white/2">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-white/5 bg-white/3">
-                        <th className="p-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">No</th>
-                        <th className="p-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">Siklus Awal</th>
-                        <th className="p-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">Siklus Akhir</th>
-                        <th className="p-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Status</th>
-                        <th className="p-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Keterangan</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-[13px]">
-                      {currentStudent.history.length > 0 ? currentStudent.history.map((item, index) => (
-                        <tr key={item.id} className="border-b border-white/5 hover:bg-white/2 transition-colors last:border-0">
-                          <td className="p-4 font-mono text-muted-foreground">{index + 1}</td>
-                          <td className="p-4 text-white font-medium whitespace-nowrap">{item.start}</td>
-                          <td className="p-4 text-white font-medium whitespace-nowrap">{item.end}</td>
-                          <td className="p-4"><span className="flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20"><CheckCircle2 size={12} /> {item.status}</span></td>
-                          <td className="p-4 text-muted-foreground italic text-xs">{item.remarks}</td>
-                        </tr>
-                      )) : (
-                        <tr>
-                          <td colSpan={5} className="p-12 text-center text-muted-foreground opacity-40">
-                            <FileText className="size-8 mx-auto mb-3" /> Belum ada riwayat siklus yang tercatat.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                <StudentHistoryTable rows={historyRows} />
               </div>
             </>
           ) : (
