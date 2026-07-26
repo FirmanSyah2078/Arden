@@ -15,13 +15,15 @@ const nextConfig: NextConfig = {
   },
 
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'hngasuihbphgvvqnasyp.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
-    ],
+    remotePatterns: process.env.SUPABASE_IMAGE_HOSTNAME ?
+        [
+          {
+            protocol: 'https',
+            hostname: process.env.SUPABASE_IMAGE_HOSTNAME,
+            pathname: '/storage/v1/object/public/**',
+          },
+        ] :
+        [],
   },
 };
 
