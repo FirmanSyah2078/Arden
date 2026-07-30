@@ -12,8 +12,8 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   }, []);
 
   return (
-    <div className="min-h-dvh w-full flex items-center justify-center bg-black/90 lg:bg-zinc-950 overflow-hidden font-sans">
-      <div className="w-full h-dvh lg:h-auto lg:min-h-175 lg:max-h-212.5 lg:aspect-9/19 max-w-95 bg-[#151419] text-white relative shadow-2xl lg:rounded-[2.5rem] lg:border-5 lg:border-zinc-900 overflow-hidden flex flex-col">
+    <div className="min-h-dvh w-full flex flex-col items-center justify-center bg-black/90 lg:bg-zinc-950 overflow-hidden font-sans">
+      <div className="w-full flex-1 lg:h-auto lg:min-h-175 lg:max-h-212.5 lg:aspect-9/19 max-w-95 bg-[#151419] text-white relative shadow-2xl lg:rounded-[2.5rem] lg:border-5 lg:border-zinc-900 overflow-hidden flex flex-col">
         
         {loading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-[#151419]">
