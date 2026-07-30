@@ -1,5 +1,6 @@
 // src/app/layout.tsx
-import type { Metadata } from "next";
+import PwaRegister from "@/components/pwa-register";
+import type { Metadata,Viewport } from "next";
 // Kita ganti ke next/font/google
 import { Geist, Inter, Space_Grotesk, Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
@@ -42,7 +43,18 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "ARDEN",
   description: "Sistem Absensi Karakter Siswi",
+ manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "ARDEN",
+  },
 };
+
+export const viewport: Viewport = {
+  themeColor: "#0a0e1a",
+};
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -58,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}
         suppressHydrationWarning
       >
+         <PwaRegister />
         {children}
       </body>
     </html>
