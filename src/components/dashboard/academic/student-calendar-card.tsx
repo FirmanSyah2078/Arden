@@ -1,12 +1,13 @@
 "use client"
 
 // 🔥 Presentational only — cuma render dari DayCell[] yang sudah dihitung di hooks.
-// Mapping warna di bawah ini murni pemilihan style (bukan logika bisnis).
+// Dibungkus card (rounded-3xl, border-white/5, bg-card) biar senada sama panel
+// lain di dashboard, dan sel-selnya dibesarin supaya nggak berdesakan.
 
 import { AlertTriangle, ChevronLeft, ChevronRight, Clock3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { DayCell } from "@/lib/cycle-engine"
+import type { DayCell } from "@/lib/academic/cycle-engine"
 
 const WEEKDAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
 
@@ -43,24 +44,24 @@ export function StudentCalendarCard({ year, month, days, onPrevMonth, onNextMont
   const leadingBlanks = (firstDayOfMonth + 6) % 7
 
   return (
-    <div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="w-full max-w-md mx-auto rounded-3xl border border-white/5 bg-card/40 p-6 flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="flex items-center justify-between">
-        <h4 className="font-jakarta text-[15px] font-bold text-foreground">
+        <h4 className="font-jakarta text-[16px] font-bold text-foreground">
           {MONTH_LABELS[month]} {year}
         </h4>
         <div className="flex items-center gap-1.5">
-          <Button variant="outline" size="icon-sm" className="rounded-full bg-card hover:bg-accent" onClick={onPrevMonth}>
+          <Button variant="outline" size="icon-sm" className="rounded-full bg-white/3 hover:bg-accent" onClick={onPrevMonth}>
             <ChevronLeft className="size-3.5" />
           </Button>
-          <Button variant="outline" size="icon-sm" className="rounded-full bg-card hover:bg-accent" onClick={onNextMonth}>
+          <Button variant="outline" size="icon-sm" className="rounded-full bg-white/3 hover:bg-accent" onClick={onNextMonth}>
             <ChevronRight className="size-3.5" />
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1.5 text-center">
+      <div className="grid grid-cols-7 gap-2 text-center">
         {WEEKDAY_LABELS.map((label) => (
-          <span key={label} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 pb-1">
+          <span key={label} className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 pb-1">
             {label}
           </span>
         ))}
@@ -79,7 +80,7 @@ export function StudentCalendarCard({ year, month, days, onPrevMonth, onNextMont
             <div
               key={day.dateISO}
               className={cn(
-                "relative aspect-square rounded-xl flex items-center justify-center text-[12px] font-semibold border transition-colors",
+                "relative aspect-square rounded-xl flex items-center justify-center text-[14px] font-semibold border transition-colors",
                 baseClass,
                 day.isPending && "border-dashed opacity-70",
                 day.isToday && "ring-2 ring-primary ring-offset-2 ring-offset-background"
@@ -94,30 +95,30 @@ export function StudentCalendarCard({ year, month, days, onPrevMonth, onNextMont
             >
               {day.dayNumber}
               {day.isPending && (
-                <Clock3 className="absolute -top-1 -right-1 size-3 text-muted-foreground bg-background rounded-full p-0.5" />
+                <Clock3 className="absolute -top-1.5 -right-1.5 size-3.5 text-muted-foreground bg-background rounded-full p-0.5" />
               )}
               {day.isAnomalyStart && (
-                <AlertTriangle className="absolute -bottom-1 -right-1 size-3 text-amber-400 bg-background rounded-full p-0.5" />
+                <AlertTriangle className="absolute -bottom-1.5 -right-1.5 size-3.5 text-amber-400 bg-background rounded-full p-0.5" />
               )}
             </div>
           )
         })}
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-white/5 mt-1">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-4 border-t border-white/5">
         {LEGEND_ITEMS.map((item) => (
           <div key={item.key} className="flex items-center gap-1.5">
             <span className={cn("size-2.5 rounded-full", item.swatchClass)} />
-            <span className="text-[10px] text-muted-foreground">{item.label}</span>
+            <span className="text-[11px] text-muted-foreground">{item.label}</span>
           </div>
         ))}
         <div className="flex items-center gap-1.5">
           <Clock3 className="size-3 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">Proyeksi (libur)</span>
+          <span className="text-[11px] text-muted-foreground">Proyeksi (libur)</span>
         </div>
         <div className="flex items-center gap-1.5">
           <AlertTriangle className="size-3 text-amber-400" />
-          <span className="text-[10px] text-muted-foreground">Anomali interval</span>
+          <span className="text-[11px] text-muted-foreground">Anomali interval</span>
         </div>
       </div>
     </div>
