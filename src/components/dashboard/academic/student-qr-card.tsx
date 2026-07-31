@@ -1,9 +1,12 @@
 "use client"
 
-// 🔥 Presentational + gate 2-langkah. State revealed/confirmOpen datang dari hooks,
-// komponen ini cuma render & panggil handler — tidak nyimpan logic kapan boleh terbuka.
+// 🔥 Presentational + gate 2-langkah. State revealed/confirmOpen/copied semuanya
+// cuma "UI micro-state" (bukan logika bisnis), jadi wajar hidup di sini.
+// Style dirombak biar senada sama pola card lain di dashboard (rounded-3xl,
+// border-white/5, bg-card) — patokan visualnya sidebar & card kelas yang sudah ada.
 
-import { Eye, EyeOff, QrCode, ShieldAlert } from "lucide-react"
+import { useState } from "react"
+import { Check, Copy, EyeOff, QrCode, ShieldAlert } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface StudentQrCardProps {
   icode: string
@@ -35,52 +39,90 @@ export function StudentQrCard({
   onCancelReveal,
   onHide,
 }: StudentQrCardProps) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard?.writeText(icode).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    })
+  }
+
   return (
-    <div className="w-full flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-300">
+    <div className="w-full max-w-xs mx-auto rounded-3xl border border-white/5 bg-card/40 p-7 flex flex-col items-center text-center gap-5 animate-in fade-in zoom-in-95 duration-300">
       {revealed ? (
         <>
-          <div className="p-4 bg-white rounded-4xl shadow-2xl border-4 border-primary/20">
-            <QrCode className="size-36 text-black" strokeWidth={1.5} />
+          <div className="flex flex-col items-center gap-2">
+            <div className="size-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <QrCode className="size-5 text-primary" />
+            </div>
+            <h4 className="font-jakarta text-[15px] font-bold text-foreground">QR Darurat</h4>
+            <p className="text-[11px] text-muted-foreground leading-relaxed max-w-52">
+              Tunjukkan layar ini ke Pelaksana untuk pemindaian manual.
+            </p>
           </div>
-          <span className="text-[11px] font-bold font-mono text-muted-foreground tracking-widest uppercase bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
+
+          <div className="relative p-5 bg-white rounded-3xl shadow-2xl border-4 border-primary/20 overflow-hidden">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-linear-to-b from-primary/10 to-transparent" />
+            <QrCode className="size-32 text-black relative z-10" strokeWidth={1.5} />
+          </div>
+
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-2 text-[11px] font-bold font-mono text-muted-foreground tracking-widest uppercase bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5 transition-colors"
+          >
             {icode}
-          </span>
-          <Button variant="outline" size="sm" className="gap-1.5 text-[11px]" onClick={onHide}>
+            {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+          </button>
+
+          <Button variant="outline" size="sm" className="gap-1.5 text-[11px] w-full" onClick={onHide}>
             <EyeOff className="size-3.5" /> Sembunyikan
           </Button>
         </>
       ) : (
-        <button
-          onClick={onRequestReveal}
-          className="flex flex-col items-center gap-3 py-10 px-8 rounded-3xl border border-dashed border-white/10 bg-white/2 hover:bg-white/4 hover:border-primary/30 transition-all group"
-        >
-          <div className="size-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-primary/30 transition-colors">
-            <ShieldAlert className="size-6 text-muted-foreground group-hover:text-primary transition-colors" />
+        <>
+          <div className="size-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+            <ShieldAlert className="size-6 text-muted-foreground" />
           </div>
-          <div className="text-center">
-            <p className="text-[12px] font-bold text-foreground">QR Terkunci</p>
-            <p className="text-[11px] text-muted-foreground mt-1 max-w-52">
-              Cuma untuk keadaan darurat. Tap untuk konfirmasi sebelum kode ditampilkan.
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[13px] font-bold text-foreground">QR Darurat Terkunci</p>
+            <p className="text-[11px] text-muted-foreground leading-relaxed max-w-56">
+              Cuma untuk keadaan darurat kalau siswi tidak membawa kartu. Perlu konfirmasi dulu
+              sebelum kode ditampilkan ke layar.
             </p>
           </div>
-          <span className="flex items-center gap-1.5 text-[10px] font-bold text-primary uppercase tracking-wider">
-            <Eye className="size-3" /> Tampilkan QR
-          </span>
-        </button>
+          <Button
+            variant="outline"
+            className="w-full gap-2 border-white/10 bg-white/3 hover:bg-white/8 hover:border-primary/30"
+            onClick={onRequestReveal}
+          >
+            <QrCode className="size-4" /> Tampilkan QR
+          </Button>
+        </>
       )}
 
       <AlertDialog open={confirmOpen} onOpenChange={(open) => !open && onCancelReveal()}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Tampilkan QR darurat?</AlertDialogTitle>
-            <AlertDialogDescription>
+        <AlertDialogContent className="max-w-sm rounded-3xl border-white/10 bg-[#0d0d0d] p-7">
+          <AlertDialogHeader className="items-center text-center gap-3">
+            <div className="size-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <ShieldAlert className="size-6 text-primary" />
+            </div>
+            <AlertDialogTitle className="text-[16px]">Tampilkan QR darurat?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[12px] leading-relaxed">
               QR ini cuma untuk kondisi darurat kalau siswi tidak membawa kartu. Jalur utama
               pencatatan tetap lewat scan Pelaksana. Lanjutkan menampilkan kode ini di layar?
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={onCancelReveal}>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={onConfirmReveal}>Tampilkan</AlertDialogAction>
+          <AlertDialogFooter className="sm:justify-center gap-2 mt-2">
+            <AlertDialogCancel
+              onClick={onCancelReveal}
+              className={cn("flex-1 sm:flex-none sm:min-w-28")}
+            >
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={onConfirmReveal} className="flex-1 sm:flex-none sm:min-w-28">
+              Tampilkan
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

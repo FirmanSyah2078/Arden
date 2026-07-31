@@ -58,7 +58,6 @@ export function useClass() {
 
   const openQrModal = (kelas: any) => {
     setQrModalClass(kelas);
-    // Ambil data murid khusus untuk kelas yang diklik saja
     const studentsInThisClass = getStudentsByClassId(kelas.id);
     setDummyStudentsQR(studentsInThisClass);
     setSelectedQRStudents([]); 
@@ -78,8 +77,6 @@ export function useClass() {
     activeFilter, handleFilterChange,
     currentPage, setCurrentPage, StudentPages, visiblePages: generatePagination(),
     paginatedClasses,
-    
-    // QR Modal Exports
     qrModalClass, openQrModal, closeQrModal,
     dummyStudentsQR, selectedQRStudents, handleToggleQRStudent, handleSelectAllQR, handlePrint
   };

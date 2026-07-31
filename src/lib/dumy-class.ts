@@ -7,10 +7,12 @@
 import type { CyclePeriod, PhaseConfig } from "./academic/cycle-engine"
 
 // --- TABEL KELAS ---
+// 🔥 Ditambahkan 'slug' untuk URL Level 2 yang aman dan estetik
 export const dummyClasses = [
   {
     id: 1,
     name: "X MIPA 1",
+    slug: "x-mipa-1",
     academic_year: "2025/2026",
     wali: "Mr. Mulyono S.Pd.",
     batch: "X",
@@ -20,6 +22,7 @@ export const dummyClasses = [
   {
     id: 2,
     name: "X MIPA 2",
+    slug: "x-mipa-2",
     academic_year: "2025/2026",
     wali: "Mrs. Susi S.Pd.",
     batch: "X",
@@ -29,6 +32,7 @@ export const dummyClasses = [
   {
     id: 3,
     name: "XI MIPA 1",
+    slug: "xi-mipa-1",
     academic_year: "2025/2026",
     wali: "Mr. Budi S.Pd.",
     batch: "XI",
@@ -38,6 +42,7 @@ export const dummyClasses = [
   {
     id: 4,
     name: "XII IPS 1",
+    slug: "xii-ips-1",
     academic_year: "2024/2025", // Contoh tahun ajaran lama (historical)
     wali: "Mrs. Ani S.Pd.",
     batch: "XII",
@@ -49,27 +54,28 @@ export const dummyClasses = [
 // --- TABEL SISWI (Berelasi dengan classId) ---
 // 🔥 Field `history` lama sudah dihapus — dead code, sudah nggak dipakai UI Academic
 // (riwayat siklus sekarang diturunkan dari `dummyCyclePeriodsByStudent` di bawah).
+// 🔥 Ditambahkan 'nanoId' untuk keamanan URL (Mencegah IDOR)
 export const dummyStudents = [
   // --- SISWI KELAS X MIPA 1 (classId: 1) ---
-  { id: 101, classId: 1, name: "Aisyah Putri Maharani Kusumawardhani", icode: "ARD-XMP1-001", nis: "1002938101", notes: "Siswi aktif dalam kegiatan pramuka." },
-  { id: 102, classId: 1, name: "Bunga Pertiwi", icode: "ARD-XMP1-002", nis: "1002938102", notes: "Membutuhkan perhatian khusus pada kesehatan fisik." },
-  { id: 103, classId: 1, name: "Citra Lestari", icode: "ARD-XMP1-003", nis: "1002938103", notes: "Sering mewakili sekolah dalam olimpiade sains." },
-  { id: 104, classId: 1, name: "Dian Sastrowardoyo", icode: "ARD-XMP1-004", nis: "1002938104", notes: "Ketua ekstrakurikuler teater." },
-  { id: 105, classId: 1, name: "Eka Wardhani", icode: "ARD-XMP1-005", nis: "1002938105", notes: "" },
-  { id: 106, classId: 1, name: "Fatimah Azzahra", icode: "ARD-XMP1-006", nis: "1002938106", notes: "" },
-  { id: 107, classId: 1, name: "Santika Ayu", icode: "ARD-XMP1-007", nis: "1002938107", notes: "" },
-  { id: 108, classId: 1, name: "Ryassanty Nawa", icode: "ARD-XMP1-008", nis: "1002938108", notes: "" },
-  { id: 109, classId: 1, name: "Nabila Ayu Saraswati", icode: "ARD-XMP1-009", nis: "1002938109", notes: "" },
-  { id: 110, classId: 1, name: "Kirana Larasati", icode: "ARD-XMP1-010", nis: "1002938110", notes: "" },
+  { id: 101, classId: 1, nanoId: "V1StGXR8", name: "Aisyah Putri Maharani Kusumawardhani", icode: "ARD-XMP1-001", nis: "1002938101", notes: "Siswi aktif dalam kegiatan pramuka." },
+  { id: 102, classId: 1, nanoId: "k9MvP2qL", name: "Bunga Pertiwi", icode: "ARD-XMP1-002", nis: "1002938102", notes: "Membutuhkan perhatian khusus pada kesehatan fisik." },
+  { id: 103, classId: 1, nanoId: "x7NwF4sA", name: "Citra Lestari", icode: "ARD-XMP1-003", nis: "1002938103", notes: "Sering mewakili sekolah dalam olimpiade sains." },
+  { id: 104, classId: 1, nanoId: "m3JbC8yZ", name: "Dian Sastrowardoyo", icode: "ARD-XMP1-004", nis: "1002938104", notes: "Ketua ekstrakurikuler teater." },
+  { id: 105, classId: 1, nanoId: "p5LxR1wN", name: "Eka Wardhani", icode: "ARD-XMP1-005", nis: "1002938105", notes: "" },
+  { id: 106, classId: 1, nanoId: "b2VnK9mT", name: "Fatimah Azzahra", icode: "ARD-XMP1-006", nis: "1002938106", notes: "" },
+  { id: 107, classId: 1, nanoId: "r8HqZ3fC", name: "Santika Ayu", icode: "ARD-XMP1-007", nis: "1002938107", notes: "" },
+  { id: 108, classId: 1, nanoId: "d4ScM7vP", name: "Ryassanty Nawa", icode: "ARD-XMP1-008", nis: "1002938108", notes: "" },
+  { id: 109, classId: 1, nanoId: "t6XzB5jW", name: "Nabila Ayu Saraswati", icode: "ARD-XMP1-009", nis: "1002938109", notes: "" },
+  { id: 110, classId: 1, nanoId: "y1PnR8kL", name: "Kirana Larasati", icode: "ARD-XMP1-010", nis: "1002938110", notes: "" },
 
   // --- SISWI KELAS X MIPA 2 (classId: 2) ---
-  { id: 201, classId: 2, name: "Ratu Jelita", icode: "ARD-XMP2-001", nis: "1002938201", notes: "" },
-  { id: 202, classId: 2, name: "Salsabila Firdaus", icode: "ARD-XMP2-002", nis: "1002938202", notes: "" },
-  { id: 203, classId: 2, name: "Tari Melani Anjani", icode: "ARD-XMP2-003", nis: "1002938203", notes: "" },
+  { id: 201, classId: 2, nanoId: "c9GfT2xQ", name: "Ratu Jelita", icode: "ARD-XMP2-001", nis: "1002938201", notes: "" },
+  { id: 202, classId: 2, nanoId: "h4WjN7mP", name: "Salsabila Firdaus", icode: "ARD-XMP2-002", nis: "1002938202", notes: "" },
+  { id: 203, classId: 2, nanoId: "l3BbV6zK", name: "Tari Melani Anjani", icode: "ARD-XMP2-003", nis: "1002938203", notes: "" },
 
   // --- SISWI KELAS XI MIPA 1 (classId: 3) ---
-  { id: 301, classId: 3, name: "Umi Kalsum", icode: "ARD-XIM1-001", nis: "1002938301", notes: "" },
-  { id: 302, classId: 3, name: "Vania Agatha", icode: "ARD-XIM1-002", nis: "1002938302", notes: "" },
+  { id: 301, classId: 3, nanoId: "q8MxC2nR", name: "Umi Kalsum", icode: "ARD-XIM1-001", nis: "1002938301", notes: "" },
+  { id: 302, classId: 3, nanoId: "w5ZpL9tJ", name: "Vania Agatha", icode: "ARD-XIM1-002", nis: "1002938302", notes: "" },
 ];
 
 // --- HELPER FUNCTIONS (KELAS & SISWI) ---
@@ -84,6 +90,10 @@ export const getClassesWithStudentCount = () => {
 export const getStudentsByClassId = (classId: number) => {
   return dummyStudents.filter(s => s.classId === classId);
 };
+
+// 🔥 Ekstraksi data berdasarkan URL params
+export const getClassBySlug = (slug: string) => dummyClasses.find(c => c.slug === slug);
+export const getStudentByNanoId = (nanoId: string) => dummyStudents.find(s => s.nanoId === nanoId);
 
 // =========================================================================
 // 🔥 SIKLUS BIOLOGIS — dipindahkan dari src/lib/academic/cycle-dummy.ts.
