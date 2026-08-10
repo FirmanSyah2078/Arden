@@ -40,6 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-serwist / service worker
-public/sw.js public/sw.js.map public/swe-worker-*.js
+# lockfile — pnpm-lock.yaml yg di-track, jangan commit lockfile npm
+package-lock.json
+
+# serwist / service worker
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js
 

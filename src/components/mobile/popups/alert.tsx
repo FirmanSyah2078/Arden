@@ -34,7 +34,6 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
         }
     }, [isOpen, initialStatus]);
 
-    // --- SUBMISSION LOGIC: Process attendance data to the backend ---
     const handleProcess = async () => {
         if (!absensiStatus?.id) return;
         setErrorMessage('');
@@ -44,7 +43,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
             const payload = {
                 id_student: parseInt(absensiStatus.id),
                 time: sholatTime,
-                status: isManual ? absensiStatus.icode : 'Haid',
+                status: absensiStatus.icode || 'Pure',
                 method: isManual ? 'MANUAL' : 'SCAN',
                 remarks: isManual ? absensiStatus.remarks : '',
                 date: new Date(),
@@ -55,9 +54,26 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 setProcessStatus('success');
             } else {
                 setProcessStatus('error');
-                setErrorMessage(response.message || 'Failed to process data.');
+                
+                // --- AGGRESSIVE HUMANIZER: No technical leaks allowed ---
+                const responseText = typeof response === 'string' 
+                    ? response 
+                    : JSON.stringify(response);
+                
+                const normalizedError = responseText.toLowerCase();
+                let friendlyMessage = 'Failed to process attendance. Please try again.';
+                
+                if (normalizedError.includes('invalid option') || normalizedError.includes('expected one of')) {
+                    friendlyMessage = 'Invalid attendance status selected. Please check and try again.';
+                } else if (normalizedError.includes('network') || normalizedError.includes('fetch') || normalizedError.includes('timeout')) {
+                    friendlyMessage = 'Connection timeout. Please check your internet.';
+                } else if (normalizedError.includes('required') || normalizedError.includes('missing')) {
+                    friendlyMessage = 'Some required information is missing.';
+                }
+                
+                setErrorMessage(friendlyMessage);
             }
-        } catch {
+        } catch (err) {
             setProcessStatus('error');
             setErrorMessage('A network connection error occurred.');
         }
@@ -82,7 +98,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 return {
                     title: 'Success!',
                     subtitle: 'Attendance data has been saved.',
-                    icon: <CheckCircle2 className="w-16 h-16 text-emerald-400 animate-in zoom-in duration-500" />,
+                    icon: <CheckCircle2 className="w-14 h-14 text-emerald-400 animate-in zoom-in duration-500" />,
                     btnClass: 'bg-indigo-600 text-white hover:bg-indigo-500',
                     textCol: 'text-emerald-400'
                 };
@@ -90,7 +106,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 return {
                     title: 'Failed!',
                     subtitle: 'An error occurred while saving data.',
-                    icon: <AlertCircle className="w-16 h-16 text-red-400 animate-in shake duration-300" />,
+                    icon: <AlertCircle className="w-14 h-14 text-red-400 animate-in shake duration-300" />,
                     btnClass: 'bg-red-500 text-white hover:bg-red-400',
                     textCol: 'text-red-400'
                 };
@@ -98,7 +114,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 return {
                     title: 'Confirmation',
                     subtitle: 'Please review the student details.',
-                    icon: <User className="w-16 h-16 text-white/20" />,
+                    icon: <User className="w-14 h-14 text-white/20" />,
                     btnClass: 'bg-indigo-600 text-white hover:bg-indigo-500',
                     textCol: 'text-white'
                 };
@@ -111,7 +127,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
         <Dialog open={isOpen} onOpenChange={setOpen}>
             <DialogContent
                 showCloseButton={false}
-                className="w-[92%] max-w-sm rounded-[40px] bg-[#151419] border-none text-white p-8 shadow-2xl overflow-hidden"
+                className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl overflow-hidden"
             >
                 <DialogTitle className="sr-only">{config.title}</DialogTitle>
                 <DialogDescription className="sr-only">{config.subtitle}</DialogDescription>
@@ -122,16 +138,16 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                         <div className="absolute inset-0 blur-xl bg-white/5 rounded-full" />
                         {config.icon}
                     </div>
-                    <h2 className={`text-3xl font-bold tracking-tight ${config.textCol}`}>
+                    <h2 className={`text-2xl font-bold tracking-tight ${config.textCol}`}>
                         {config.title}
                     </h2>
-                    <p className="text-[11px] text-white/30 font-mono uppercase tracking-widest mt-2">
+                    <p className="text-[10px] text-white/30 font-mono uppercase tracking-widest mt-2">
                         {config.subtitle}
                     </p>
                 </div>
 
                 {/* User Info Card (Symmetry Style) */}
-                <div className="bg-[#1F1E23] p-6 rounded-3xl border border-white/5 mb-8 shadow-sm relative overflow-hidden">
+                <div className="bg-[#1F1E23] p-5 rounded-3xl border border-white/5 mb-8 shadow-sm relative overflow-hidden">
                     <div className="flex flex-col gap-5 relative z-10">
                         <div>
                             <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Student Name</p>
@@ -163,7 +179,7 @@ export function Alert({ isOpen, absensiStatus, setOpen, onScanUlang, sholatTime 
                 </div>
 
                 {processStatus === 'error' && (
-                    <div className="mb-8 p-3 rounded-xl bg-red-950 border border-red-800 text-red-400 text-xs text-center font-medium">
+                    <div className="mb-8 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] text-center font-medium tracking-wide">
                         {errorMessage}
                     </div>
                 )}
