@@ -73,7 +73,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
             <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-[#151419] to-transparent pointer-events-none z-10" />
 
             {!search && !isFocused && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-20 animate-in fade-in duration-500">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center animate-in fade-in duration-500">
                     <div className="relative mb-6">
                         <div className="absolute inset-0 blur-2xl bg-indigo-500/20 rounded-full" />
                         <div className="relative flex items-center justify-center -space-x-3">
@@ -167,7 +167,7 @@ export const Manual = ({ setPick, setOpenForm, search, setSearch, data, isLoadin
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
             />
-            <div className="flex-1 min-h-0 relative w-full overflow-hidden pb-20">
+            <div className="flex-1 min-h-0 relative w-full overflow-hidden">
                 <ManualResults
                     search={search}
                     data={data}

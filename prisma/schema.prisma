@@ -159,9 +159,9 @@ model tbl_routine {
 
 model tbl_classes {
   id_class       BigInt         @id @default(autoincrement())
-  grade_level    Int
+  grade_level    Int?
   class_name     String         @db.VarChar(50)
-  academic_year  String         @db.VarChar(20)
+  academic_year  String?         @db.VarChar(20)
   advisor        String?        @db.VarChar(100)
   description    String?
   tbl_chart_data tbl_chart_data[]
