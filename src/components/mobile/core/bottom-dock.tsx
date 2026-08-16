@@ -1,21 +1,24 @@
-'use client';
+"use client"
 
-import Image from 'next/image';
-import { User, History, Settings, LogOut } from 'lucide-react';
-import { useProfile } from '@/hooks/settings/use-profile';
+import Image from "next/image"
+import { User, History, Settings, LogOut } from "lucide-react"
+import { useProfile } from "@/hooks/settings/use-profile"
 
 interface BottomDockProps {
-  onOpenHistory: () => void;
-  onOpenSettings: () => void;
-  onLogout: () => void;
+    onOpenHistory: () => void
+    onOpenSettings: () => void
+    onLogout: () => void
 }
 
-export const BottomDock = ({ onOpenHistory, onOpenSettings, onLogout }: BottomDockProps) => {
-    const { formData } = useProfile();
+export const BottomDock = ({
+    onOpenHistory,
+    onOpenSettings,
+    onLogout,
+}: BottomDockProps) => {
+    const { formData } = useProfile()
 
     return (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-[#1F1E23] border border-white/10 rounded-full p-2 shadow-2xl flex items-center justify-between transition-all duration-500 hover:border-white/20">
-            
+        <div className="absolute bottom-6 left-1/2 z-50 flex w-[92%] max-w-md -translate-x-1/2 items-center justify-between rounded-full border border-white/10 bg-[#1F1E23] p-2 shadow-2xl transition-all duration-500 hover:border-white/20">
             {/* LEFT SECTION: Identity */}
             <div className="flex items-center gap-3 px-3">
                 <div className="flex items-center gap-2">
@@ -24,55 +27,62 @@ export const BottomDock = ({ onOpenHistory, onOpenSettings, onLogout }: BottomDo
                         alt="Logo"
                         width={18}
                         height={20}
-                        className="object-contain shrink-0"
+                        className="shrink-0 object-contain"
                     />
-                    <span className="text-[10px] font-extrabold text-white tracking-tighter leading-none opacity-80">ARDEN</span>
+                    <span className="text-[10px] leading-none font-extrabold tracking-tighter text-white opacity-80">
+                        ARDEN
+                    </span>
                 </div>
-                <div className="w-px h-4 bg-white/10 mx-1" />
+                <div className="mx-1 h-4 w-px bg-white/10" />
                 <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-[#2A292F] overflow-hidden shrink-0 border border-white/10">
+                    <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-white/10 bg-[#2A292F]">
                         {formData?.avatarUrl ? (
-                            <Image src={formData.avatarUrl} alt="Profile" width={24} height={24} className="w-full h-full object-cover" />
+                            <Image
+                                src={formData.avatarUrl}
+                                alt="Profile"
+                                width={24}
+                                height={24}
+                                className="h-full w-full object-cover"
+                            />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-white/20">
+                            <div className="flex h-full w-full items-center justify-center text-white/20">
                                 <User size={10} />
                             </div>
                         )}
                     </div>
-                    <span className="text-[10px] font-bold text-white truncate max-w-15">
-                        {formData?.name?.split(' ')[0] || 'User'}
+                    <span className="max-w-15 truncate text-[10px] font-bold text-white">
+                        {formData?.name?.split(" ")[0] || "User"}
                     </span>
                 </div>
             </div>
 
             {/* DIVIDER: Vertical Line */}
-            <div className="w-px h-6 bg-white/10 mx-1" />
+            <div className="mx-1 h-6 w-px bg-white/10" />
 
             {/* RIGHT SECTION: Navigation Actions */}
             <div className="flex items-center gap-1 px-1">
                 <button
                     onClick={onOpenHistory}
-                    className="p-2 rounded-full text-white/40 hover:text-white hover:bg-[#2A292F] transition-all active:scale-90"
+                    className="rounded-full p-2 text-white/40 transition-all hover:bg-[#2A292F] hover:text-white active:scale-90"
                     title="History"
                 >
                     <History size={18} />
                 </button>
                 <button
                     onClick={onOpenSettings}
-                    className="p-2 rounded-full text-white/40 hover:text-white hover:bg-[#2A292F] transition-all active:scale-90"
+                    className="rounded-full p-2 text-white/40 transition-all hover:bg-[#2A292F] hover:text-white active:scale-90"
                     title="Settings"
                 >
                     <Settings size={18} />
                 </button>
                 <button
                     onClick={onLogout}
-                    className="p-2 rounded-full text-white/40 hover:text-red-400 hover:bg-red-900/20 transition-all active:scale-90"
+                    className="rounded-full p-2 text-white/40 transition-all hover:bg-red-900/20 hover:text-red-400 active:scale-90"
                     title="Logout"
                 >
                     <LogOut size={18} />
                 </button>
             </div>
-
         </div>
-    );
-};
+    )
+}

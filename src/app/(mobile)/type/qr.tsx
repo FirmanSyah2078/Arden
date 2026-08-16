@@ -6,6 +6,7 @@ import { Loader2, QrCode, User, Camera, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
 import { Alert } from '@/components/mobile/popups/alert';
+import { searchStudentCache } from "@/lib/offline/student-cache"
 
 interface QrProps {
   sholat: DailyPrayer;
@@ -151,7 +152,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
 
   const handleScanSuccess = async (decodedText: string) => {
     if (isProcessingRef.current || showPopup) return;
-    
+
     // HARD LOCK: Kunci instan secara sinkron
     isProcessingRef.current = true;
     setValidating(true);
@@ -167,26 +168,56 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
         icode = json.i || json.icode || json.nis || icode;
       } catch { }
 
-      const res = await fetch(`/api/student?icode=${icode.trim()}`);
-      const jsonRes = await res.json();
-      if (jsonRes.status !== 'success' || !jsonRes.data) throw new Error("Student data not found.");
+      let student: {
+        id_student: string | number
+        full_name: string
+        nis: string
+        class_name?: string
+        icode: string
+      } | null = null
+
+      try {
+        const res = await fetch(`/api/student?icode=${icode.trim()}`)
+        const jsonRes = await res.json()
+
+        if (res.ok && jsonRes.status === "success" && jsonRes.data) {
+          student = {
+            id_student: jsonRes.data.id_student,
+            full_name: jsonRes.data.full_name,
+            nis: jsonRes.data.nis,
+            class_name: jsonRes.data.tbl_classes?.class_name || "-",
+            icode: jsonRes.data.icode || icode.trim(),
+          }
+        } else {
+          const cachedStudents = searchStudentCache(icode.trim())
+          student = cachedStudents[0] || null
+        }
+      } catch {
+        const cachedStudents = searchStudentCache(icode.trim())
+        student = cachedStudents[0] || null
+      }
+
+      if (!student) {
+        throw new Error("Student data not found.")
+      }
 
       setScanResult({
-        id: jsonRes.data.id_student.toString(),
-        full_name: jsonRes.data.full_name,
-        nis: jsonRes.data.nis,
-        class_name: jsonRes.data.tbl_classes?.class_name || '-',
-        status: 'success',
-        message: 'Awaiting confirmation',
-        icode: jsonRes.data.icode,
-      });
+        id: student.id_student.toString(),
+        full_name: student.full_name,
+        nis: student.nis,
+        class_name: student.class_name || "-",
+        status: "success",
+        message: "Awaiting confirmation",
+        icode: student.icode,
+      })
+
       setValidating(false);
       setShowPopup(true);
       // Catatan: isProcessingRef tetap TRUE karena popup muncul, mencegah scan di background
     } catch (err: any) {
       toast.error("Scanning Failed", { description: err.message || "Invalid QR Code" });
       setValidating(false);
-      
+
       // COOLDOWN: Buka kunci setelah 2 detik agar tidak spamming
       setTimeout(() => {
         isProcessingRef.current = false;
@@ -240,7 +271,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
                 animation: symmetry-float 4s ease-in-out infinite;
             }
           `}</style>
-          <div className="flex flex-col items-center justify-center translate-y-9">
+          <div className="flex flex-col items-center justify-center">
             <div className="relative w-32 h-12 mb-8 flex items-center justify-center animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
               <div className="absolute inset-0 bg-zinc-500/10 rounded-full blur-3xl" />
               <div className="relative flex items-center justify-center -space-x-3">

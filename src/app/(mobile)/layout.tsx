@@ -16,7 +16,7 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-   const [isEditProfileOpen, setEditProfileOpen] = useState(false);
+  const [isEditProfileOpen, setEditProfileOpen] = useState(false);
   const [isHelpGuideOpen, setHelpGuideOpen] = useState(false);
 
   useEffect(() => {
@@ -36,8 +36,8 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
   const currentVariant = getDockVariant();
 
   return (
-    <div className="min-h-dvh w-full flex items-center justify-center bg-black/90 lg:bg-zinc-950 overflow-hidden font-sans">
-      <div className="w-full h-dvh lg:h-auto lg:min-h-175 lg:max-h-212.5 lg:aspect-9/19 max-w-95 bg-[#151419] text-white relative shadow-2xl lg:rounded-[2.5rem] lg:border-8 lg:border-zinc-900 overflow-hidden flex flex-col">
+    <div className="flex h-svh w-full items-center justify-center overflow-hidden bg-black/90 font-sans md:h-auto md:min-h-dvh md:overflow-auto md:bg-zinc-950 md:p-4">
+      <div className="relative flex h-svh w-full flex-none flex-col overflow-hidden bg-[#151419] text-white md:h-211 md:w-97.5 md:shrink-0 md:rounded-[2.5rem] md:border-8 md:border-zinc-900 md:shadow-2xl">
         <Toaster
           position="top-center"
           theme="dark"
@@ -72,14 +72,14 @@ function MobileLayoutContent({ children }: { children: React.ReactNode }) {
               </div>
             )}
             <GlobalMenu />
-          <EditProfile
-  isOpen={isEditProfileOpen}
-  setIsOpen={setEditProfileOpen}
-/>
+            <EditProfile
+              isOpen={isEditProfileOpen}
+              setIsOpen={setEditProfileOpen}
+            />
             <HelpGuide
-  isOpen={isHelpGuideOpen}
-  setIsOpen={setHelpGuideOpen}
-/>
+              isOpen={isHelpGuideOpen}
+              setIsOpen={setHelpGuideOpen}
+            />
           </>
         )}
       </div>

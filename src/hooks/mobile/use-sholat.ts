@@ -1,8 +1,5 @@
-import {DailyPrayer, PrayerTimes} from '@/types/api';
+import {DailyPrayer, PrayerCacheData} from '@/types/api';
 import {useEffect, useMemo, useState} from 'react';
-
-const API_URL =
-    process.env.NEXT_PUBLIC_API_TIME_SHOLAT || 'https://api.aladhan.com';
 
 // =============================================================================
 // DEBUG SECTION: Simulasikan waktu sholat (Contoh: '19:30' untuk Isya)
@@ -11,25 +8,89 @@ const API_URL =
 const DEBUG_TIME: string|null = null;
 // =============================================================================
 
-interface ExtendedPrayerTimes extends PrayerTimes {
+interface MobilePrayerSchedule extends PrayerCacheData {
   Sunrise: string;
 }
 
+const PRAYERS: DailyPrayer[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
+function getJakartaDateParts(date: Date) {
+  const parts = new Intl
+                    .DateTimeFormat('en-CA', {
+                      timeZone: 'Asia/Jakarta',
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                    })
+                    .formatToParts(date);
+
+  return {
+    date: `${parts.find((part) => part.type === 'year')?.value}-${
+        parts.find((part) => part.type === 'month')?.value}-${
+        parts.find((part) => part.type === 'day')?.value}`,
+    day: new Intl
+             .DateTimeFormat(
+                 'en-US', {timeZone: 'Asia/Jakarta', weekday: 'long'})
+             .format(date),
+  };
+}
+
 export function useSholat() {
-  const [schedule, setSchedule] = useState<ExtendedPrayerTimes|null>(null);
+  const [schedule, setSchedule] = useState<MobilePrayerSchedule|null>(null);
+  const [trackedPrayers, setTrackedPrayers] = useState<DailyPrayer[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchJadwal = async () => {
       try {
         const now = new Date();
-        const res = await fetch(`${API_URL}/v1/timings/${now.getDate()}-${
-            now.getMonth() + 1}-${
-            now.getFullYear()}?latitude=-8.0954&longitude=112.1609&method=20`);
-        const json = await res.json();
-        if (json.code === 200) setSchedule(json.data.timings);
+        const {date, day} = getJakartaDateParts(now);
+        const [cacheResponse, routineResponse] = await Promise.all([
+          fetch(`/api/prayers/sync?date=${date}`),
+          fetch('/api/prayers/routine'),
+        ]);
+        const cacheJson = await cacheResponse.json();
+        const routineJson = await routineResponse.json();
+        console.log('[useSholat] cacheJson:', cacheJson)
+        console.log('[useSholat] routineJson:', routineJson)
+        console.log('[useSholat] date/day:', date, day)
+
+
+        if (cacheJson.status !== 'success' || !cacheJson.data) {
+          throw new Error('Today prayer cache is unavailable');
+        }
+
+        const routine = routineJson.status === 'success' &&
+                Array.isArray(routineJson.data) ?
+            routineJson.data.find((item: any) => item.day_name === day) :
+            null;
+
+        const tracked = routine?.is_active ?
+            PRAYERS.filter(
+                (prayer) => routine[`track_${prayer.toLowerCase()}`]) :
+            [];
+
+        setTrackedPrayers(tracked);
+        setSchedule({...cacheJson.data, Sunrise: cacheJson.data.dhuhr});
+
+        console.log('[useSholat] writing prayer cache')
+
+        localStorage.setItem(
+            'arden-prayer-cache',
+            JSON.stringify({
+              date,
+              schedule: cacheJson.data,
+              trackedPrayers: tracked,
+              cachedAt: new Date().toISOString(),
+            }),
+        );
       } catch (err) {
         console.error(err);
+        setSchedule(null);
+        setTrackedPrayers([]);
+      } finally {
+        setIsLoading(false)
       }
     };
     fetchJadwal();
@@ -57,7 +118,8 @@ export function useSholat() {
       return {
         displayStatus: 'Dhuhr',
         timeRange: '00:00 - 00:00',
-        activeScanner: 'Dhuhr' as DailyPrayer
+        activeScanner: 'Dhuhr' as DailyPrayer,
+        availablePrayers: [] as DailyPrayer[],
       };
 
     const getMins = (t: string) => {
@@ -68,42 +130,46 @@ export function useSholat() {
 
     let stat = 'Dhuhr', range = '-', active: DailyPrayer = 'Dhuhr';
 
-    if (nowMins >= getMins(schedule.Fajr) &&
-        nowMins < getMins(schedule.Sunrise)) {
+    if (nowMins >= getMins(schedule.fajr) &&
+        nowMins < getMins(schedule.dhuhr)) {
       stat = 'Fajr';
       active = 'Fajr';
-      range = `${schedule.Fajr} - ${schedule.Sunrise}`;
+      range = `${schedule.fajr} - ${schedule.dhuhr}`;
     } else if (
-        nowMins >= getMins(schedule.Sunrise) &&
-        nowMins < getMins(schedule.Dhuhr)) {
-      stat = 'Sunrise';
-      active = 'Dhuhr';
-      range = `${schedule.Sunrise} - ${schedule.Dhuhr}`;
-    } else if (
-        nowMins >= getMins(schedule.Dhuhr) && nowMins < getMins(schedule.Asr)) {
+        nowMins >= getMins(schedule.dhuhr) && nowMins < getMins(schedule.asr)) {
       stat = 'Dhuhr';
       active = 'Dhuhr';
-      range = `${schedule.Dhuhr} - ${schedule.Asr}`;
+      range = `${schedule.dhuhr} - ${schedule.asr}`;
     } else if (
-        nowMins >= getMins(schedule.Asr) &&
-        nowMins < getMins(schedule.Maghrib)) {
+        nowMins >= getMins(schedule.asr) &&
+        nowMins < getMins(schedule.maghrib)) {
       stat = 'Asr';
       active = 'Asr';
-      range = `${schedule.Asr} - ${schedule.Maghrib}`;
+      range = `${schedule.asr} - ${schedule.maghrib}`;
     } else if (
-        nowMins >= getMins(schedule.Maghrib) &&
-        nowMins < getMins(schedule.Isha)) {
+        nowMins >= getMins(schedule.maghrib) &&
+        nowMins < getMins(schedule.isha)) {
       stat = 'Maghrib';
       active = 'Maghrib';
-      range = `${schedule.Maghrib} - ${schedule.Isha}`;
+      range = `${schedule.maghrib} - ${schedule.isha}`;
     } else {
       stat = 'Isha';
       active = 'Isha';
-      range = `${schedule.Isha} - ${schedule.Fajr}`;
+      range = `${schedule.isha} - ${schedule.fajr}`;
     }
 
-    return {displayStatus: stat, timeRange: range, activeScanner: active};
-  }, [currentTime, schedule]);
+    const availablePrayers = trackedPrayers;
+    const fallbackActive = availablePrayers[0] || active;
+    const activeScanner =
+        availablePrayers.includes(active) ? active : fallbackActive;
 
-  return {schedule, currentTime, ...timeData};
+    return {
+      displayStatus: stat,
+      timeRange: range,
+      activeScanner,
+      availablePrayers
+    };
+  }, [currentTime, schedule, trackedPrayers]);
+
+  return {schedule, currentTime, trackedPrayers, isLoading, ...timeData};
 }

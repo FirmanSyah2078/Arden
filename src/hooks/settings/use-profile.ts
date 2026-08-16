@@ -3,6 +3,12 @@ import imageCompression from 'browser-image-compression';
 import {useRouter} from 'next/navigation';
 import {useEffect, useRef, useState} from 'react'
 import {toast} from 'sonner';
+import {
+  getProfileCache,
+  queueProfileUpdate,
+  saveProfileCache,
+  syncQueuedProfileUpdate,
+} from '@/lib/offline/profile-queue';
 
 export interface UserProfileData {
   avatarUrl: string|null;
@@ -150,9 +156,14 @@ export function useProfile() {
 
           setOriginalData(initialData);
           setFormData(initialData);
+          saveProfileCache(initialData);
         }
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        const cachedProfile = getProfileCache();
+        if (cachedProfile) {
+          setOriginalData(cachedProfile);
+          setFormData(cachedProfile);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -218,6 +229,7 @@ export function useProfile() {
 
         setOriginalData(updatedData);
         setFormData(updatedData);
+        saveProfileCache(updatedData);
         setSelectedFile(null);
 
         router.refresh();
@@ -233,10 +245,31 @@ export function useProfile() {
             {description: json.message, position: 'top-center'});
       }
     } catch (error: any) {
+      if (!selectedFile) {
+        const queuedProfile = {
+          ...formData,
+          photo_url: formData.avatarUrl,
+          queuedAt: new Date().toISOString(),
+        };
+
+        queueProfileUpdate(queuedProfile);
+        const pendingData = {
+          ...formData,
+          lastUpdated: 'Pending sync',
+        };
+        setOriginalData(pendingData);
+        setFormData(pendingData);
+        saveProfileCache(pendingData);
+        toast.info('Profil disimpan offline', {
+          description: 'Perubahan akan dikirim saat koneksi kembali.',
+          position: 'top-center',
+        });
+      } else {
       toast.error('Gagal memperbarui profil', {
         description: error.message || 'Terjadi kesalahan jaringan.',
         position: 'top-center'
       });
+      }
     } finally {
       setIsSubmitting(false)
     }
