@@ -126,7 +126,7 @@ export default function MePage() {
                 <Input
                   value={formData?.name || ''}
                   onChange={(e) => handleChange('name', e.target.value)}
-                  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 !ring-0 !ring-offset-0"
+                  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 ring-0! ring-offset-0!"
                   disabled={isLoading || isSubmitting}
                 />
               </div>
@@ -138,7 +138,7 @@ export default function MePage() {
                 <Input
                   value={formData?.username || ''}
                   onChange={(e) => handleChange('username', e.target.value)}
-                  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 !ring-0 !ring-offset-0"
+                  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 ring-0! ring-offset-0!"
                   disabled={isLoading || isSubmitting}
                 />
               </div>

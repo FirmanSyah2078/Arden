@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Search, User, Loader2, ChevronRight, AlertCircle, Info, X } from 'lucide-react';
 import { AttendanceStatusResponse, StudentMobile } from '@/types/api';
 
@@ -92,8 +92,26 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                     <p className="text-white/40 text-xs max-w-55 leading-relaxed">Enter name or NIS to search for student data manually.</p>
                 </div>
             )}
-
-            {search && data.length > 0 && (
+            {search && isLoading && (
+                <div className="h-full w-full overflow-hidden">
+                    <div className="flex items-center justify-between px-1 py-2">
+                        <div className="h-2.5 w-24 animate-pulse rounded-full bg-zinc-800" />
+                        <div className="h-2.5 w-16 animate-pulse rounded-full bg-zinc-800" />
+                    </div>
+                    <ul className="flex flex-col gap-3 pb-8 pt-1">
+                        {[...Array(4)].map((_, i) => (
+                            <li key={i} className="flex w-full items-center gap-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-4">
+                                <div className="h-11 w-11 shrink-0 animate-pulse rounded-xl bg-zinc-800" />
+                                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                                    <div className="h-3.5 w-32 animate-pulse rounded-full bg-zinc-800" />
+                                    <div className="h-2.5 w-24 animate-pulse rounded-full bg-zinc-800" />
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+            {search && data.length > 0 && data.length > 0 && (
                 <div
                     onScroll={handleScroll}
                     onTouchStart={() => (document.activeElement as HTMLElement)?.blur()}
@@ -106,11 +124,7 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
 
                     <ul className="flex flex-col gap-3 pb-8 pt-1">
                         {data.map((item, index) => (
-                            <li
-                                key={item.id_student}
-                                className="animate-in slide-in-from-bottom-2 duration-300"
-                                style={{ animationDelay: `${index * 60}ms` }}
-                            >
+                            <li key={item.id_student}>
                                 <button
                                     onClick={() => handleSelect(item)}
                                     className="w-full text-left bg-[#1F1E23] hover:bg-[#2A292F] border border-white/5 rounded-2xl p-4 flex items-center gap-4 transition-all active:scale-[0.98] group shadow-sm"
@@ -157,6 +171,40 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
 
 export const Manual = ({ setPick, setOpenForm, search, setSearch, data, isLoading, onFocus, onBlur, handleSelect, onScrollDirectionChange }: ManualProps) => {
     const [isFocused, setIsFocused] = useState(false);
+    const [isEntering, setIsEntering] = useState(true);
+
+    useEffect(() => {
+        const t = setTimeout(() => setIsEntering(false), 450);
+        return () => clearTimeout(t);
+    }, []);
+
+    if (isEntering) {
+        return (
+            <div className="flex h-full w-full flex-col">
+                {/* Skeleton search bar */}
+                <div className="relative z-20 mb-6 flex-none px-1">
+                    <div className="flex h-12 w-full items-center rounded-2xl border border-white/5 bg-[#1F1E23] p-1 pl-3 shadow-lg">
+                        <div className="mr-2 h-4 w-4 animate-pulse rounded bg-zinc-800" />
+                        <div className="h-3 w-40 animate-pulse rounded-full bg-zinc-800" />
+                    </div>
+                </div>
+                {/* Skeleton list */}
+                <div className="relative min-h-0 w-full flex-1 overflow-hidden">
+                    <div className="flex flex-col gap-3 px-1 pt-1">
+                        {[...Array(4)].map((_, i) => (
+                            <div key={i} className="flex w-full items-center gap-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-4">
+                                <div className="h-11 w-11 shrink-0 animate-pulse rounded-xl bg-zinc-800" />
+                                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                                    <div className="h-3.5 w-32 animate-pulse rounded-full bg-zinc-800" />
+                                    <div className="h-2.5 w-24 animate-pulse rounded-full bg-zinc-800" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full h-full flex flex-col">

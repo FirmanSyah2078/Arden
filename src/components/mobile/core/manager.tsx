@@ -1,11 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { UserSearch, ScanLine, Menu, X, History as HistoryIcon, Settings, LogOut, RotateCcw, Camera, User } from 'lucide-react';
-import { toast } from 'sonner';
-import Image from 'next/image';
-
 import { useDock } from '@/context/dock-context';
 import Qr, { QrHandle } from '@/app/(mobile)/type/qr';
 import { Manual } from '../type/manual';
@@ -157,7 +152,7 @@ export const Manager = ({
             <Qr ref={qrRef} sholat={activeScanner} onCamActive={setIsCamActive} />
           </div>
         ) : (
-          <div key="manual-view" className="w-full h-full animate-in fade-in zoom-in-95 duration-500 ease-out flex flex-col">
+          <div key="manual-view" className="w-full h-full flex flex-col">
             <Manual
               search={search}
               setSearch={setSearch}

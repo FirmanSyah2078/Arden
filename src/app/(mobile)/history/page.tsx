@@ -14,9 +14,11 @@ import { Button } from "@/components/ui/button";
 const ListContent = ({
   isLoadingHistory,
   historyData,
+  hasPrayers,
 }: {
   isLoadingHistory: boolean
   historyData: any[]
+  hasPrayers: boolean
 }) => {
   if (isLoadingHistory) {
     return (
@@ -37,6 +39,17 @@ const ListContent = ({
             </div>
           </div>
         ))}
+      </div>
+    )
+  }
+
+  if (!hasPrayers) {
+    return (
+      <div className="flex h-full py-50 flex-col items-center justify-center rounded-3xl px-6 text-center shadow-inner">
+        <ClipboardClock className="mb-3 h-12 w-12 text-zinc-500" />
+        <p className="text-xs font-medium tracking-wide text-zinc-500">
+          No prayer schedule for today
+        </p>
       </div>
     )
   }
@@ -94,7 +107,7 @@ const ListContent = ({
 
 export default function HistoryPage() {
   const router = useRouter()
-  const { displayStatus, availablePrayers } = useSholat()
+  const { displayStatus, availablePrayers, isLoading: isPrayerLoading } = useSholat()
   const [activeTab, setActiveTab] = useState<string>("")
   const { historyData, isLoadingHistory, fetchHistory } = useAttendance()
 
@@ -129,21 +142,24 @@ export default function HistoryPage() {
           <span>Offline view — showing the last cached server history</span>
         </div>
       )}
+
       {/* TAB NAVIGATION - Persistent/Fixed at the top */}
-      <div className="mt-4 mb-4 flex h-12 w-full items-center justify-between gap-1 rounded-2xl border border-white/5 bg-[#1F1E23] p-1 shadow-inner">
-        {prayerTimes.map((time) => (
-          <button
-            key={time.id}
-            onClick={() => setActiveTab(time.id)}
-            className={`h-full flex-1 rounded-xl text-[10px] font-bold transition-all duration-300 ${activeTab === time.id
-              ? "bg-indigo-600 text-white shadow-sm"
-              : "text-white/40 hover:text-white/60"
-              }`}
-          >
-            {time.label}
-          </button>
-        ))}
-      </div>
+      {prayerTimes.length > 0 && (
+        <div className="mt-4 mb-4 flex h-12 w-full items-center justify-between gap-1 rounded-2xl border border-white/5 bg-[#1F1E23] p-1 shadow-inner">
+          {prayerTimes.map((time) => (
+            <button
+              key={time.id}
+              onClick={() => setActiveTab(time.id)}
+              className={`h-full flex-1 rounded-xl text-[10px] font-bold transition-all duration-300 ${activeTab === time.id
+                ? "bg-indigo-600 text-white shadow-sm"
+                : "text-white/40 hover:text-white/60"
+                }`}
+            >
+              {time.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* BODY - The Invisible Boundary Zone (Zero-Offside) */}
       <div
@@ -165,8 +181,9 @@ export default function HistoryPage() {
         `}</style>
         <div className="flex flex-col gap-6 pb-6">
           <ListContent
-            isLoadingHistory={isLoadingHistory || !activeTab || availablePrayers.length === 0}
+            isLoadingHistory={isPrayerLoading || (availablePrayers.length > 0 && (isLoadingHistory || !activeTab))}
             historyData={historyData}
+            hasPrayers={availablePrayers.length > 0}
           />
         </div>
       </div>
@@ -181,6 +198,6 @@ export default function HistoryPage() {
           Back
         </Button>
       </div>
-    </div>
+    </div >
   )
 }
