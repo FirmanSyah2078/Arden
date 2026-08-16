@@ -228,6 +228,7 @@ export interface GeneratorSettingsData {
   cornerSquareColor: string;
   cornerDot: QRCornerDotType;
   cornerDotColor: string;
+  mainDotColor: string;
   isCustomColor: boolean;
   qrIcon: string;
   imageSize: number;

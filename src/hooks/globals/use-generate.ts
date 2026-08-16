@@ -1,255 +1,484 @@
 // src/hooks/globals/use-generate.ts
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { toast } from "sonner";
-import imageCompression from 'browser-image-compression';
-import { 
-  GeneratorSettingsData, 
-  QRErrorCorrectionLevel, 
-  QRDotType, 
-  QRCornerSquareType, 
-  QRCornerDotType,
-  QRShape
-} from "@/types/api";
 
-const defaultSettings: GeneratorSettingsData = { 
-  qrShape: "square", qrColor: "#000000", bgColor: "#ffffff",
-  isBgTransparent: true, qrPattern: "square", errorLevel: "Q",
-  cornerSquare: "square", cornerSquareColor: "#000000",
-  cornerDot: "square", cornerDotColor: "#000000",
-  isCustomColor: false, 
-  qrIcon: "", imageSize: 0.4, iconMargin: 5, hideDotsBg: true 
-};
+import { useState, useEffect, useCallback, useMemo } from "react"
+
+import { toast } from "sonner"
+
+import imageCompression from "browser-image-compression"
+
+import type { GeneratorSettingsData } from "@/types/api"
+
+import { ArdenQREngine } from "@/lib/qr/arden-qr-engine"
+
+// ============================================================
+// DEFAULT GENERATOR CONFIGURATION
+// ============================================================
+
+const defaultSettings: GeneratorSettingsData = {
+  qrShape: "square",
+
+  // Global / fallback color
+  qrColor: "#000000",
+
+  bgColor: "#ffffff",
+  isBgTransparent: true,
+
+  qrPattern: "square",
+  errorLevel: "Q",
+
+  cornerSquare: "square",
+  cornerSquareColor: "#000000",
+
+  cornerDot: "square",
+  cornerDotColor: "#000000",
+
+  // Advanced Colors
+  mainDotColor: "#000000",
+
+  isCustomColor: false,
+
+  qrIcon: "",
+  imageSize: 0.4,
+  iconMargin: 5,
+  hideDotsBg: true,
+}
+
+// ============================================================
+// HOOK
+// ============================================================
 
 export function useGenerate() {
-  const [settings, setSettings] = useState<GeneratorSettingsData>(defaultSettings);
-  const [savedSettings, setSavedSettings] = useState<GeneratorSettingsData>(defaultSettings);
-  
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // ----------------------------------------------------------
+  // CURRENT DRAFT CONFIGURATION
+  // ----------------------------------------------------------
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [settings, setSettings] =
+    useState<GeneratorSettingsData>(defaultSettings)
 
-  const [previewPayload, setPreviewPayload] = useState("ARD-48CCDA39");
+  // ----------------------------------------------------------
+  // LAST SAVED MASTER CONFIGURATION
+  // ----------------------------------------------------------
 
-  const qrRef = useRef<HTMLDivElement>(null);
-  const qrCode = useRef<any>(null);
+  const [savedSettings, setSavedSettings] =
+    useState<GeneratorSettingsData>(defaultSettings)
 
-  // finalBgColor ini HANYA untuk dilempar ke SVG generator, bukan untuk UI input
-  const finalBgColor = settings.isBgTransparent ? "transparent" : (settings.bgColor || "#ffffff");
+  // ----------------------------------------------------------
+  // PENDING IMAGE UPLOAD
+  // ----------------------------------------------------------
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
+  // ----------------------------------------------------------
+  // UI STATE
+  // ----------------------------------------------------------
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  const [isSaving, setIsSaving] = useState(false)
+
+  // ==========================================================
+  // LOAD MASTER CONFIGURATION
+  // ==========================================================
 
   const loadSettings = useCallback(async () => {
     try {
-      const res = await fetch("/api/generate");
-      const json = await res.json();
-      if (json.status === "success" && json.data) {
-        
-        // 🔥 SELF-HEALING LOGIC (MENCEGAH HYDRATION ERROR)
-        // Jika di database terlanjur tersimpan kata "transparent" dari error lama,
-        // kita paksa ubah jadi Hex agar <input type="color"> tidak ngambek.
-        const dbBgColor = json.data.bgColor;
-        const isTransparent = dbBgColor === "transparent" || json.data.isBgTransparent;
-        const safeBgColor = (dbBgColor === "transparent" || !dbBgColor) ? "#ffffff" : dbBgColor;
+      const response = await fetch("/api/generate", {
+        method: "GET",
+        cache: "no-store",
+      })
 
-        const serverData = { 
-          ...settings, 
-          ...json.data, 
-          isBgTransparent: isTransparent,
-          bgColor: safeBgColor // UI akan selalu menerima HEX yang valid
-        };
-        
-        setSettings(serverData);
-        setSavedSettings(serverData);
+      if (!response.ok) {
+        throw new Error("Failed to load generator settings.")
       }
-    } catch (error) { 
-      // Silently fail
-    } finally { 
-      setIsLoading(false); 
+
+      const json = await response.json()
+
+      if (json.status !== "success" || !json.data) {
+        throw new Error(json.message || "Invalid generator settings response.")
+      }
+
+      // ----------------------------------------------------
+      // BACKGROUND NORMALIZATION
+      // ----------------------------------------------------
+      //
+      // Database tetap menyimpan HEX.
+      //
+      // isBgTransparent menentukan apakah QR benar-benar
+      // transparent.
+      //
+      // Jadi input color selalu mendapatkan HEX valid.
+      // ----------------------------------------------------
+
+      const dbBgColor = json.data.bgColor
+
+      const isTransparent =
+        dbBgColor === "transparent" || Boolean(json.data.isBgTransparent)
+
+      const safeBgColor =
+        dbBgColor === "transparent" || !dbBgColor ? "#ffffff" : dbBgColor
+
+      const serverData: GeneratorSettingsData = {
+        ...defaultSettings,
+
+        ...json.data,
+
+        isBgTransparent: isTransparent,
+
+        bgColor: safeBgColor,
+      }
+
+      setSettings(serverData)
+
+      setSavedSettings(serverData)
+
+      // ----------------------------------------------------
+      // SYNCHRONIZE ENGINE CACHE
+      // ----------------------------------------------------
+
+      ArdenQREngine.invalidateMasterSettings()
+
+      await ArdenQREngine.getMasterSettings()
+    } catch (error) {
+      console.error("Generator settings load failed:", error)
+
+      toast.error("Failed to load Generator Engine configuration.")
+    } finally {
+      setIsLoading(false)
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ==========================================================
+  // INITIAL LOAD
+  // ==========================================================
 
   useEffect(() => {
-    setIsMounted(true);
-    loadSettings(); 
-  }, [loadSettings]);
+    loadSettings()
+  }, [loadSettings])
 
-  // =====================================================================
-  // 🔥 ENGINE: RENDER QR CODE
-  // =====================================================================
-  const renderQRCode = async (forceNew = false) => {
-    if (!isMounted || typeof window === "undefined" || !qrRef.current) return;
-    const QRCodeStyling = (await import("qr-code-styling")).default;
+  // ==========================================================
+  // CHANGE MASTER SETTINGS
+  // ==========================================================
 
-    const options = {
-      width: 180, height: 180, type: "svg" as const,
-      shape: settings.qrShape as QRShape,
-      data: previewPayload,
-      ...(settings.qrIcon ? { image: settings.qrIcon } : { image: "" }), 
-      
-      qrOptions: { errorCorrectionLevel: settings.errorLevel as QRErrorCorrectionLevel },
-      dotsOptions: { color: settings.qrColor || "#000000", type: settings.qrPattern as QRDotType },
-      backgroundOptions: { color: finalBgColor }, // Di sini baru dia pakai transparent
-      cornersSquareOptions: { type: settings.cornerSquare as QRCornerSquareType, color: settings.cornerSquareColor || settings.qrColor },
-      cornersDotOptions: { type: settings.cornerDot as QRCornerDotType, color: settings.cornerDotColor || settings.qrColor },
-      imageOptions: {
-        crossOrigin: "anonymous", 
-        imageSize: settings.imageSize,
-        margin: settings.iconMargin, hideBackgroundDots: settings.hideDotsBg ?? true
+  const handleChange = (
+    field: keyof GeneratorSettingsData,
+    value: string | boolean | number
+  ) => {
+    setSettings((previous) => {
+      const next = {
+        ...previous,
+        [field]: value,
       }
-    };
 
-    if (!qrCode.current || forceNew) {
-      qrRef.current.innerHTML = ""; 
-      qrCode.current = new QRCodeStyling(options); 
-      qrCode.current.append(qrRef.current);
-    } else {
-      qrCode.current.update(options);
-    }
-  };
+      // ------------------------------------------------------
+      // TRANSPARENT BACKGROUND
+      // ------------------------------------------------------
 
-  useEffect(() => {
-    renderQRCode();
-  }, [settings, finalBgColor, previewPayload, isMounted]);
+      if (field === "isBgTransparent" && value === true) {
+        next.bgColor = savedSettings.bgColor
+      }
 
-  const forceRefresh = async () => {
-    await renderQRCode(true);
-    toast.success("Engine Cache Cleared!", { duration: 1500 });
-  };
+      // ------------------------------------------------------
+      // Logo requires stronger error correction.
+      // ------------------------------------------------------
 
-  const resetToDefault = () => {
-    setSettings(defaultSettings);
-    setSelectedFile(null);
-    setPreviewPayload("ARD-48CCDA39");
-    toast.info("Engine reset to default state.", { duration: 2000 });
-  };
-
-  const handleChange = (field: keyof GeneratorSettingsData, value: string | boolean | number) => {
-    setSettings(prev => {
-      let next = { ...prev, [field]: value };
-      
       if (field === "qrIcon" && value !== "") {
         if (next.errorLevel === "L" || next.errorLevel === "M") {
-          next.errorLevel = "Q";
-          toast.info("Error Correction locked to 'Q' to support image.", { duration: 2000 });
+          next.errorLevel = "Q"
+
+          toast.info("Error Correction locked to 'Q' to support image.", {
+            duration: 2000,
+          })
         }
       }
 
+      // ------------------------------------------------------
+      // ADVANCED COLORS OFF
+      //
+      // Global QR Color kembali menjadi satu-satunya
+      // sumber warna untuk seluruh komponen QR.
+      // ------------------------------------------------------
+
       if (field === "isCustomColor" && value === false) {
-        next.cornerSquareColor = next.qrColor;
-        next.cornerDotColor = next.qrColor;
+        next.mainDotColor = next.qrColor
+
+        next.cornerSquareColor = next.qrColor
+
+        next.cornerDotColor = next.qrColor
       }
+
+      // ------------------------------------------------------
+      // GLOBAL QR COLOR
+      //
+      // Saat Advanced Colors OFF:
+      // Global menjadi master color.
+      //
+      // Saat Advanced Colors ON:
+      // Global berdiri sendiri dan TIDAK menyentuh
+      // Advanced Colors.
+      // ------------------------------------------------------
 
       if (field === "qrColor" && !next.isCustomColor) {
-        next.cornerSquareColor = value as string;
-        next.cornerDotColor = value as string;
+        next.mainDotColor = value as string
+
+        next.cornerSquareColor = value as string
+
+        next.cornerDotColor = value as string
       }
+
+      // ------------------------------------------------------
+      // Remove selected file when logo is removed.
+      // ------------------------------------------------------
 
       if (field === "qrIcon" && value === "") {
-         setSelectedFile(null);
+        setSelectedFile(null)
       }
 
-      return next;
-    });
-  };
+      return next
+    })
+  }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // ==========================================================
+  // IMAGE UPLOAD
+  // ==========================================================
 
-    if (file.size > 2 * 1024 * 1024) { 
-      toast.error("Image is too large. Max 2MB allowed.");
-      return;
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
     }
 
-    const toastId = toast.loading("Compressing and analyzing image...");
+    // ------------------------------------------------------
+    // MAX INPUT SIZE
+    // ------------------------------------------------------
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image is too large. Max 2MB allowed.")
+
+      event.target.value = ""
+
+      return
+    }
+
+    const toastId = toast.loading("Compressing and analyzing image...")
 
     try {
       const options = {
-        maxSizeMB: 0.2, 
-        maxWidthOrHeight: 512, 
-        useWebWorker: true, 
-      };
+        maxSizeMB: 0.2,
 
-      const compressedFile = await imageCompression(file, options);
-      const previewUrl = URL.createObjectURL(compressedFile);
-      
-      handleChange("qrIcon", previewUrl);
-      setSelectedFile(compressedFile);
-      
-      toast.success("Image preview ready!", { id: toastId, duration: 1500 });
-    } catch (error) {
-      toast.error("Image compression failed.", { id: toastId });
-    }
-  };
+        maxWidthOrHeight: 512,
 
-  const handleDownload = async (extension: "png" | "svg") => {
-    if (!qrCode.current) return;
-    try {
-      await qrCode.current.download({ name: "ARDEN-QRCode", extension });
-      toast.success(`QR Code downloaded as ${extension.toUpperCase()}`);
-    } catch (err) { toast.error("Failed to download QR Code"); }
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault(); 
-    setIsSaving(true);
-    
-    let finalIconUrl = settings.qrIcon;
-
-    try {
-      if (selectedFile) {
-        const fileFormData = new FormData();
-        fileFormData.append("file", selectedFile);
-
-        toast.loading("Uploading logo to Storage...");
-        const uploadRes = await fetch('/api/upload', { method: 'POST', body: fileFormData });
-        const uploadJson = await uploadRes.json();
-        
-        if (!uploadRes.ok) throw new Error(uploadJson.message);
-        finalIconUrl = uploadJson.data.url; 
-
-        if (savedSettings.qrIcon && savedSettings.qrIcon.startsWith("http")) {
-          await fetch(`/api/upload?url=${encodeURIComponent(savedSettings.qrIcon)}`, { method: 'DELETE' });
-        }
-      } 
-      else if (settings.qrIcon === "" && savedSettings.qrIcon && savedSettings.qrIcon.startsWith("http")) {
-         await fetch(`/api/upload?url=${encodeURIComponent(savedSettings.qrIcon)}`, { method: 'DELETE' });
-         finalIconUrl = "";
+        useWebWorker: true,
       }
 
-      toast.loading("Saving configuration...");
-      
-      // 🔥 PENTING: Kita tidak lagi menimpa bgColor menjadi "transparent" di database.
-      // Database murni akan menyimpan Hex Code terakhir yang dipilih (history warnanya aman).
-      const dataToSave = { ...settings, qrIcon: finalIconUrl };
+      const compressedFile = await imageCompression(file, options)
 
-      const res = await fetch("/api/generate", { 
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dataToSave) 
-      });
-      const json = await res.json();
-      
-      if (json.status === "success") {
-        setSettings(dataToSave);
-        setSavedSettings(dataToSave);
-        setSelectedFile(null); 
-        toast.dismiss();
-        toast.success("Generator settings updated!");
-      } else throw new Error(json.message);
-    } catch (err: any) { 
-      toast.dismiss();
-      toast.error(`Failed to save: ${err.message}`); 
-    } finally { 
-      setIsSaving(false); 
+      const previewUrl = URL.createObjectURL(compressedFile)
+
+      // ----------------------------------------------------
+      // PREVIEW URL
+      // ----------------------------------------------------
+
+      handleChange("qrIcon", previewUrl)
+
+      // ----------------------------------------------------
+      // STORE FILE FOR SAVE
+      // ----------------------------------------------------
+
+      setSelectedFile(compressedFile)
+
+      toast.success("Image preview ready!", {
+        id: toastId,
+        duration: 1500,
+      })
+    } catch (error) {
+      console.error("Image compression failed:", error)
+
+      toast.error("Image compression failed.", {
+        id: toastId,
+      })
     }
-  };
+  }
+
+  // ==========================================================
+  // SAVE MASTER ENGINE
+  // ==========================================================
+
+  const handleSave = async (event: React.FormEvent) => {
+    event.preventDefault()
+
+    setIsSaving(true)
+
+    let finalIconUrl = settings.qrIcon
+
+    try {
+      // ----------------------------------------------------
+      // UPLOAD NEW LOGO
+      // ----------------------------------------------------
+
+      if (selectedFile) {
+        const formData = new FormData()
+
+        formData.append("file", selectedFile)
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        })
+
+        const uploadJson = await uploadResponse.json()
+
+        if (!uploadResponse.ok || uploadJson.status !== "success") {
+          throw new Error(uploadJson.message || "Logo upload failed.")
+        }
+
+        finalIconUrl = uploadJson.data.url
+
+        // --------------------------------------------------
+        // DELETE OLD LOGO
+        // --------------------------------------------------
+
+        if (savedSettings.qrIcon && savedSettings.qrIcon.startsWith("http")) {
+          await fetch(
+            `/api/upload?url=${encodeURIComponent(savedSettings.qrIcon)}`,
+            {
+              method: "DELETE",
+            }
+          )
+        }
+      }
+
+      // ----------------------------------------------------
+      // DELETE EXISTING LOGO
+      // ----------------------------------------------------
+      else if (
+        settings.qrIcon === "" &&
+        savedSettings.qrIcon &&
+        savedSettings.qrIcon.startsWith("http")
+      ) {
+        await fetch(
+          `/api/upload?url=${encodeURIComponent(savedSettings.qrIcon)}`,
+          {
+            method: "DELETE",
+          }
+        )
+
+        finalIconUrl = ""
+      }
+
+      // ----------------------------------------------------
+      // PREPARE MASTER CONFIGURATION
+      // ----------------------------------------------------
+
+      const dataToSave: GeneratorSettingsData = {
+        ...settings,
+
+        qrIcon: finalIconUrl,
+      }
+
+      // ----------------------------------------------------
+      // PERSIST TO DATABASE
+      // ----------------------------------------------------
+
+      const response = await fetch("/api/generate", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(dataToSave),
+      })
+
+      const json = await response.json()
+
+      if (!response.ok || json.status !== "success") {
+        throw new Error(json.message || "Failed to save Generator Engine.")
+      }
+
+      // ----------------------------------------------------
+      // UPDATE LOCAL MASTER STATE
+      // ----------------------------------------------------
+
+      setSettings(dataToSave)
+
+      setSavedSettings(dataToSave)
+
+      setSelectedFile(null)
+
+      // ----------------------------------------------------
+      // IMPORTANT
+      // ----------------------------------------------------
+      //
+      // Saved Studio configuration menjadi Master QR
+      // configuration untuk consumer Arden berikutnya.
+      // ----------------------------------------------------
+
+      ArdenQREngine.invalidateMasterSettings()
+
+      await ArdenQREngine.getMasterSettings()
+
+      toast.success("Generator Engine saved successfully.", {
+        duration: 2000,
+      })
+    } catch (error) {
+      console.error("Generator save failed:", error)
+
+      toast.error(
+        `Failed to save: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // ==========================================================
+  // DRAFT DETECTION
+  // ==========================================================
 
   const isDraftModified = useMemo(() => {
-    return JSON.stringify(settings) !== JSON.stringify(savedSettings) || selectedFile !== null;
-  }, [settings, savedSettings, selectedFile]);
+    return (
+      JSON.stringify(settings) !== JSON.stringify(savedSettings) ||
+      selectedFile !== null
+    )
+  }, [settings, savedSettings, selectedFile])
 
-  return { 
-    settings, isLoading, isSaving, isDraftModified, finalBgColor, qrRef,
-    previewPayload, setPreviewPayload, forceRefresh, resetToDefault,
-    handleChange, handleImageUpload, handleDownload, handleSave, 
-  };
+  // ==========================================================
+  // PUBLIC HOOK API
+  // ==========================================================
+  //
+  // PERHATIKAN:
+  //
+  // Tidak ada lagi:
+  //
+  // - previewPayload
+  // - setPreviewPayload
+  // - qrRef
+  // - qrCode
+  // - forceRefresh
+  // - resetToDefault
+  // - handleDownload
+  //
+  // Semua itu sekarang milik Preview Workspace.
+  // ==========================================================
+
+  return {
+    settings,
+
+    isLoading,
+
+    isSaving,
+
+    isDraftModified,
+
+    handleChange,
+
+    handleImageUpload,
+
+    handleSave,
+  }
 }

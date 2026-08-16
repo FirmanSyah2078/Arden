@@ -1,6 +1,7 @@
 "use client"
 
-import React from "react"
+import React, { useSyncExternalStore } from "react"
+import { createPortal } from "react-dom"
 
 import { User } from "lucide-react"
 
@@ -43,6 +44,36 @@ export type CardSizeKey =
 interface IdentityCardPrintProps {
   data: IdentityCardData
   printSize: CardSizeKey
+}
+
+/**
+ * ============================================================
+ * useMounted
+ * ============================================================
+ *
+ * Dipakai buat nunda portal (butuh `document`) sampai kode
+ * benar-benar jalan di client.
+ *
+ * Sebelumnya ini pakai useState + useEffect(() => setMounted(true)),
+ * tapi itu kena ESLint react-hooks/set-state-in-effect: memanggil
+ * setState langsung di body efek memicu render tambahan yang
+ * sebenarnya bisa dihindari.
+ *
+ * useSyncExternalStore adalah API yang memang didesain React untuk
+ * sinkronisasi ke sumber eksternal (di sini: ketersediaan
+ * `document`) tanpa lewat efek sama sekali — getSnapshot beda
+ * dengan getServerSnapshot, jadi React otomatis re-render sekali
+ * begitu hydration kelar, tanpa perlu setState manual.
+ */
+
+const noopSubscribe = () => () => {}
+
+function useMounted() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false
+  )
 }
 
 /**
@@ -459,125 +490,8 @@ function PrintCardBack({
 
 /**
  * ============================================================
- * CUT MARKS
- * ============================================================
- */
-
-function CutMarks({
-  width,
-  height,
-}: {
-  width: number
-  height: number
-}) {
-  const mark = 3
-
-  return (
-    <div
-      className="identity-card-cut-mark pointer-events-none absolute"
-      style={{
-        width: `${width}mm`,
-        height: `${height}mm`,
-      }}
-      aria-hidden="true"
-    >
-      <span
-        className="absolute"
-        style={{
-          left: `-${mark}mm`,
-          top: 0,
-          width: `${mark}mm`,
-          borderTop:
-            "0.2mm solid #777",
-        }}
-      />
-
-      <span
-        className="absolute"
-        style={{
-          left: 0,
-          top: `-${mark}mm`,
-          height: `${mark}mm`,
-          borderLeft:
-            "0.2mm solid #777",
-        }}
-      />
-
-      <span
-        className="absolute"
-        style={{
-          right: `-${mark}mm`,
-          top: 0,
-          width: `${mark}mm`,
-          borderTop:
-            "0.2mm solid #777",
-        }}
-      />
-
-      <span
-        className="absolute"
-        style={{
-          right: 0,
-          top: `-${mark}mm`,
-          height: `${mark}mm`,
-          borderRight:
-            "0.2mm solid #777",
-        }}
-      />
-
-      <span
-        className="absolute"
-        style={{
-          left: `-${mark}mm`,
-          bottom: 0,
-          width: `${mark}mm`,
-          borderBottom:
-            "0.2mm solid #777",
-        }}
-      />
-
-      <span
-        className="absolute"
-        style={{
-          left: 0,
-          bottom: `-${mark}mm`,
-          height: `${mark}mm`,
-          borderLeft:
-            "0.2mm solid #777",
-        }}
-      />
-
-      <span
-        className="absolute"
-        style={{
-          right: `-${mark}mm`,
-          bottom: 0,
-          width: `${mark}mm`,
-          borderBottom:
-            "0.2mm solid #777",
-        }}
-      />
-
-      <span
-        className="absolute"
-        style={{
-          right: 0,
-          bottom: `-${mark}mm`,
-          height: `${mark}mm`,
-          borderRight:
-            "0.2mm solid #777",
-        }}
-      />
-    </div>
-  )
-}
-
-/**
- * ============================================================
  * PRINT PAGE
  * ============================================================
- *
- * INI BAGIAN YANG SEBELUMNYA HILANG.
  *
  * Setiap sisi kartu mempunyai container A4 sendiri.
  *
@@ -601,6 +515,35 @@ function PrintPage({
  * ============================================================
  * MAIN PRINT COMPONENT
  * ============================================================
+ *
+ * 🔥 FIX (2 bug sekaligus):
+ *
+ * 1. "Kartu nongol pas reload" — sebelumnya .identity-card-print-root
+ *    cuma disembunyikan lewat <style jsx global> (styled-jsx), yang
+ *    baru ke-attach setelah JS jalan. Ada jeda singkat di mana elemen
+ *    ini nggak punya "display: none" sama sekali → sempat ke-render
+ *    mentah. Sekarang dikasih inline style={{ display: "none" }}
+ *    sebagai baseline yang berlaku dari awal, tanpa nunggu stylesheet.
+ *    Aturan @media print masih menang karena dia pakai !important di
+ *    stylesheet, yang mengalahkan inline style biasa.
+ *
+ * 2. "Print keluar kertas kosong" — root print ini sebelumnya
+ *    dirender sebagai child dari IdentityCardPanel, yang ada di
+ *    dalam wrapper ber-class `print:hidden` (lihat page.tsx). Saat
+ *    mode print aktif, ancestor itu sendiri `display: none`, jadi
+ *    child di dalamnya nggak akan pernah muncul walau diberi
+ *    `display: block !important` sendiri — display:none di parent
+ *    itu final. Fix: portal-kan root print ini langsung ke
+ *    document.body, supaya keluar dari subtree manapun yang
+ *    "print:hidden" dan nggak lagi bergantung ke posisi caller.
+ *
+ * 3. Posisi kartu di kertas A4 sekarang di-center (sebelumnya
+ *    nempel pojok kiri-atas, nyisain banyak spasi kosong).
+ *
+ * 4. Cut marks (garis siku panduan gunting di pojok) dihapus
+ *    total — komponennya, pemanggilannya, dan CSS print-nya —
+ *    karena dianggap mengganggu tampilan hasil cetak.
+ * ============================================================
  */
 
 export function IdentityCardPrint({
@@ -610,7 +553,13 @@ export function IdentityCardPrint({
   const activeSize =
     CARD_SIZES[printSize]
 
-  return (
+  /*
+   * Portal cuma boleh jalan di client (butuh document).
+   * mounted dipakai supaya nggak SSR-mismatch.
+   */
+  const mounted = useMounted()
+
+  const printMarkup = (
     <>
       {/* ======================================================
           PRINT CSS
@@ -729,8 +678,8 @@ export function IdentityCardPrint({
             margin: 0 !important;
             padding: 0 !important;
 
-            align-items: flex-start !important;
-            justify-content: flex-start !important;
+            align-items: center !important;
+            justify-content: center !important;
 
             page-break-after: always !important;
             break-after: page !important;
@@ -755,7 +704,9 @@ export function IdentityCardPrint({
            * CARD WRAPPER
            * ===================================================
            *
-           * Posisi 0,0 pada setiap halaman.
+           * Dibiarkan auto-size, posisinya ditentukan oleh
+           * align-items/justify-content: center pada parent
+           * .identity-card-print-page di atas.
            */
 
           .identity-card-print-page
@@ -792,18 +743,6 @@ export function IdentityCardPrint({
 
           /*
            * ===================================================
-           * CUT MARKS
-           * ===================================================
-           */
-
-          .identity-card-print-root
-            .identity-card-cut-mark {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-
-          /*
-           * ===================================================
            * IMAGES
            * ===================================================
            */
@@ -828,11 +767,16 @@ export function IdentityCardPrint({
 
       {/* ======================================================
           PRINT ROOT
+
+          style inline "display: none" = baseline anti-FOUC,
+          dikalahkan oleh @media print { display: block !important }
+          di atas saat benar-benar mencetak.
           ====================================================== */}
 
       <div
         className="identity-card-print-root"
         aria-hidden="true"
+        style={{ display: "none" }}
       >
         {/* ====================================================
             PAGE 1 — FRONT
@@ -842,11 +786,6 @@ export function IdentityCardPrint({
           <div className="relative shrink-0">
             <PrintCardFront
               data={data}
-              width={activeSize.w}
-              height={activeSize.h}
-            />
-
-            <CutMarks
               width={activeSize.w}
               height={activeSize.h}
             />
@@ -864,14 +803,28 @@ export function IdentityCardPrint({
               width={activeSize.w}
               height={activeSize.h}
             />
-
-            <CutMarks
-              width={activeSize.w}
-              height={activeSize.h}
-            />
           </div>
         </PrintPage>
       </div>
     </>
+  )
+
+  /*
+   * Sebelum mount di client, jangan render apa-apa (aman untuk SSR,
+   * dan toh elemen ini memang harus tersembunyi di layar normal).
+   */
+  if (!mounted) {
+    return null
+  }
+
+  /*
+   * Portal ke document.body — keluar dari subtree `print:hidden`
+   * manapun (termasuk wrapper di page.tsx), jadi @media print di atas
+   * benar-benar bisa menampilkan elemen ini saat window.print()
+   * dipanggil.
+   */
+  return createPortal(
+    printMarkup,
+    document.body
   )
 }

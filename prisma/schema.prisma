@@ -138,6 +138,7 @@ model tbl_qr_generator {
   corner_square_color String   @default("#000000")
   corner_dot          String   @default("square")
   corner_dot_color    String   @default("#000000")
+  main_dot_color      String   @default("#000000")
   is_custom_color     Boolean  @default(false)
   qr_icon             String?  @db.Text
   image_size          Float    @default(0.4)

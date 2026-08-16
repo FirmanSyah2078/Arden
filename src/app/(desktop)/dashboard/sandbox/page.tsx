@@ -69,7 +69,7 @@ export default function SandboxPage() {
       <div className="flex w-full flex-1 flex-col">
         {tab === "Analytics" ? (
           <div className="flex h-105 items-center justify-center text-sm text-neutral-600">
-            Analytics view isn't part of this mockup.
+            Analytics view isn&apos;t part of this mockup.
           </div>
         ) : (
           <>

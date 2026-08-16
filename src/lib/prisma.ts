@@ -7,10 +7,14 @@ import {Pool} from 'pg';
 // Ini akan memaksa Javascript mengubah semua BigInt menjadi String saat diubah
 // ke JSON Sehingga tidak akan terjadi error 404/500 saat me-return
 // NextResponse.json()
-if (typeof BigInt !== 'undefined') {
-  (BigInt.prototype as any).toJSON = function() {
-    return this.toString();
-  };
+if (typeof BigInt !== "undefined") {
+  Object.defineProperty(BigInt.prototype, "toJSON", {
+    value: function () {
+      return this.toString();
+    },
+    configurable: true,
+    writable: true,
+  });
 }
 
 // Mencegah multiple instance Prisma Client saat hot-reload di mode development
