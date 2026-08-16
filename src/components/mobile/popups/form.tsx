@@ -14,7 +14,7 @@ import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
 
 // --- VALIDATION SCHEMA: Ensures remarks are provided when status is "Menstruation" ---
 const formSchema = z.object({
-status: z.enum(["Menstruation", "Pure"]),
+  status: z.enum(["Menstruation", "Pure"]),
   remarks: z.string().optional(),
 }).refine((data) => {
   if (data.status === 'Menstruation' && (!data.remarks || data.remarks.trim() === '')) return false;
@@ -42,7 +42,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
   const [isLainnya, setIsLainnya] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-defaultValues: { status: "Menstruation", remarks: "" },
+    defaultValues: { status: "Menstruation", remarks: "" },
   });
 
   const watchStatus = form.watch("status");
@@ -80,12 +80,12 @@ defaultValues: { status: "Menstruation", remarks: "" },
           </div>
         ) : (
           <div className="flex flex-col gap-6">
-<div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
-  <span className="text-xl font-bold tracking-tight text-white">Manual Confirmation</span>
-  <span className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
-    Manual Attendance Confirmation
-  </span>
-</div>
+            <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
+              <span className="text-xl font-bold tracking-tight text-white">Manual Confirmation</span>
+              <span className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
+                Manual Attendance Confirmation
+              </span>
+            </div>
 
             <FormUI {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -113,34 +113,34 @@ defaultValues: { status: "Menstruation", remarks: "" },
                   control={form.control}
                   name="status"
                   render={({ field }) => (
-<FormItem className="space-y-3">
-  <label className="text-white/40 text-[10px] uppercase tracking-wider font-bold block mb-1">Attendance Status</label>
-  <FormControl>
-    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-3">
-      <div className="relative flex items-center justify-center">
-        <RadioGroupItem value="Menstruation" id="r-haid" className="peer sr-only" />
-        <label htmlFor="r-haid" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-red-400/50 peer-data-[state=checked]:bg-red-900/30 transition-all cursor-pointer hover:bg-[#2A292F] group">
-          <Droplet className="w-5 h-5 mb-1 text-red-400 group-hover:scale-110 transition-transform" />
-          <span className="text-xs font-bold text-white">Menstruation</span>
-          <span className="text-[9px] text-white/30 mt-0.5 leading-none">Excused</span>
-        </label>
-      </div>
-      <div className="relative flex items-center justify-center">
-        <RadioGroupItem value="Pure" id="r-suci" className="peer sr-only" />
-        <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-green-400/50 peer-data-[state=checked]:bg-green-900/30 transition-all cursor-pointer hover:bg-[#2A292F] group">
-          <Sparkles className="w-5 h-5 mb-1 text-green-400 group-hover:scale-110 transition-transform" />
-          <span className="text-xs font-bold text-white">Praying</span>
-          <span className="text-[9px] text-white/30 mt-0.5 leading-none">Pure Condition</span>
-        </label>
-      </div>
-    </RadioGroup>
-  </FormControl>
-  {form.formState.errors.status && (
-    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] text-center font-medium tracking-wide">
-      {form.formState.errors.status.message}
-    </div>
-  )}
-</FormItem>
+                    <FormItem className="space-y-3">
+                      <label className="text-white/40 text-[10px] uppercase tracking-wider font-bold block mb-1">Attendance Status</label>
+                      <FormControl>
+                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-3">
+                          <div className="relative flex items-center justify-center">
+                            <RadioGroupItem value="Menstruation" id="r-haid" className="peer sr-only" />
+                            <label htmlFor="r-haid" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-red-400/50 peer-data-[state=checked]:bg-red-900/30 transition-all cursor-pointer hover:bg-[#2A292F] group">
+                              <Droplet className="w-5 h-5 mb-1 text-red-400 group-hover:scale-110 transition-transform" />
+                              <span className="text-xs font-bold text-white">Menstruation</span>
+                              <span className="text-[9px] text-white/30 mt-0.5 leading-none">Excused</span>
+                            </label>
+                          </div>
+                          <div className="relative flex items-center justify-center">
+                            <RadioGroupItem value="Pure" id="r-suci" className="peer sr-only" />
+                            <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-green-400/50 peer-data-[state=checked]:bg-green-900/30 transition-all cursor-pointer hover:bg-[#2A292F] group">
+                              <Sparkles className="w-5 h-5 mb-1 text-green-400 group-hover:scale-110 transition-transform" />
+                              <span className="text-xs font-bold text-white">Praying</span>
+                              <span className="text-[9px] text-white/30 mt-0.5 leading-none">Pure Condition</span>
+                            </label>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
+                      {form.formState.errors.status && (
+                        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] text-center font-medium tracking-wide">
+                          {form.formState.errors.status.message}
+                        </div>
+                      )}
+                    </FormItem>
                   )}
                 />
 
@@ -163,7 +163,8 @@ defaultValues: { status: "Menstruation", remarks: "" },
                                     field.onChange(option === 'Other' ? '' : option);
                                     setIsLainnya(option === 'Other');
                                   }}
-                                  className={`px-3 py-1.5 rounded-full text-[10px] font-medium transition-all border whitespace-nowrap ${watchRemarks === option
+                                  className={`px-3 py-1.5 rounded-full text-[10px] font-medium transition-all border whitespace-nowrap ${(option === "Other" ? isLainnya : watchRemarks === option)
+
                                     ? 'bg-[#2A292F] border-white/20 text-white shadow-inner ring-1 ring-white/10'
                                     : 'bg-[#1F1E23] border-white/5 text-white/40 hover:text-white/60'
                                     }`}
@@ -173,25 +174,25 @@ defaultValues: { status: "Menstruation", remarks: "" },
                               ))}
                             </div>
                             {isLainnya && (
-                                <div className="relative flex-1 animate-in fade-in zoom-in-95 duration-300">
-                                  <Edit3 className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30" />
-                                  <Input
-                                    placeholder="Write reason..."
-                                    className="pl-8 bg-[#1F1E23] border-white/10 text-white text-xs h-12 rounded-2xl outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 ring-0! ring-offset-0!"
-                                    value={field.value}
-                                    onChange={(e) => {
-                                      field.onChange(e.target.value);
-                                    }}
-                                  />
-                                </div>
+                              <div className="relative flex-1 animate-in fade-in zoom-in-95 duration-300">
+                                <Edit3 className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30" />
+                                <Input
+                                  placeholder="Write reason..."
+                                  className="pl-8 bg-[#1F1E23] border-white/10 text-white text-xs h-12 rounded-2xl outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 ring-0! ring-offset-0!"
+                                  value={field.value}
+                                  onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                  }}
+                                />
+                              </div>
                             )}
                           </div>
                         </FormControl>
-{form.formState.errors.remarks && (
-  <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] text-center font-medium tracking-wide">
-    {form.formState.errors.remarks.message}
-  </div>
-)}
+                        {form.formState.errors.remarks && (
+                          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] text-center font-medium tracking-wide">
+                            {form.formState.errors.remarks.message}
+                          </div>
+                        )}
                       </FormItem>
                     )}
                   />
@@ -201,9 +202,9 @@ defaultValues: { status: "Menstruation", remarks: "" },
                   <Button type="submit" className="w-full rounded-2xl h-12 bg-indigo-600 text-white hover:bg-indigo-500 font-bold transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20">
                     Process
                   </Button>
-<AlertDialogCancel className="w-full bg-[#1F1E23] border border-white/5 text-white hover:bg-[#2A292F] rounded-2xl h-12 mt-0 transition-all active:scale-[0.98]">
-  Cancel
-</AlertDialogCancel>
+                  <AlertDialogCancel className="w-full bg-[#1F1E23] border border-white/5 text-white hover:bg-[#2A292F] rounded-2xl h-12 mt-0 transition-all active:scale-[0.98]">
+                    Cancel
+                  </AlertDialogCancel>
                 </div>
               </form>
             </FormUI>

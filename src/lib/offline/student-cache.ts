@@ -3,10 +3,18 @@ import type {StudentMobile} from '@/types/api'
 const STORAGE_KEY = 'arden-student-cache'
 
 export function saveStudentCache(students: StudentMobile[]) {
+  const existing = getStudentCache()
+
+  const merged = [...existing, ...students].filter(
+      (student, index, all) =>
+          all.findIndex(
+              (item) => String(item.id_student) === String(student.id_student),
+              ) === index,
+  )
   localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
-        students,
+        students: merged,
         cachedAt: new Date().toISOString(),
       }),
   )

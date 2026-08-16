@@ -39,6 +39,7 @@ export function useSholat() {
   const [schedule, setSchedule] = useState<MobilePrayerSchedule|null>(null);
   const [trackedPrayers, setTrackedPrayers] = useState<DailyPrayer[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchJadwal = async () => {
@@ -88,6 +89,8 @@ export function useSholat() {
         console.error(err);
         setSchedule(null);
         setTrackedPrayers([]);
+      } finally {
+        setIsLoading(false)
       }
     };
     fetchJadwal();
@@ -168,5 +171,5 @@ export function useSholat() {
     };
   }, [currentTime, schedule, trackedPrayers]);
 
-  return {schedule, currentTime, trackedPrayers, ...timeData};
+  return {schedule, currentTime, trackedPrayers, isLoading, ...timeData};
 }

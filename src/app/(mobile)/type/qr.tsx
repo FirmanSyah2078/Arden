@@ -271,7 +271,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
                 animation: symmetry-float 4s ease-in-out infinite;
             }
           `}</style>
-          <div className="flex flex-col items-center justify-center translate-y-9">
+          <div className="flex flex-col items-center justify-center">
             <div className="relative w-32 h-12 mb-8 flex items-center justify-center animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
               <div className="absolute inset-0 bg-zinc-500/10 rounded-full blur-3xl" />
               <div className="relative flex items-center justify-center -space-x-3">

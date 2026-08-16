@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Inbox } from "lucide-react"
+import { ClipboardClock, WifiOff } from "lucide-react"
 import { UnifiedHeader } from "@/components/mobile/ui/unified-header"
 import { useAttendance } from "@/hooks/mobile/use-attendance"
 import { formatTime } from "@/lib/date"
@@ -20,19 +20,20 @@ const ListContent = ({
 }) => {
   if (isLoadingHistory) {
     return (
-      <div className="flex w-full flex-col gap-3 py-4">
+      <div className="flex w-full flex-col gap-3 pb-2">
         {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className="flex w-full animate-pulse items-center gap-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-3"
-          >
-            <div className="h-11 w-11 shrink-0 rounded-xl bg-zinc-800" />
-            <div className="flex flex-1 items-center justify-between gap-3">
-              <div className="flex flex-col gap-2">
-                <div className="h-4 w-32 rounded-full bg-zinc-800" />
-                <div className="h-3 w-20 rounded-full bg-zinc-800" />
+          <div key={i} className="flex w-full items-center">
+            <div className="flex flex-1 animate-pulse items-center gap-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-3 shadow-sm">
+              <div className="h-11 w-11 shrink-0 rounded-xl bg-zinc-800" />
+
+              <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                <div className="flex min-w-0 flex-col gap-2">
+                  <div className="h-4 w-32 rounded-full bg-zinc-800" />
+                  <div className="h-3 w-20 rounded-full bg-zinc-800" />
+                </div>
+
+                <div className="h-3 w-12 shrink-0 rounded-full bg-zinc-800" />
               </div>
-              <div className="h-3 w-12 rounded-full bg-zinc-800" />
             </div>
           </div>
         ))}
@@ -78,8 +79,8 @@ const ListContent = ({
               </li>
             ))
           ) : (
-            <div className="flex h-48 flex-col items-center justify-center rounded-3xl border border-white/10 bg-zinc-900/50 px-6 text-center shadow-inner">
-              <Inbox className="mb-3 h-12 w-12 text-zinc-500 opacity-40" />
+            <div className="flex h-full py-50 flex-col items-center justify-center rounded-3xl px-6 text-center shadow-inner">
+              <ClipboardClock className="mb-3 h-12 w-12 text-zinc-500" />
               <p className="text-xs font-medium tracking-wide text-zinc-500">
                 No history available
               </p>
@@ -122,7 +123,12 @@ export default function HistoryPage() {
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#151419] px-5 pt-4 font-sans">
       <UnifiedHeader />
-
+      {typeof navigator !== "undefined" && !navigator.onLine && (
+        <div className="mb-2 flex items-center gap-1.5 text-[10px] text-amber-300/70">
+          <WifiOff className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          <span>Offline view — showing the last cached server history</span>
+        </div>
+      )}
       {/* TAB NAVIGATION - Persistent/Fixed at the top */}
       <div className="mt-4 mb-4 flex h-12 w-full items-center justify-between gap-1 rounded-2xl border border-white/5 bg-[#1F1E23] p-1 shadow-inner">
         {prayerTimes.map((time) => (
@@ -130,7 +136,7 @@ export default function HistoryPage() {
             key={time.id}
             onClick={() => setActiveTab(time.id)}
             className={`h-full flex-1 rounded-xl text-[10px] font-bold transition-all duration-300 ${activeTab === time.id
-              ? "scale-[1.02] bg-indigo-600 text-white shadow-sm"
+              ? "bg-indigo-600 text-white shadow-sm"
               : "text-white/40 hover:text-white/60"
               }`}
           >
@@ -159,7 +165,7 @@ export default function HistoryPage() {
         `}</style>
         <div className="flex flex-col gap-6 pb-6">
           <ListContent
-            isLoadingHistory={isLoadingHistory}
+            isLoadingHistory={isLoadingHistory || !activeTab || availablePrayers.length === 0}
             historyData={historyData}
           />
         </div>

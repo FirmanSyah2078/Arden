@@ -41,7 +41,7 @@ export const UnifiedHeader = () => {
   const { title, desc } = getContent()
 
   return (
-    <header className="mb-6 flex w-full flex-col gap-1 border-b border-white/5 pb-4">
+    <header className="mb-6 flex w-full flex-col gap-1 border-b border-white/10 pb-4">
       <h1 className="text-xl font-bold tracking-tight text-white">{title}</h1>
       <p className="font-mono text-[10px] tracking-widest text-white/30 uppercase">
         {desc}

@@ -39,7 +39,8 @@ export function Alert({
   const [scanTime, setScanTime] = useState("")
   const [gatekeeperStatus, setGatekeeperStatus] = useState("")
 
-  const { submitAttendance, isLoadingHistory: loading } = useAttendance()
+  const { submitAttendance } = useAttendance()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -47,6 +48,7 @@ export function Alert({
       setErrorMessage("")
       setGatekeeperStatus("")
       setProcessStatus(initialStatus || "idle")
+      setIsSubmitting(false)
     }
   }, [isOpen, initialStatus])
 
@@ -55,6 +57,7 @@ export function Alert({
     setErrorMessage("")
 
     try {
+      setIsSubmitting(true)
       const isManual = absensiStatus.message === "Manual Entry"
       const payload = {
         id_student: parseInt(absensiStatus.id),
@@ -136,6 +139,8 @@ export function Alert({
     } catch (err) {
       setProcessStatus("error")
       setErrorMessage("A network connection error occurred.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -311,9 +316,9 @@ export function Alert({
               <Button
                 className={`w-full ${config.btnClass} h-14 rounded-2xl text-sm font-bold shadow-lg transition-all active:scale-[0.98]`}
                 onClick={handleProcess}
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
                     Processing...
@@ -322,7 +327,7 @@ export function Alert({
                   "Save Attendance"
                 )}
               </Button>
-              {!loading && (
+              {!isSubmitting && (
                 <Button
                   variant="outline"
                   className="h-12 w-full rounded-2xl border-white/10 bg-transparent text-xs text-white/60 transition-all hover:bg-white/5 hover:text-white"

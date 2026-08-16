@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { Inbox } from "lucide-react"
+import { FileClock } from "lucide-react"
 import {
     getPendingAttendance,
     type QueuedAttendance,
@@ -11,7 +11,6 @@ function formatCapturedTime(value: string) {
     return new Intl.DateTimeFormat("id-ID", {
         hour: "2-digit",
         minute: "2-digit",
-        second: "2-digit",
         hour12: false,
     }).format(new Date(value))
 }
@@ -96,7 +95,7 @@ export function PendingAttendanceList() {
                                                     </div>
 
                                                     <div className="mt-1 text-[10px] text-white/40">
-                                                        {payload.time} • {payload.method} • Pending
+                                                        {payload.time} • {payload.method}
                                                     </div>
                                                 </div>
 
@@ -112,11 +111,11 @@ export function PendingAttendanceList() {
                             )
                         })
                     ) : (
-                        <div className="flex h-48 flex-col items-center justify-center rounded-3xl border border-white/10 bg-zinc-900/50 px-6 text-center shadow-inner">
-                            <Inbox className="mb-3 h-12 w-12 text-zinc-500 opacity-40" />
+                        <div className="flex h-full py-50 flex-col items-center justify-center rounded-3xl px-6 text-center shadow-inner">
+                            <FileClock className="mb-3 h-12 w-12 text-zinc-500" />
 
                             <p className="text-xs font-medium tracking-wide text-zinc-500">
-                                No history available
+                                No Queue available
                             </p>
                         </div>
                     )}

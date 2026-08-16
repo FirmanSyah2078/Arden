@@ -56,7 +56,8 @@ export const BottomDock = ({ variant, handleCamAction }: BottomDockProps) => {
               <Button
                 variant="secondary"
                 onClick={handleToggleMode}
-                className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none bg-[#2A292F] text-white transition-all duration-300 hover:bg-[#35343B] hover:text-white"
+                className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none bg-[#2A292F] text-white transition-all duration-300 hover:bg-[#35343B] hover:text-white active:scale-90
+"
               >
                 {mode === "scan" ? (
                   <UserSearch size={16} />
@@ -69,7 +70,7 @@ export const BottomDock = ({ variant, handleCamAction }: BottomDockProps) => {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none shadow-sm transition-all duration-300 outline-none ${isMenuOpen ? "bg-indigo-600 text-white" : "bg-[#2A292F] text-white hover:bg-[#35343B] hover:text-white"}`}
+            className={`group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none shadow-sm transition-all duration-200 outline-none active:scale-90 ${isMenuOpen ? "bg-indigo-600 text-white" : "bg-[#2A292F] text-white hover:bg-[#35343B] hover:text-white"}`}
           >
             {isMenuOpen ? (
               <X size={20} strokeWidth={2} />

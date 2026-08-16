@@ -50,6 +50,37 @@ export const Manager = ({
   const { formData } = useProfile();
 
   useEffect(() => {
+    if (!navigator.onLine) return
+
+    const preloadStudents = async () => {
+      try {
+        const res = await fetch("/api/student?limit=1000")
+
+        if (!res.ok) return
+
+        const json = await res.json()
+
+        if (json.status === "success" && Array.isArray(json.data)) {
+          const students = json.data.map((s: any) => ({
+            id_student: s.id_student,
+            full_name: s.full_name,
+            nis: s.nis,
+            class_name:
+              s.tbl_classes?.class_name || s.class_name || "Unknown",
+            icode: s.icode || "",
+          }))
+
+          saveStudentCache(students)
+        }
+      } catch {
+        // Preload gagal tidak boleh mengganggu halaman /go
+      }
+    }
+
+    void preloadStudents()
+  }, [])
+
+  useEffect(() => {
     const handleShutter = () => handleCamAction();
     window.addEventListener('start-qr-camera', handleShutter);
     return () => window.removeEventListener('start-qr-camera', handleShutter);
@@ -60,6 +91,13 @@ export const Manager = ({
     if (!search.trim()) { setData([]); setIsLoading(false); return; }
     setIsLoading(true);
     const timer = setTimeout(async () => {
+      const localResults = searchStudentCache(search)
+
+      if (!navigator.onLine) {
+        setData(localResults)
+        setIsLoading(false)
+        return
+      }
       try {
         const res = await fetch(
           `/api/student?prm=${encodeURIComponent(search)}&limit=15`,
