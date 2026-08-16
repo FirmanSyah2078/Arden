@@ -33,7 +33,8 @@ export class MobileAttendanceService {
       status,
       remarks,
       method,
-      executor
+      executor,
+      captured_at
     } = payload;
 
     // 1. AMBIL ZONA WAKTU DARI KONFIGURASI GEOGRAFIS
@@ -41,7 +42,11 @@ export class MobileAttendanceService {
     const systemTimezone = geoSettings?.timezone || 'Asia/Jakarta';
 
     // 2. SINKRONISASI WAKTU LOKAL MUTLAK
-    const now = new Date();
+    const attendanceTime = captured_at ? new Date(captured_at) : new Date();
+
+    if (Number.isNaN(attendanceTime.getTime())) {
+      throw new Error('Invalid captured attendance time.');
+    }
 
     // Memaksa pengambilan Jam & Menit sesuai zona waktu yang dikonfigurasi
     const timeFormatter = new Intl.DateTimeFormat('en-US', {
@@ -50,7 +55,7 @@ export class MobileAttendanceService {
       minute: '2-digit',
       hour12: false
     });
-    const currentHourMin = timeFormatter.format(now);  // Contoh: "15:30"
+    const currentHourMin = timeFormatter.format(attendanceTime);
 
     // Memaksa pengambilan Tanggal, Bulan, Tahun sesuai zona waktu yang
     // dikonfigurasi (Penting! Mencegah bug pergantian hari saat Server UTC
@@ -58,13 +63,13 @@ export class MobileAttendanceService {
     const tzOptions = {timeZone: systemTimezone};
     const localYear =
         new Intl.DateTimeFormat('en-US', {...tzOptions, year: 'numeric'})
-            .format(now);
+            .format(attendanceTime);
     const localMonth =
         new Intl.DateTimeFormat('en-US', {...tzOptions, month: 'numeric'})
-            .format(now);
+            .format(attendanceTime);
     const localDay =
         new Intl.DateTimeFormat('en-US', {...tzOptions, day: 'numeric'})
-            .format(now);
+            .format(attendanceTime);
 
     const dateString = `${localYear}-${String(localMonth).padStart(2, '0')}-${
         String(localDay).padStart(2, '0')}T00:00:00.000Z`;
@@ -119,8 +124,18 @@ export class MobileAttendanceService {
     };
 
     const sessionMins = getMinutes(sessionTimeStr);
-    const nowMins = getMinutes(currentHourMin);
-    const diffMins = nowMins - sessionMins;
+    const capturedAt =
+        payload.captured_at ? new Date(payload.captured_at) : new Date()
+
+    const capturedHourMin = capturedAt.toLocaleTimeString('en-GB', {
+      timeZone: systemTimezone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+
+    const nowMins = getMinutes(capturedHourMin)
+    const diffMins = nowMins - sessionMins
 
     // 5. LOGIKA GATEKEEPER (JENDELA WAKTU 20 & 60 MENIT)
     let validatedStatus = '';

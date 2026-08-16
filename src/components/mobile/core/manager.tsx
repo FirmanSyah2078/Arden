@@ -15,6 +15,10 @@ import { AttendanceStatusResponse, StudentMobile } from '@/types/api';
 import { useSholat } from '@/hooks/mobile/use-sholat';
 import { useProfile } from '@/hooks/settings/use-profile';
 import { BottomDock } from '../ui/bottom-dock';
+import {
+  saveStudentCache,
+  searchStudentCache,
+} from "@/lib/offline/student-cache"
 
 interface ManagerProps {
   className?: string;
@@ -57,19 +61,33 @@ export const Manager = ({
     setIsLoading(true);
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/student?prm=${encodeURIComponent(search)}&limit=15`);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const json = await res.json();
-        if (json.status === 'success' && Array.isArray(json.data)) {
-          setData(json.data.map((s: any) => ({
+        const res = await fetch(
+          `/api/student?prm=${encodeURIComponent(search)}&limit=15`,
+        )
+
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+
+        const json = await res.json()
+
+        if (json.status === "success" && Array.isArray(json.data)) {
+          const students = json.data.map((s: any) => ({
             id_student: s.id_student,
             full_name: s.full_name,
             nis: s.nis,
-            class_name: s.tbl_classes?.class_name || s.class_name || 'Unknown',
-            icode: s.icode || ''
-          })));
-        } else { setData([]); }
-      } catch (e) { console.error(e); } finally { setIsLoading(false); }
+            class_name: s.tbl_classes?.class_name || s.class_name || "Unknown",
+            icode: s.icode || "",
+          }))
+
+          saveStudentCache(students)
+          setData(students)
+        } else {
+          setData([])
+        }
+      } catch {
+        setData(searchStudentCache(search))
+      } finally {
+        setIsLoading(false)
+      }
     }, 500);
     return () => clearTimeout(timer);
   }, [search, mode]);

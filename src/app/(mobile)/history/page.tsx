@@ -1,62 +1,74 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from 'react';
-import { Inbox, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { UnifiedHeader } from '@/components/mobile/ui/unified-header';
-import { useAttendance } from '@/hooks/mobile/use-attendance';
-import { formatTime } from '@/lib/date';
-import { useSholat } from '@/hooks/mobile/use-sholat';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react"
+import { Inbox } from "lucide-react"
+import { UnifiedHeader } from "@/components/mobile/ui/unified-header"
+import { useAttendance } from "@/hooks/mobile/use-attendance"
+import { formatTime } from "@/lib/date"
+import { useSholat } from "@/hooks/mobile/use-sholat"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button";
+
 
 // --- LIST COMPONENT (Symmetry Luxury Implementation) ---
-const ListContent = ({ isLoadingHistory, historyData }: { isLoadingHistory: boolean, historyData: any[] }) => {
+const ListContent = ({
+  isLoadingHistory,
+  historyData,
+}: {
+  isLoadingHistory: boolean
+  historyData: any[]
+}) => {
   if (isLoadingHistory) {
     return (
-      <div className="flex flex-col gap-3 w-full py-4">
+      <div className="flex w-full flex-col gap-3 py-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-center w-full p-3 bg-[#1F1E23] rounded-2xl border border-white/5 gap-4 animate-pulse">
-            <div className="w-11 h-11 rounded-xl bg-zinc-800 shrink-0" />
-            <div className="flex-1 flex justify-between items-center gap-3">
+          <div
+            key={i}
+            className="flex w-full animate-pulse items-center gap-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-3"
+          >
+            <div className="h-11 w-11 shrink-0 rounded-xl bg-zinc-800" />
+            <div className="flex flex-1 items-center justify-between gap-3">
               <div className="flex flex-col gap-2">
-                <div className="w-32 h-4 bg-zinc-800 rounded-full" />
-                <div className="w-20 h-3 bg-zinc-800 rounded-full" />
+                <div className="h-4 w-32 rounded-full bg-zinc-800" />
+                <div className="h-3 w-20 rounded-full bg-zinc-800" />
               </div>
-              <div className="w-12 h-3 bg-zinc-800 rounded-full" />
+              <div className="h-3 w-12 rounded-full bg-zinc-800" />
             </div>
           </div>
         ))}
       </div>
-    );
+    )
   }
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="flex flex-col gap-0 w-full pb-2">
-        <ul className="flex flex-col gap-3 w-full">
+    <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col gap-0 pb-2">
+        <ul className="flex w-full flex-col gap-3">
           {historyData.length > 0 ? (
             historyData.map((item, idx) => (
               <li key={idx}>
-                <div className="flex items-center w-full">
-                  <div className="flex-1 bg-[#1F1E23] rounded-2xl p-3 flex items-center gap-4 shadow-sm border border-white/5">
-                    <div className="w-11 h-11 rounded-xl bg-[#2A292F] text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-inner">
+                <div className="flex w-full items-center">
+                  <div className="flex flex-1 items-center gap-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-3 shadow-sm">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#2A292F] text-sm font-bold text-white shadow-inner">
                       {item.tbl_students.full_name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="flex-1 min-w-0 flex justify-between items-center gap-3">
-                      <div className="flex flex-col min-w-0">
-                        <p className="text-sm font-semibold text-white truncate leading-tight">
+                    <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                      <div className="flex min-w-0 flex-col">
+                        <p className="truncate text-sm leading-tight font-semibold text-white">
                           {item.tbl_students.full_name}
                         </p>
-                        <div className="flex items-center gap-1.5 text-[10px] text-white/40 font-mono tracking-wider uppercase mt-0.5">
+                        <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-white/40 uppercase">
                           <span className="text-white/60">
-                            {item.tbl_students.tbl_classes?.class_name || 'N/A'}
+                            {item.tbl_students.tbl_classes?.class_name || "N/A"}
                           </span>
                           <span className="opacity-20">•</span>
-                          <span className="font-mono tracking-wide">{item.tbl_students.nis}</span>
+                          <span className="font-mono tracking-wide">
+                            {item.tbl_students.nis}
+                          </span>
                         </div>
                       </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-white/60 font-mono text-[10px] leading-none">
+                      <div className="shrink-0 text-right">
+                        <span className="font-mono text-[10px] leading-none text-white/60">
                           {formatTime(item.created_at)} WIB
                         </span>
                       </div>
@@ -66,53 +78,61 @@ const ListContent = ({ isLoadingHistory, historyData }: { isLoadingHistory: bool
               </li>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center h-48 text-center px-6 bg-zinc-900/50 rounded-3xl border border-white/10 shadow-inner">
-              <Inbox className="w-12 h-12 mb-3 text-zinc-500 opacity-40" />
-              <p className="text-xs font-medium text-zinc-500 tracking-wide">No history available</p>
+            <div className="flex h-48 flex-col items-center justify-center rounded-3xl border border-white/10 bg-zinc-900/50 px-6 text-center shadow-inner">
+              <Inbox className="mb-3 h-12 w-12 text-zinc-500 opacity-40" />
+              <p className="text-xs font-medium tracking-wide text-zinc-500">
+                No history available
+              </p>
             </div>
           )}
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default function HistoryPage() {
-  const router = useRouter();
-  const { displayStatus } = useSholat();
-  const [activeTab, setActiveTab] = useState<string>('Dhuhr');
-  const { historyData, isLoadingHistory, fetchHistory } = useAttendance();
+  const router = useRouter()
+  const { displayStatus, availablePrayers } = useSholat()
+  const [activeTab, setActiveTab] = useState<string>("")
+  const { historyData, isLoadingHistory, fetchHistory } = useAttendance()
 
-  const PRAYER_TIMES = [
-    { id: 'Dhuhr', label: 'Dhuhr' },
-    { id: 'Asr', label: 'Asr' },
-    { id: 'Maghrib', label: 'Maghrib' },
-    { id: 'Isha', label: 'Isha' },
-  ];
+  const prayerTimes = availablePrayers.map((prayer) => ({
+    id: prayer,
+    label: prayer,
+  }))
 
   useEffect(() => {
-    const initialTab = PRAYER_TIMES.find(t => t.id === displayStatus)?.id || 'Dhuhr';
-    setActiveTab(initialTab);
-  }, []); // Only set initial tab on mount to prevent "jumping" when displayStatus updates
+    if (availablePrayers.length === 0) {
+      setActiveTab("")
+      return
+    }
+    setActiveTab((current) =>
+      availablePrayers.includes(current as any)
+        ? current
+        : availablePrayers.find((prayer) => prayer === displayStatus) ||
+        availablePrayers[0]
+    )
+  }, [availablePrayers, displayStatus])
 
   useEffect(() => {
-    fetchHistory(activeTab);
-  }, [activeTab, fetchHistory]);
+    if (activeTab) fetchHistory(activeTab)
+  }, [activeTab, fetchHistory])
 
   return (
-    <div className="relative w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#151419] px-5 pt-4 font-sans">
       <UnifiedHeader />
 
       {/* TAB NAVIGATION - Persistent/Fixed at the top */}
-      <div className="w-full bg-[#1F1E23] rounded-2xl p-1 h-12 flex items-center justify-between gap-1 shadow-inner border border-white/5 mt-4 mb-4">
-        {PRAYER_TIMES.map((time) => (
+      <div className="mt-4 mb-4 flex h-12 w-full items-center justify-between gap-1 rounded-2xl border border-white/5 bg-[#1F1E23] p-1 shadow-inner">
+        {prayerTimes.map((time) => (
           <button
             key={time.id}
             onClick={() => setActiveTab(time.id)}
-            className={`flex-1 h-full rounded-xl text-[10px] font-bold transition-all duration-300 ${activeTab === time.id
-              ? 'bg-indigo-600 text-white shadow-sm scale-[1.02]'
-              : 'text-white/40 hover:text-white/60'
-            }`}
+            className={`h-full flex-1 rounded-xl text-[10px] font-bold transition-all duration-300 ${activeTab === time.id
+              ? "scale-[1.02] bg-indigo-600 text-white shadow-sm"
+              : "text-white/40 hover:text-white/60"
+              }`}
           >
             {time.label}
           </button>
@@ -120,29 +140,41 @@ export default function HistoryPage() {
       </div>
 
       {/* BODY - The Invisible Boundary Zone (Zero-Offside) */}
-      <div 
-        className="flex-1 overflow-y-auto custom-scrollbar" 
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+      <div
+        className="custom-scrollbar flex-1 overflow-y-auto"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          WebkitOverflowScrolling: "touch",
+        }}
       >
         <style jsx>{`
-          div { -ms-overflow-style: none; scrollbar-width: none; }
-          div::-webkit-scrollbar { display: none; }
+          div {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+          div::-webkit-scrollbar {
+            display: none;
+          }
         `}</style>
         <div className="flex flex-col gap-6 pb-6">
-          <ListContent isLoadingHistory={isLoadingHistory} historyData={historyData} />
+          <ListContent
+            isLoadingHistory={isLoadingHistory}
+            historyData={historyData}
+          />
         </div>
       </div>
 
       {/* FOOTER - The Safe Zone (No Overlap) */}
-      <div className="pt-4 pb-6 px-4 flex justify-center items-center bg-transparent shrink-0">
+      <div className="flex shrink-0 items-center justify-center bg-transparent px-4 pt-4 pb-6">
         <Button
           onClick={() => router.back()}
           variant="outline"
-          className="w-full max-w-sm h-14 rounded-2xl bg-zinc-900 text-white/80 border-white/10 hover:bg-zinc-800 hover:text-white font-semibold transition-all active:scale-[0.98]"
+          className="h-14 w-full max-w-sm rounded-2xl border-white/10 bg-zinc-900 font-semibold text-white/80 transition-all hover:bg-zinc-800 hover:text-white active:scale-[0.98]"
         >
           Back
         </Button>
       </div>
     </div>
-  );
+  )
 }

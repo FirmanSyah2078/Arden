@@ -33,7 +33,7 @@ export function Alert({
   initialStatus = "idle",
 }: AlertProps) {
   const [processStatus, setProcessStatus] = useState<
-    "idle" | "success" | "error"
+    "idle" | "success" | "error" | "pending"
   >(initialStatus)
   const [errorMessage, setErrorMessage] = useState("")
   const [scanTime, setScanTime] = useState("")
@@ -58,9 +58,12 @@ export function Alert({
       const isManual = absensiStatus.message === "Manual Entry"
       const payload = {
         id_student: parseInt(absensiStatus.id),
+        student_name: absensiStatus.full_name,
+        student_nis: absensiStatus.nis,
+        class_name: absensiStatus.class_name,
         time: sholatTime,
         status: absensiStatus.icode || "Pure",
-        method: isManual ? "MANUAL" : "SCAN",
+        method: isManual ? "Manual" : "Scan QR",
         remarks: isManual ? absensiStatus.remarks : "",
         date: new Date(),
       }
@@ -69,6 +72,9 @@ export function Alert({
       if (response.status === "success") {
         setProcessStatus("success")
         setGatekeeperStatus(response.data?._gatekeeperStatus || "")
+      } else if (response.status === "queued") {
+        setProcessStatus("pending")
+        setGatekeeperStatus("Pending sync")
       } else {
         setProcessStatus("error")
         setGatekeeperStatus("")
@@ -148,6 +154,16 @@ export function Alert({
   // --- UI STATE MAPPING: Returns configuration based on the current process status ---
   const getStatusConfig = () => {
     switch (processStatus) {
+      case "pending":
+        return {
+          title: "Pending sync",
+          subtitle: "Will be validated when connection returns.",
+          icon: (
+            <Clock className="h-14 w-14 animate-pulse text-amber-400" />
+          ),
+          btnClass: "bg-amber-500 text-white hover:bg-amber-400",
+          textCol: "text-amber-400",
+        }
       case "success":
         return {
           title: "Success!",
@@ -253,24 +269,28 @@ export function Alert({
             </span>
           </div>
         </div>
-        {processStatus === "success" && gatekeeperStatus && (
-          <div className="mb-8 flex justify-center">
-            <span
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase ${
-                gatekeeperStatus === "Normal"
-                  ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                  : "border-red-500/20 bg-red-500/10 text-red-400"
-              }`}
-            >
-              {gatekeeperStatus === "Normal" ? (
-                <CheckCircle2 className="size-3" />
-              ) : (
-                <AlertCircle className="size-3" />
-              )}
-              Gatekeeper: {gatekeeperStatus}
-            </span>
-          </div>
-        )}
+        {(processStatus === "success" || processStatus === "pending") &&
+          gatekeeperStatus && (
+            <div className="mb-8 flex justify-center">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase ${gatekeeperStatus === "Pending sync"
+                  ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                  : gatekeeperStatus === "Normal"
+                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                    : "border-red-500/20 bg-red-500/10 text-red-400"
+                  }`}
+              >
+                {gatekeeperStatus === "Pending sync" ? (
+                  <Clock className="size-3" />
+                ) : gatekeeperStatus === "Normal" ? (
+                  <CheckCircle2 className="size-3" />
+                ) : (
+                  <AlertCircle className="size-3" />
+                )}
+                Gatekeeper: {gatekeeperStatus}
+              </span>
+            </div>
+          )}
         {processStatus === "error" && (
           <div className="mb-8 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-center text-[10px] font-medium tracking-wide text-red-400">
             {errorMessage}
@@ -279,12 +299,12 @@ export function Alert({
 
         {/* Primary Action */}
         <div className="flex flex-col gap-3">
-          {processStatus === "success" ? (
+          {processStatus === "success" || processStatus === "pending" ? (
             <Button
               className={`w-full ${config.btnClass} h-14 rounded-2xl text-sm font-bold shadow-lg transition-all active:scale-[0.98]`}
               onClick={handleCloseAndResume}
             >
-              Done
+              {processStatus === "pending" ? "Close" : "Done"}
             </Button>
           ) : (
             <>
