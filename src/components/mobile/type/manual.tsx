@@ -17,40 +17,51 @@ export interface ManualProps {
     onScrollDirectionChange?: (visible: boolean) => void;
 }
 
-// --- COMPONENT 1: SEARCH BAR (High-End Gray Outline Version) ---
-export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => (
-    <div className="relative mb-6 flex-none z-20 px-1">
-        <div className={`relative h-12 w-full bg-[#1F1E23] rounded-2xl border flex items-center p-1 pl-3 transition-all duration-300 group shadow-lg ${search ? 'border-transparent shadow-[0_0_0_1px_rgba(255,255,255,0.4),0_0_12px_rgba(255,255,255,0.05)]' : 'border-white/5'
-            }`}>
-            <Search size={18} className={`${search ? 'text-white' : 'text-white/20'} transition-colors shrink-0 mr-2`} />
-            <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                placeholder="Search by Name or NIS..."
-                spellCheck="false"
-                autoComplete="off"
-                className="flex-1 min-w-0 bg-transparent border-none outline-none text-white font-medium placeholder:text-white/20 text-[14px] h-full"
-            />
-            <div className="flex items-center gap-2 mr-2">
-                {search && (
-                    <button
-                        onClick={() => setSearch('')}
-                        className="p-1.5 rounded-lg bg-[#2A292F] hover:bg-[#35343B] text-white/40 hover:text-white transition-all active:scale-90"
-                    >
-                        <X size={14} />
-                    </button>
-                )}
-                {isLoading && (
-                    <div className="w-8 h-8 flex items-center justify-center shrink-0 rounded-lg bg-white/10 ml-1">
-                        <Loader2 size={16} className="text-white/60 animate-spin shrink-0" />
-                    </div>
-                )}
+// --- COMPONENT 1: SEARCH BAR (Structured pill — icon tile + divider) ---
+export const ManualSearch = ({ search, setSearch, isLoading, onFocus, onBlur }: { search: string, setSearch: (s: string) => void, isLoading: boolean, onFocus: () => void, onBlur: () => void }) => {
+    const [focused, setFocused] = useState(false);
+    const active = focused || search.length > 0;
+    return (
+        <div className="relative mb-6 flex-none z-20 px-1">
+            <div className={`relative flex h-13 w-full items-center rounded-full border bg-[#1F1E23] p-1.5 pr-2 shadow-lg transition-all duration-300 ${focused ? 'border-indigo-500/60' : search ? 'border-white/15' : 'border-white/5'}`}>
+                {/* Icon tile */}
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${active ? 'bg-indigo-600 text-white' : 'bg-[#2A292F] text-zinc-400'}`}>
+                    <Search size={17} strokeWidth={2.2} />
+                </div>
+
+                {/* Divider */}
+                <div className="mx-2.5 h-6 w-px shrink-0 bg-white/10" />
+
+                <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onFocus={() => { setFocused(true); onFocus(); }}
+                    onBlur={() => { setFocused(false); onBlur(); }}
+                    placeholder="Search by Name or NIS..."
+                    spellCheck="false"
+                    autoComplete="off"
+                    className="h-full min-w-0 flex-1 border-none bg-transparent text-[14px] font-medium text-white outline-none placeholder:text-white/25"
+                />
+
+                <div className="flex items-center gap-1.5">
+                    {search && (
+                        <button
+                            onClick={() => setSearch('')}
+                            className="rounded-full bg-[#2A292F] p-2 text-zinc-200 transition-all hover:bg-[#333238] hover:text-white active:scale-90"
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
+                    {isLoading && (
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
+                            <Loader2 size={16} className="shrink-0 animate-spin text-white/60" />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 // --- COMPONENT 2: SEARCH RESULTS (Solid Material White Theme) ---
 export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused, onScrollDirectionChange }: { search: string, data: StudentMobile[], isLoading: boolean, handleSelect: (s: StudentMobile) => void, isFocused: boolean, onScrollDirectionChange?: (visible: boolean) => void }) => {
@@ -74,22 +85,25 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
 
             {!search && !isFocused && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center animate-in fade-in duration-500">
-                    <div className="relative mb-6">
-                        <div className="absolute inset-0 blur-2xl bg-indigo-500/20 rounded-full" />
-                        <div className="relative flex items-center justify-center -space-x-3">
-                            <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0s' }}>
-                                <User size={16} className="text-white/20" />
+                    {/* Kartu siswa + badge search: cari siswa lalu isi form */}
+                    <div className="relative mb-8">
+                        <div className="flex h-20 w-32 items-center gap-3 rounded-xl border border-white/10 bg-[#27272A] px-3 shadow-inner">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1F1E23]">
+                                <User size={18} className="text-zinc-500" />
                             </div>
-                            <div className="w-12 h-12 rounded-full border-2 border-[#151419] bg-[#27272A] flex items-center justify-center z-20 scale-110 shadow-xl ar-float-loop" style={{ animationDelay: '0.2s' }}>
-                                <Search size={20} className="text-white/60" />
-                            </div>
-                            <div className="w-10 h-10 rounded-full border-2 border-[#151419] bg-[#1F1E23] flex items-center justify-center z-10 shadow-lg ar-float-loop" style={{ animationDelay: '0.4s' }}>
-                                <User size={16} className="text-white/20" />
+                            <div className="flex flex-1 flex-col gap-1.5">
+                                <div className="h-2 w-full rounded-full bg-zinc-600" />
+                                <div className="h-2 w-2/3 rounded-full bg-zinc-700" />
                             </div>
                         </div>
+                        <div className="absolute -bottom-2 -right-2 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-indigo-600 shadow-lg">
+                            <Search size={16} className="text-white" />
+                        </div>
                     </div>
-                    <h3 className="text-white font-semibold text-lg mb-1 tracking-tight">Manual Search</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed">Enter name or NIS to search for student data manually.</p>
+                    <h3 className="text-white font-bold text-xl mb-2 tracking-tight">Manual Attendance</h3>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium">
+                        Search a student by name or NIS, then fill in the attendance form.
+                    </p>
                 </div>
             )}
             {search && isLoading && (
@@ -183,7 +197,7 @@ export const Manual = ({ setPick, setOpenForm, search, setSearch, data, isLoadin
             <div className="flex h-full w-full flex-col">
                 {/* Skeleton search bar */}
                 <div className="relative z-20 mb-6 flex-none px-1">
-                    <div className="flex h-12 w-full items-center rounded-2xl border border-white/5 bg-[#1F1E23] p-1 pl-3 shadow-lg">
+                    <div className="flex h-12 w-full items-center rounded-full border border-white/5 bg-[#1F1E23] p-1 pl-4 shadow-lg">
                         <div className="mr-2 h-4 w-4 animate-pulse rounded bg-zinc-800" />
                         <div className="h-3 w-40 animate-pulse rounded-full bg-zinc-800" />
                     </div>

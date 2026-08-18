@@ -170,7 +170,7 @@ export const Manager = ({
           </div>
         )}
       </div>
-      <BottomDock variant="home" handleCamAction={handleCamAction} />
+      <BottomDock variant="home" handleCamAction={handleCamAction} isCamActive={isCamActive} />
 
       <Form
         key={manualResult?.id}

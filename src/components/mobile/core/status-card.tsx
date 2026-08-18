@@ -6,7 +6,11 @@ import { useSholat } from '@/hooks/mobile/use-sholat';
 
 export const StatusCard = () => {
   const { profile, isLoading } = useProfile();
-  const { displayStatus, timeRange, isLoading: isPrayerLoading } = useSholat()
+  const {
+    displayStatus,
+    timeRange,
+    isLoading: isPrayerLoading,
+  } = useSholat();
 
   const labels: Record<string, string> = {
     Fajr: 'Fajr',
@@ -14,15 +18,15 @@ export const StatusCard = () => {
     Dhuhr: 'Dhuhr',
     Asr: 'Asr',
     Maghrib: 'Maghrib',
-    Isha: 'Isha'
+    Isha: 'Isha',
   };
 
   const loading = isLoading || isPrayerLoading;
 
   return (
-    <div className="flex w-full items-center gap-4 rounded-3xl border border-white/10 bg-[#1F1E23] p-4 shadow-xl">
-      {/* Avatar — kotak固定 56px, tidak pernah berubah ukuran */}
-      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-white/10 bg-[#2A292F] shadow-inner">
+    <div className="relative flex w-full items-center gap-4 overflow-hidden rounded-3xl border border-white/8 bg-[#1F1E23] p-4 shadow-xl">
+      {/* Avatar — kotak tetap 56px, tidak pernah berubah ukuran */}
+      <div className="relative z-10 h-14 w-14 shrink-0 overflow-hidden rounded-full border border-white/10 bg-[#2A292F] shadow-inner">
         {loading ? (
           <div className="h-full w-full animate-pulse bg-zinc-800" />
         ) : profile.avatarUrl ? (
@@ -46,7 +50,7 @@ export const StatusCard = () => {
       </div>
 
       {/* Kolom teks — tinggi dikunci 68px, dua state sama persis */}
-      <div className="flex h-17 min-w-0 flex-1 flex-col justify-center">
+      <div className="relative z-10 flex h-17 min-w-0 flex-1 flex-col justify-center">
         {loading ? (
           <>
             <div className="mb-1.5 h-3 w-20 animate-pulse rounded-full bg-zinc-800" />
@@ -58,17 +62,18 @@ export const StatusCard = () => {
             <span className="mb-1 text-[10px] font-medium uppercase tracking-widest text-zinc-500">
               Welcome back,
             </span>
-            <h2 className="mb-2 truncate text-base font-bold leading-tight text-white">
+            <h2 className="mb-2 truncate text-base font-bold leading-tight tracking-tight text-white">
               {profile.name || 'User'}
             </h2>
             <div className="flex items-center gap-2">
-              <div className="flex shrink-0 items-center rounded-full bg-indigo-600 px-2 py-0.5 shadow-sm">
+              <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-indigo-600 px-2.5 py-0.5 shadow-sm">
+                <span className="h-1 w-1 rounded-full bg-white/80" aria-hidden="true" />
                 <span className="text-[9px] font-bold capitalize tracking-wider text-white">
                   {labels[displayStatus] ? `Prayer Time: ${labels[displayStatus]}` : '...'}
                 </span>
               </div>
-              <span className="font-mono text-[10px] tracking-tight text-zinc-500">
-                {timeRange} <span className="opacity-50">WIB</span>
+              <span className="font-mono text-[10px] tracking-tight text-zinc-400">
+                {timeRange} WIB
               </span>
             </div>
           </>
