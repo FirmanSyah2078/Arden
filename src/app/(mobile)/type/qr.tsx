@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Loader2, QrCode, User, Camera, X } from 'lucide-react';
+import { Loader2, QrCode, Camera, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { AttendanceStatusResponse, DailyPrayer } from '@/types/api';
 import { Alert } from '@/components/mobile/popups/alert';
@@ -227,7 +227,16 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-[#151419] flex flex-col items-center justify-center p-4">
-      <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-700 ease-out ${isCameraActive ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-90 blur-sm pointer-events-none'}`}>
+      <style>{`
+        @keyframes qr-scan-line {
+            0%, 100% { top: 14%; opacity: 0.9; }
+            50% { top: 80%; opacity: 0.5; }
+        }
+        .animate-qr-scan-line {
+            animation: qr-scan-line 2.4s ease-in-out infinite;
+        }
+      `}</style>
+      <div className={`relative w-full max-w-md aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black transition-all duration-180 ease-out ${isCameraActive ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-95 pointer-events-none'}`}>
         <div id="reader" className="w-full h-full absolute inset-0" />
         {isCameraActive && !validating && (
           <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
@@ -238,64 +247,55 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
               <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white rounded-none" />
               <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white rounded-none" />
               <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white rounded-none" />
-              <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-zinc-300 to-transparent shadow-[0_0_8px_rgba(209,203,203,0.6)] animate-scan-line" />
+              <div className="animate-qr-scan-line absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-zinc-300 to-transparent shadow-[0_0_8px_rgba(209,203,203,0.6)]" />
             </div>
           </div>
         )}
       </div>
 
-      {!validating && (
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both">
-          <div className="flex items-center justify-center p-1 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-full shadow-2xl">
-            <button
-              onClick={() => {
-                isCameraActive ? stopCamera() : startCamera();
-                if (onCamAction) onCamAction();
-              }}
-              className={`w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 shadow-lg ${isCameraActive ? 'bg-zinc-700 text-white' : camError ? 'bg-red-600 text-white' : 'bg-indigo-600 text-white'}`}
-            >
-              {isCameraActive ? <X size={18} /> : <Camera size={18} />}
-            </button>
+      {!isCameraActive && !validating && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent pointer-events-none animate-in fade-in duration-180 ease-out px-6 text-center">
+          <div className="flex flex-col items-center justify-center">
+            {/* Scan frame dengan garis scan bergerak */}
+            <div className="relative mb-8 h-24 w-24 animate-in fade-in zoom-in-95 duration-180 fill-mode-both" style={{ animationDelay: '0ms' }}>
+              <div className="absolute left-0 top-0 h-6 w-6 rounded-tl-lg border-l-2 border-t-2 border-indigo-500" />
+              <div className="absolute right-0 top-0 h-6 w-6 rounded-tr-lg border-r-2 border-t-2 border-indigo-500" />
+              <div className="absolute bottom-0 left-0 h-6 w-6 rounded-bl-lg border-b-2 border-l-2 border-indigo-500" />
+              <div className="absolute bottom-0 right-0 h-6 w-6 rounded-br-lg border-b-2 border-r-2 border-indigo-500" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                {/* Mini kartu siswi: kotak QR + identitas */}
+                <div className="flex h-12 w-18.5 items-center gap-2 rounded-lg border border-white/10 bg-[#27272A] px-2 shadow-inner">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#1F1E23]">
+                    <QrCode size={16} className="text-zinc-400" />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1.5">
+                    <div className="h-1.5 w-full rounded-full bg-zinc-600" />
+                    <div className="h-1.5 w-2/3 rounded-full bg-zinc-700" />
+                  </div>
+                </div>
+              </div>
+              <div className="animate-qr-scan-line absolute left-3 right-3 h-0.5 rounded-full bg-indigo-500/80" />
+            </div>
+            <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in zoom-in-95 duration-180 fill-mode-both" style={{ animationDelay: '150ms' }}>Scan Student Card</h3>
+            <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in zoom-in-95 duration-180 fill-mode-both" style={{ animationDelay: '300ms' }}>
+              Tap the <span className="text-indigo-400 font-bold">camera button below</span> to turn on the camera, then align the student's QR code inside the scan frame.
+            </p>
           </div>
         </div>
       )}
 
-      {!isCameraActive && !validating && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-40 bg-transparent pointer-events-none animate-in fade-in duration-700 ease-out px-6 text-center">
-          <style>{`
-            @keyframes symmetry-float {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(-8px); }
-            }
-            .animate-symmetry-float {
-                animation: symmetry-float 4s ease-in-out infinite;
-            }
-          `}</style>
-          <div className="flex flex-col items-center justify-center">
-            <div className="relative w-32 h-12 mb-8 flex items-center justify-center animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '0ms' }}>
-              <div className="absolute inset-0 bg-zinc-500/10 rounded-full blur-3xl" />
-              <div className="relative flex items-center justify-center -space-x-3">
-                {[
-                  { icon: User, delay: '0s' },
-                  { icon: QrCode, delay: '0.2s' },
-                  { icon: User, delay: '0.4s' }
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className={`relative w-12 h-12 rounded-full bg-zinc-800 border border-black flex items-center justify-center shadow-xl animate-symmetry-float overflow-hidden transition-all ${i === 1 ? 'z-20 scale-110' : 'z-10 scale-80'}`}
-                    style={{ animationDelay: item.delay }}
-                  >
-                    <item.icon size={20} className="text-zinc-400 relative z-10" />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '150ms' }}>QR Scanner</h3>
-            <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in zoom-in-95 duration-700 fill-mode-both" style={{ animationDelay: '300ms' }}>
-              Point the camera at the QR Code. <br />
-              Press <span className="text-indigo-400 font-bold">Start Cam</span> to begin.
-            </p>
-          </div>
+      {/* Floating camera button — solid material, no blur */}
+      {!validating && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-4 duration-180 ease-out fill-mode-both">
+          <button
+            onClick={isCameraActive ? stopCamera : startCamera}
+            className={`flex h-12 w-12 items-center justify-center rounded-full shadow-2xl transition-all duration-200 active:scale-95 border ${isCameraActive
+              ? 'bg-[#1F1E23] border-white/10 text-white'
+              : 'bg-indigo-600 border-indigo-500/50 text-white'
+              }`}
+          >
+            {isCameraActive ? <X size={20} /> : <Camera size={20} />}
+          </button>
         </div>
       )}
 

@@ -58,9 +58,9 @@ export function PendingAttendanceList() {
     }
 
     return (
-        <div className="flex w-full flex-col">
-            <div className="flex w-full flex-col gap-0 pb-2">
-                <ul className="flex w-full flex-col gap-3">
+        <div className="flex min-h-full w-full flex-col">
+            <div className="flex w-full flex-1 flex-col gap-0 pb-2">
+                <ul className="flex w-full flex-1 flex-col gap-3">
                     {items.length > 0 ? (
                         items.map((item) => {
                             const payload = item.payload
@@ -111,7 +111,7 @@ export function PendingAttendanceList() {
                             )
                         })
                     ) : (
-                        <div className="flex h-full py-50 flex-col items-center justify-center rounded-3xl px-6 text-center shadow-inner">
+                        <div className="flex flex-1 flex-col items-center justify-center rounded-3xl px-6 text-center">
                             <FileClock className="mb-3 h-12 w-12 text-zinc-500" />
 
                             <p className="text-xs font-medium tracking-wide text-zinc-500">

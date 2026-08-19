@@ -42,7 +42,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
   const [isLainnya, setIsLainnya] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { status: "Menstruation", remarks: "" },
+    defaultValues: { status: "Pure", remarks: "" },
   });
 
   const watchStatus = form.watch("status");
@@ -70,7 +70,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent className="w-[92%] max-w-sm rounded-3xl bg-[#151419] border-none text-white p-6 shadow-2xl overflow-y-auto max-h-[90vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-        <AlertDialogTitle className="sr-only">Manual Confirmation</AlertDialogTitle>
+        <AlertDialogTitle className="sr-only">Attendance Details</AlertDialogTitle>
         <AlertDialogDescription className="sr-only">Confirm attendance status for {dataStudent?.full_name}</AlertDialogDescription>
 
         {!dataStudent ? (
@@ -81,9 +81,11 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
         ) : (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-1 mb-6 pb-4 border-b border-white/5">
-              <span className="text-xl font-bold tracking-tight text-white">Manual Confirmation</span>
+              <span className="text-xl font-bold tracking-tight text-white">
+                Attendance Details
+              </span>
               <span className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
-                Manual Attendance Confirmation
+                Select attendance status
               </span>
             </div>
 
@@ -129,8 +131,8 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                             <RadioGroupItem value="Pure" id="r-suci" className="peer sr-only" />
                             <label htmlFor="r-suci" className="flex flex-col items-center justify-center w-full p-3 rounded-2xl border border-white/5 bg-[#1F1E23] peer-data-[state=checked]:border-green-400/50 peer-data-[state=checked]:bg-green-900/30 transition-all cursor-pointer hover:bg-[#2A292F] group">
                               <Sparkles className="w-5 h-5 mb-1 text-green-400 group-hover:scale-110 transition-transform" />
-                              <span className="text-xs font-bold text-white">Praying</span>
-                              <span className="text-[9px] text-white/30 mt-0.5 leading-none">Pure Condition</span>
+                              <span className="text-xs font-bold text-white">Present</span>
+                              <span className="text-[9px] text-white/30 mt-0.5 leading-none">Attended prayer</span>
                             </label>
                           </div>
                         </RadioGroup>
@@ -151,7 +153,13 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                     name="remarks"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel className="text-white/40 text-[10px] uppercase tracking-widest font-bold block">Remarks / Reason</FormLabel>
+                        <FormLabel
+                          className={`text-[10px] uppercase tracking-widest font-bold block ${
+                            form.formState.errors.remarks ? "text-red-400" : "text-white/40"
+                          }`}
+                        >
+                          Remarks / Reason
+                        </FormLabel>
                         <FormControl>
                           <div className="space-y-3">
                             <div className="flex flex-wrap gap-2">
@@ -175,10 +183,18 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
                             </div>
                             {isLainnya && (
                               <div className="relative flex-1 animate-in fade-in zoom-in-95 duration-300">
-                                <Edit3 className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30" />
+                                <Edit3
+                                  className={`absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 ${
+                                    form.formState.errors.remarks ? "text-red-400" : "text-white/30"
+                                  }`}
+                                />
                                 <Input
                                   placeholder="Write reason..."
-                                  className="pl-8 bg-[#1F1E23] border-white/10 text-white text-xs h-12 rounded-2xl outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 ring-0! ring-offset-0!"
+                                  className={`pl-8 bg-[#1F1E23] text-white text-xs h-12 rounded-2xl outline-none transition-all duration-300 ring-0! ring-offset-0! ${
+                                    form.formState.errors.remarks
+                                      ? "border-red-400/60 focus:border-red-400 focus:ring-1 focus:ring-red-400/20"
+                                      : "border-white/10 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20"
+                                  }`}
                                   value={field.value}
                                   onChange={(e) => {
                                     field.onChange(e.target.value);
@@ -200,7 +216,7 @@ export function Form({ isOpen, setIsOpen, dataStudent, setPick, setSuccessPopup,
 
                 <div className="flex flex-col gap-3 pt-4">
                   <Button type="submit" className="w-full rounded-2xl h-12 bg-indigo-600 text-white hover:bg-indigo-500 font-bold transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20">
-                    Process
+                    Review Attendance
                   </Button>
                   <AlertDialogCancel className="w-full bg-[#1F1E23] border border-white/5 text-white hover:bg-[#2A292F] rounded-2xl h-12 mt-0 transition-all active:scale-[0.98]">
                     Cancel

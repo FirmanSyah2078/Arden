@@ -29,7 +29,7 @@ export const UnifiedHeader = () => {
     if (pathname === "/guide") {
       return {
         title: "User Guide",
-        desc: "Operational guidelines and system help",
+        desc: "Learn how to record, review, and manage attendance in Arden",
       }
     }
     return {

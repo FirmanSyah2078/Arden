@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { User, Camera } from 'lucide-react';
+import { User, Camera, AtSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,16 +17,10 @@ function ProfileSkeleton() {
         <div className="h-3 w-20 animate-pulse rounded-full bg-[#1F1E23]" />
       </div>
 
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <div className="ml-1 h-3 w-20 animate-pulse rounded-full bg-[#1F1E23]" />
-          <div className="h-12 w-full animate-pulse rounded-2xl bg-[#1F1E23]" />
-        </div>
-
-        <div className="space-y-2">
-          <div className="ml-1 h-3 w-20 animate-pulse rounded-full bg-[#1F1E23]" />
-          <div className="h-12 w-full animate-pulse rounded-2xl bg-[#1F1E23]" />
-        </div>
+      <div className="space-y-4 rounded-3xl border border-white/8 bg-[#1F1E23] p-5">
+        <div className="h-3 w-28 animate-pulse rounded-full bg-zinc-800" />
+        <div className="h-12 w-full animate-pulse rounded-2xl bg-zinc-800/60" />
+        <div className="h-12 w-full animate-pulse rounded-2xl bg-zinc-800/60" />
       </div>
 
       <div className="space-y-3">
@@ -64,7 +58,7 @@ export default function MePage() {
           <ProfileSkeleton />
         ) : (
           <>
-            {/* Avatar Section - Symmetry Luxury */}
+            {/* Avatar Section - Symmetry Luxury (UNCHANGED — udah perfect) */}
             <div className="flex flex-col items-center py-12 gap-6">
               <div className="relative">
                 {/* Aura Glow Effect */}
@@ -112,68 +106,85 @@ export default function MePage() {
                   ref={fileInputRef}
                   onChange={handleFileChange}
                   className="hidden"
-                  accept="image/*"
+                  accept="image/png, image/jpeg, image/webp"
                 />
               </div>
             </div>
 
-            {/* Form Section - Symmetry Search Bar Style */}
-            <div className="space-y-6">
-              <div className="space-y-2 group">
-                <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1 transition-colors group-focus-within:text-indigo-400">
-                  Full Name
-                </Label>
-                <Input
-                  value={formData?.name || ''}
-                  onChange={(e) => handleChange('name', e.target.value)}
-                  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 !ring-0 !ring-offset-0"
-                  disabled={isLoading || isSubmitting}
-                />
-              </div>
+            {/* Form Section — grouped card, icon tile + divider (search bar language) */}
+            <div className="rounded-3xl border border-white/8 bg-[#1F1E23] p-5">
+              <div className="space-y-4">
+                {/* Full Name */}
+                <div className="group space-y-2">
+                  <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-zinc-500 transition-colors group-focus-within:text-indigo-400">
+                    Full Name
+                  </Label>
+                  <div className="flex h-12 w-full items-center rounded-2xl border border-white/10 bg-[#141317] p-1.5 pr-4 transition-all duration-300 group-focus-within:border-indigo-500/60">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#2A292F] text-zinc-400 transition-colors duration-300 group-focus-within:bg-indigo-600 group-focus-within:text-white">
+                      <User size={16} strokeWidth={2.2} />
+                    </div>
+                    <div className="mx-2.5 h-5 w-px shrink-0 bg-white/10" />
+                    <Input
+                      value={formData?.name || ''}
+                      onChange={(e) => handleChange('name', e.target.value)}
+                      placeholder="Your full name"
+                      className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 py-0 text-[14px] font-medium text-white shadow-none outline-none placeholder:text-white/25 ring-0! ring-offset-0! dark:bg-transparent focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                      disabled={isLoading || isSubmitting}
+                    />
+                  </div>
+                </div>
 
-              <div className="space-y-2 group">
-                <Label className="text-[10px] font-bold text-white/40 uppercase tracking-wider ml-1 transition-colors group-focus-within:text-indigo-400">
-                  Username
-                </Label>
-                <Input
-                  value={formData?.username || ''}
-                  onChange={(e) => handleChange('username', e.target.value)}
-                  className="bg-[#1F1E23] border-white/10 text-white rounded-2xl h-12 outline-none transition-all duration-300 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 !ring-0 !ring-offset-0"
-                  disabled={isLoading || isSubmitting}
-                />
+                {/* Username */}
+                <div className="group space-y-2">
+                  <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-zinc-500 transition-colors group-focus-within:text-indigo-400">
+                    Username
+                  </Label>
+                  <div className="flex h-12 w-full items-center rounded-2xl border border-white/10 bg-[#141317] p-1.5 pr-4 transition-all duration-300 group-focus-within:border-indigo-500/60">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#2A292F] text-zinc-400 transition-colors duration-300 group-focus-within:bg-indigo-600 group-focus-within:text-white">
+                      <AtSign size={16} strokeWidth={2.2} />
+                    </div>
+                    <div className="mx-2.5 h-5 w-px shrink-0 bg-white/10" />
+                    <Input
+                      value={formData?.username || ''}
+                      onChange={(e) => handleChange('username', e.target.value)}
+                      placeholder="Your username"
+                      className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 py-0 text-[14px] font-medium text-white shadow-none outline-none placeholder:text-white/25 ring-0! ring-offset-0! dark:bg-transparent focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                      disabled={isLoading || isSubmitting}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Action Buttons - Dynamic Back/Cancel */}
-            <div className="flex flex-col gap-3 mt-12">
+            {/* Action Buttons — solid, no glow */}
+            <div className="mt-8 flex flex-col gap-3">
               <Button
                 onClick={async () => {
                   await handleSave();
                 }}
                 disabled={isSaveDisabled}
-                className="w-full h-14 rounded-2xl bg-indigo-600 text-white font-bold transition-all active:scale-[0.98] border-none shadow-[0_4px_20px_rgba(79,70,229,0.3)]"
+                className="h-14 w-full rounded-2xl border-none bg-indigo-600 font-bold text-white transition-all hover:bg-indigo-500 active:scale-[0.98] disabled:opacity-40"
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                     <span>Saving...</span>
                   </div>
-                ) : 'Save Changes'}
+                ) : (
+                  'Save Changes'
+                )}
               </Button>
 
               <Button
                 onClick={() => {
                   if (isDirty) {
                     resetForm();
-                    // Add a slight delay before going back to let the user see the reset, 
-                    // or just let them click again. But for better UX, we can do:
-                    // router.back(); // Uncomment this if you want to force exit after reset
                   } else {
                     router.back();
                   }
                 }}
                 variant="outline"
-                className="w-full h-14 rounded-2xl bg-zinc-900/50 text-white/80 border-white/10 hover:bg-zinc-800 hover:text-white font-semibold transition-all active:scale-[0.98]"
+                className="h-14 w-full rounded-2xl border border-white/10 bg-[#1F1E23] font-semibold text-zinc-300 transition-all hover:bg-[#2A292F] hover:text-white active:scale-[0.98]"
               >
                 {isDirty ? 'Cancel' : 'Back'}
               </Button>

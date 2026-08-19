@@ -6,7 +6,11 @@ import { useSholat } from '@/hooks/mobile/use-sholat';
 
 export const StatusCard = () => {
   const { profile, isLoading } = useProfile();
-  const { displayStatus, timeRange, isLoading: isPrayerLoading } = useSholat()
+  const {
+    displayStatus,
+    timeRange,
+    isLoading: isPrayerLoading,
+  } = useSholat();
 
   const labels: Record<string, string> = {
     Fajr: 'Fajr',
@@ -14,71 +18,67 @@ export const StatusCard = () => {
     Dhuhr: 'Dhuhr',
     Asr: 'Asr',
     Maghrib: 'Maghrib',
-    Isha: 'Isha'
+    Isha: 'Isha',
   };
 
+  const loading = isLoading || isPrayerLoading;
+
   return (
-    <>
-      {isLoading || isPrayerLoading ? (
-        <div className="flex w-full items-center gap-4 rounded-3xl border border-white/10 bg-[#1F1E23] p-4 shadow-xl">
-          <div className="h-14 w-14 shrink-0 animate-pulse rounded-full border border-white/10 bg-[#2A292F]" />
-
-          <div className="flex min-w-0 flex-1 flex-col justify-center">
-            <div className="mb-0.5 h-2.5 w-20 animate-pulse rounded-full bg-zinc-800" />
-
-            <div className="mb-2 h-4 w-32 animate-pulse rounded-full bg-zinc-800" />
-
-            <div className="flex items-center gap-2">
-              <div className="h-5 w-28 animate-pulse rounded-full bg-zinc-800" />
-              <div className="h-3 w-20 animate-pulse rounded-full bg-zinc-800" />
-            </div>
+    <div className="relative flex w-full items-center gap-4 overflow-hidden rounded-3xl border border-white/8 bg-[#1F1E23] p-4 shadow-xl">
+      {/* Avatar — kotak tetap 56px, tidak pernah berubah ukuran */}
+      <div className="relative z-10 h-14 w-14 shrink-0 overflow-hidden rounded-full border border-white/10 bg-[#2A292F] shadow-inner">
+        {loading ? (
+          <div className="h-full w-full animate-pulse bg-zinc-800" />
+        ) : profile.avatarUrl ? (
+          <>
+            <img
+              src={profile.avatarUrl}
+              alt="Blur"
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-md"
+            />
+            <img
+              src={profile.avatarUrl}
+              alt="Profile"
+              className="relative z-10 h-full w-full object-cover"
+            />
+          </>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-white/20">
+            <User size={24} />
           </div>
-        </div>
-      ) : (
-        <div className="w-full bg-[#1F1E23] rounded-3xl p-4 border border-white/10 shadow-xl flex items-center gap-4 transition-all duration-500">
-          {/* Avatar with Symmetry Blurred BG Glow effect */}
-          <div className="w-14 h-14 rounded-full bg-[#2A292F] overflow-hidden shrink-0 border border-white/10 shadow-inner relative">
-            {profile.avatarUrl ? (
-              <>
-                <img
-                  src={profile.avatarUrl}
-                  alt="Blur"
-                  className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-40"
-                />
-                <img
-                  src={profile.avatarUrl}
-                  alt="Profile"
-                  className="relative z-10 w-full h-full object-cover"
-                />
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-white/20">
-                <User size={24} />
-              </div>
-            )}
-          </div>
+        )}
+      </div>
 
-          <div className="flex-1 min-w-0 flex flex-col justify-center">
-            <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium mb-0.5">
+      {/* Kolom teks — tinggi dikunci 68px, dua state sama persis */}
+      <div className="relative z-10 flex h-17 min-w-0 flex-1 flex-col justify-center">
+        {loading ? (
+          <>
+            <div className="mb-1.5 h-3 w-20 animate-pulse rounded-full bg-zinc-800" />
+            <div className="mb-2.5 h-4 w-32 animate-pulse rounded-full bg-zinc-800" />
+            <div className="h-5 w-28 animate-pulse rounded-full bg-zinc-800" />
+          </>
+        ) : (
+          <>
+            <span className="mb-1 text-[10px] font-medium uppercase tracking-widest text-zinc-500">
               Welcome back,
             </span>
-            <h2 className="text-base font-bold text-white truncate leading-tight mb-2">
+            <h2 className="mb-2 truncate text-base font-bold leading-tight tracking-tight text-white">
               {profile.name || 'User'}
             </h2>
             <div className="flex items-center gap-2">
-              {/* Professional Prayer Status Badge */}
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-600 border-none shrink-0 shadow-sm">
-                <span className="text-[9px] font-bold tracking-wider text-white capitalize">
+              <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-indigo-600 px-2.5 py-0.5 shadow-sm">
+                <span className="h-1 w-1 rounded-full bg-white/80" aria-hidden="true" />
+                <span className="text-[9px] font-bold capitalize tracking-wider text-white">
                   {labels[displayStatus] ? `Prayer Time: ${labels[displayStatus]}` : '...'}
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500 tracking-tight">
-                {timeRange} <span className="opacity-50">WIB</span>
+              <span className="font-mono text-[10px] tracking-tight text-zinc-400">
+                {timeRange} WIB
               </span>
             </div>
-          </div>
-        </div>
-      )}
-    </>
+          </>
+        )}
+      </div>
+    </div>
   );
 };

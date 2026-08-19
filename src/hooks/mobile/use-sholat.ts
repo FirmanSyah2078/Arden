@@ -58,7 +58,26 @@ export function useSholat() {
 
 
         if (cacheJson.status !== 'success' || !cacheJson.data) {
-          throw new Error('Today prayer cache is unavailable');
+          // Coba fallback dari localStorage cache
+          const raw = localStorage.getItem('arden-prayer-cache')
+          if (raw) {
+            try {
+              const cached = JSON.parse(raw)
+              if (cached.schedule) {
+                setSchedule(
+                    {...cached.schedule, Sunrise: cached.schedule.dhuhr})
+                setTrackedPrayers(cached.trackedPrayers || [])
+                return
+              }
+            } catch {
+              // cache corrupt, lanjut ke bawah
+            }
+          }
+
+          // Tidak ada jadwal sama sekali — bukan error, cukup kosongkan
+          setSchedule(null)
+          setTrackedPrayers([])
+          return
         }
 
         const routine = routineJson.status === 'success' &&

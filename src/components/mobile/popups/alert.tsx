@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Clock, Loader2, CheckCircle2, AlertCircle, User } from "lucide-react"
+import { Clock, Loader2, CheckCircle2, AlertCircle } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -164,7 +164,7 @@ export function Alert({
           title: "Pending sync",
           subtitle: "Will be validated when connection returns.",
           icon: (
-            <Clock className="h-14 w-14 animate-pulse text-amber-400" />
+            <Clock className="h-8 w-8 animate-pulse text-amber-400" />
           ),
           btnClass: "bg-amber-500 text-white hover:bg-amber-400",
           textCol: "text-amber-400",
@@ -174,7 +174,7 @@ export function Alert({
           title: "Success!",
           subtitle: "Attendance data has been saved.",
           icon: (
-            <CheckCircle2 className="animate-in zoom-in h-14 w-14 text-emerald-400 duration-500" />
+            <CheckCircle2 className="animate-in zoom-in h-8 w-8 text-emerald-400 duration-500" />
           ),
           btnClass: "bg-indigo-600 text-white hover:bg-indigo-500",
           textCol: "text-emerald-400",
@@ -182,18 +182,18 @@ export function Alert({
       case "error":
         return {
           title: "Failed!",
-          subtitle: "An error occurred while saving data.",
+          subtitle: "Attendance could not be saved.",
           icon: (
-            <AlertCircle className="animate-in shake h-14 w-14 text-red-400 duration-300" />
+            <AlertCircle className="animate-in shake h-8 w-8 text-red-400 duration-300" />
           ),
           btnClass: "bg-red-500 text-white hover:bg-red-400",
           textCol: "text-red-400",
         }
       default:
         return {
-          title: "Confirmation",
-          subtitle: "Please review the student details.",
-          icon: <User className="h-14 w-14 text-white/20" />,
+          title: "Review Attendance",
+          subtitle: "Check the details before saving.",
+          icon: null,
           btnClass: "bg-indigo-600 text-white hover:bg-indigo-500",
           textCol: "text-white",
         }
@@ -206,7 +206,7 @@ export function Alert({
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent
         showCloseButton={false}
-        className="w-[92%] max-w-sm overflow-hidden rounded-3xl border-none bg-[#151419] p-6 text-white shadow-2xl"
+        className="w-[92%] max-w-sm max-h-[85vh] overflow-y-auto rounded-3xl border-none bg-[#151419] p-4 text-white shadow-2xl"
       >
         <DialogTitle className="sr-only">{config.title}</DialogTitle>
         <DialogDescription className="sr-only">
@@ -214,69 +214,70 @@ export function Alert({
         </DialogDescription>
 
         {/* Status Header */}
-        <div className="mb-10 flex flex-col items-center text-center">
-          <div className="relative mb-6 rounded-full border border-white/5 bg-[#1F1E23] p-5 shadow-inner">
-            <div className="absolute inset-0 rounded-full bg-white/5 blur-xl" />
-            {config.icon}
-          </div>
-          <h2 className={`text-2xl font-bold tracking-tight ${config.textCol}`}>
+        <div className="mb-4 flex flex-col items-center text-center">
+          {config.icon && (
+            <div className="relative mb-3 rounded-full border border-white/5 bg-[#1F1E23] p-3 shadow-inner">
+              {config.icon}
+            </div>
+          )}
+          <h2 className={`text-xl font-bold tracking-tight ${config.textCol}`}>
             {config.title}
           </h2>
-          <p className="mt-2 font-mono text-[10px] tracking-widest text-white/30 uppercase">
+          <p className="mt-1 font-mono text-[10px] tracking-widest text-white/30 uppercase">
             {config.subtitle}
           </p>
         </div>
 
-        {/* User Info Card (Symmetry Style) */}
-        <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/5 bg-[#1F1E23] p-5 shadow-sm">
-          <div className="relative z-10 flex flex-col gap-5">
-            <div>
-              <p className="mb-1 text-[10px] font-bold tracking-wider text-white/40 uppercase">
-                Student Name
-              </p>
-              <p className="mb-4 text-lg leading-tight font-bold text-white">
-                {absensiStatus?.full_name}
-              </p>
-              <div className="flex items-center gap-4">
-                <div>
-                  <p className="mb-0.5 text-[10px] font-bold tracking-wider text-white/40 uppercase">
-                    Class
-                  </p>
-                  <p className="font-mono text-sm text-white">
-                    {absensiStatus?.class_name}
-                  </p>
-                </div>
-                <div className="h-8 w-px bg-white/5"></div>
-                <div>
-                  <p className="mb-0.5 text-[10px] font-bold tracking-wider text-white/40 uppercase">
-                    Student ID (NIS)
-                  </p>
-                  <p className="font-mono text-sm text-white">
-                    {absensiStatus?.nis}
-                  </p>
-                </div>
-              </div>
+        {/* Compact attendance summary */}
+        <div className="mb-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-3">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-white/40">
+            Student
+          </p>
+          <p className="truncate text-base font-bold leading-tight text-white">
+            {absensiStatus?.full_name}
+          </p>
+
+          <div className="mt-2 grid grid-cols-2 gap-3 border-b border-white/5 pb-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Class</p>
+              <p className="truncate font-mono text-xs text-white">{absensiStatus?.class_name}</p>
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">NIS</p>
+              <p className="truncate font-mono text-xs text-white">{absensiStatus?.nis}</p>
             </div>
           </div>
-        </div>
 
-        {/* Timing Display */}
-        <div className="mb-10 flex gap-3">
-          <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/5 bg-[#1F1E23] p-3 shadow-sm">
-            <Clock size={14} className="text-white/40" />
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Status</p>
+              <p className={`text-xs font-bold ${absensiStatus?.icode === "Menstruation" ? "text-red-400" : "text-emerald-400"}`}>
+                {absensiStatus?.icode === "Menstruation" ? "Excused" : "Present"}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Session</p>
+              <p className="text-xs font-bold uppercase text-white">{sholatTime}</p>
+            </div>
+          </div>
+
+          {absensiStatus?.icode === "Menstruation" && absensiStatus.remarks && (
+            <div className="mt-3 border-t border-white/5 pt-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Reason</p>
+              <p className="mt-0.5 break-words text-xs text-white/80">{absensiStatus.remarks}</p>
+            </div>
+          )}
+
+          <div className="mt-3 flex items-center gap-2 border-t border-white/5 pt-3">
+            <Clock size={13} className="text-white/40" />
             <span className="font-mono text-xs text-white">
               {scanTime} <span className="text-white/30">WIB</span>
-            </span>
-          </div>
-          <div className="flex flex-1 items-center justify-center rounded-2xl border border-white/5 bg-[#1F1E23] p-3 shadow-sm">
-            <span className="text-xs font-bold tracking-wide text-white uppercase">
-              {sholatTime}
             </span>
           </div>
         </div>
         {(processStatus === "success" || processStatus === "pending") &&
           gatekeeperStatus && (
-            <div className="mb-8 flex justify-center">
+            <div className="mb-4 flex justify-center">
               <span
                 className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase ${gatekeeperStatus === "Pending sync"
                   ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
@@ -297,7 +298,7 @@ export function Alert({
             </div>
           )}
         {processStatus === "error" && (
-          <div className="mb-8 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-center text-[10px] font-medium tracking-wide text-red-400">
+          <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-center text-[10px] font-medium tracking-wide text-red-400">
             {errorMessage}
           </div>
         )}
@@ -324,16 +325,16 @@ export function Alert({
                     Processing...
                   </>
                 ) : (
-                  "Save Attendance"
+                  processStatus === "error" ? "Try Again" : "Save Attendance"
                 )}
               </Button>
               {!isSubmitting && (
                 <Button
                   variant="outline"
-                  className="h-12 w-full rounded-2xl border-white/10 bg-transparent text-xs text-white/60 transition-all hover:bg-white/5 hover:text-white"
+                  className="h-12 w-full rounded-2xl border border-white/5 bg-[#1F1E23] text-xs font-semibold text-white/70 transition-all hover:bg-[#2A292F] hover:text-white active:scale-[0.98]"
                   onClick={handleCloseAndResume}
                 >
-                  Cancel & Rescan
+                  Cancel
                 </Button>
               )}
             </>
