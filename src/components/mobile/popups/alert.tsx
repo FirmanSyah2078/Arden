@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Clock, Loader2, CheckCircle2, AlertCircle, User } from "lucide-react"
+import { Clock, Loader2, CheckCircle2, AlertCircle } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -193,7 +193,7 @@ export function Alert({
         return {
           title: "Review Attendance",
           subtitle: "Check the details before saving.",
-          icon: <User className="h-8 w-8 text-white/20" />,
+          icon: null,
           btnClass: "bg-indigo-600 text-white hover:bg-indigo-500",
           textCol: "text-white",
         }
@@ -215,10 +215,11 @@ export function Alert({
 
         {/* Status Header */}
         <div className="mb-4 flex flex-col items-center text-center">
-          <div className="relative mb-4 rounded-full border border-white/5 bg-[#1F1E23] p-3 shadow-inner">
-            <div className="absolute inset-0 rounded-full bg-white/5 blur-xl" />
-            {config.icon}
-          </div>
+          {config.icon && (
+            <div className="relative mb-3 rounded-full border border-white/5 bg-[#1F1E23] p-3 shadow-inner">
+              {config.icon}
+            </div>
+          )}
           <h2 className={`text-xl font-bold tracking-tight ${config.textCol}`}>
             {config.title}
           </h2>
@@ -227,77 +228,50 @@ export function Alert({
           </p>
         </div>
 
-        {/* User Info Card (Symmetry Style) */}
-        <div className="relative mb-4 overflow-hidden rounded-2xl border border-white/5 bg-[#1F1E23] p-3 shadow-sm">
-          <div className="relative z-10 flex flex-col gap-5">
-            <div>
-              <p className="mb-1 text-[10px] font-bold tracking-wider text-white/40 uppercase">
-                Student Name
-              </p>
-              <p className="mb-2 text-base leading-tight font-bold text-white">
-                {absensiStatus?.full_name}
-              </p>
-              <div className="flex items-center gap-4">
-                <div>
-                  <p className="mb-0.5 text-[10px] font-bold tracking-wider text-white/40 uppercase">
-                    Class
-                  </p>
-                  <p className="font-mono text-sm text-white">
-                    {absensiStatus?.class_name}
-                  </p>
-                </div>
-                <div className="h-6 w-px bg-white/5"></div>
-                <div>
-                  <p className="mb-0.5 text-[10px] font-bold tracking-wider text-white/40 uppercase">
-                    Student ID (NIS)
-                  </p>
-                  <p className="font-mono text-sm text-white">
-                    {absensiStatus?.nis}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-4">
+        {/* Compact attendance summary */}
+        <div className="mb-4 rounded-2xl border border-white/5 bg-[#1F1E23] p-3">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-white/40">
-            Attendance Details
+            Student
+          </p>
+          <p className="truncate text-base font-bold leading-tight text-white">
+            {absensiStatus?.full_name}
           </p>
 
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-xs text-white/50">Status</span>
-            <span
-              className={`text-xs font-bold ${absensiStatus?.icode === "Menstruation"
-                ? "text-red-400"
-                : "text-emerald-400"
-                }`}
-            >
-              {absensiStatus?.icode === "Menstruation" ? "Excused" : "Present"}
-            </span>
+          <div className="mt-2 grid grid-cols-2 gap-3 border-b border-white/5 pb-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Class</p>
+              <p className="truncate font-mono text-xs text-white">{absensiStatus?.class_name}</p>
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">NIS</p>
+              <p className="truncate font-mono text-xs text-white">{absensiStatus?.nis}</p>
+            </div>
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Status</p>
+              <p className={`text-xs font-bold ${absensiStatus?.icode === "Menstruation" ? "text-red-400" : "text-emerald-400"}`}>
+                {absensiStatus?.icode === "Menstruation" ? "Excused" : "Present"}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Session</p>
+              <p className="text-xs font-bold uppercase text-white">{sholatTime}</p>
+            </div>
           </div>
 
           {absensiStatus?.icode === "Menstruation" && absensiStatus.remarks && (
-            <div className="mt-3 flex items-start justify-between gap-4 border-t border-white/5 pt-3">
-              <span className="text-xs text-white/50">Reason</span>
-              <span className="max-w-[60%] text-right text-xs text-white/80">
-                {absensiStatus.remarks}
-              </span>
+            <div className="mt-3 border-t border-white/5 pt-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Reason</p>
+              <p className="mt-0.5 break-words text-xs text-white/80">{absensiStatus.remarks}</p>
             </div>
           )}
-        </div>
 
-        {/* Timing Display */}
-        <div className="mb-4 flex gap-2">
-          <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/5 bg-[#1F1E23] p-2 shadow-sm">
-            <Clock size={14} className="text-white/40" />
+          <div className="mt-3 flex items-center gap-2 border-t border-white/5 pt-3">
+            <Clock size={13} className="text-white/40" />
             <span className="font-mono text-xs text-white">
               {scanTime} <span className="text-white/30">WIB</span>
-            </span>
-          </div>
-          <div className="flex flex-1 items-center justify-center rounded-2xl border border-white/5 bg-[#1F1E23] p-2 shadow-sm">
-            <span className="text-xs font-bold tracking-wide text-white uppercase">
-              {sholatTime}
             </span>
           </div>
         </div>
@@ -357,7 +331,7 @@ export function Alert({
               {!isSubmitting && (
                 <Button
                   variant="outline"
-                  className="h-12 w-full rounded-2xl border-white/10 bg-transparent text-xs text-white/60 transition-all hover:bg-white/5 hover:text-white"
+                  className="h-12 w-full rounded-2xl border border-white/5 bg-[#1F1E23] text-xs font-semibold text-white/70 transition-all hover:bg-[#2A292F] hover:text-white active:scale-[0.98]"
                   onClick={handleCloseAndResume}
                 >
                   Cancel
