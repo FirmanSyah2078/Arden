@@ -84,9 +84,9 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
             <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-[#151419] to-transparent pointer-events-none z-10" />
 
             {!search && !isFocused && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center animate-in fade-in duration-[220ms] ease-out">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center animate-in fade-in duration-220 ease-out">
                     {/* Kartu siswa + badge search: cari siswa lalu isi form */}
-                    <div className="relative mb-8 animate-in fade-in zoom-in-95 duration-[220ms] fill-mode-both" style={{ animationDelay: '0ms' }}>
+                    <div className="relative mb-8 animate-in fade-in zoom-in-95 duration-220 fill-mode-both" style={{ animationDelay: '0ms' }}>
                         <div className="flex h-20 w-32 items-center gap-3 rounded-xl border border-white/10 bg-[#27272A] px-3 shadow-inner">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1F1E23]">
                                 <User size={18} className="text-zinc-500" />
@@ -100,8 +100,8 @@ export const ManualResults = ({ search, data, isLoading, handleSelect, isFocused
                             <Search size={16} className="text-white" />
                         </div>
                     </div>
-                    <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in zoom-in-95 duration-[220ms] fill-mode-both" style={{ animationDelay: '80ms' }}>Manual Attendance</h3>
-                    <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in zoom-in-95 duration-[220ms] fill-mode-both" style={{ animationDelay: '140ms' }}>
+                    <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in zoom-in-95 duration-220 fill-mode-both" style={{ animationDelay: '80ms' }}>Manual Attendance</h3>
+                    <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in zoom-in-95 duration-220 fill-mode-both" style={{ animationDelay: '140ms' }}>
                         Search a student by name or NIS, then fill in the attendance form.
                     </p>
                 </div>

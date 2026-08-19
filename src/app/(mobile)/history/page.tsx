@@ -148,31 +148,37 @@ export default function HistoryPage() {
       )}
 
       {/* TAB NAVIGATION - Persistent/Fixed at the top */}
-      {prayerTimes.length > 0 && (
+      {(isPrayerLoading || prayerTimes.length > 0) && (
         <div className="relative mt-4 mb-4 flex h-12 w-full items-center gap-1 rounded-2xl border border-white/5 bg-[#141317] p-1 shadow-inner">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-1 left-1 rounded-xl border border-indigo-500/50 bg-indigo-600 shadow-[0_6px_16px_-5px_rgba(79,70,229,0.55)] transition-transform duration-[220ms] ease-[cubic-bezier(0.32,0.72,0,1)]"
-            style={{
-              width: `calc((100% - 0.5rem) / ${prayerTimes.length})`,
-              transform: `translateX(${Math.max(activeTabIndex, 0) * 100}%)`,
-            }}
-          />
-          {prayerTimes.map((time) => (
-            <button
-              key={time.id}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === time.id}
-              onClick={() => setActiveTab(time.id)}
-              className={`relative z-10 h-full flex-1 rounded-xl text-[10px] font-bold transition-colors duration-[220ms] ${activeTab === time.id
-                ? "text-white"
-                : "text-white/40 hover:text-white/70"
-                }`}
-            >
-              {time.label}
-            </button>
-          ))}
+          {prayerTimes.length > 0 ? (
+            <>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-1 left-1 rounded-xl border border-indigo-500/50 bg-indigo-600 shadow-[0_6px_16px_-5px_rgba(79,70,229,0.55)] transition-transform duration-[220ms] ease-[cubic-bezier(0.32,0.72,0,1)]"
+                style={{
+                  width: `calc((100% - 0.5rem) / ${prayerTimes.length})`,
+                  transform: `translateX(${Math.max(activeTabIndex, 0) * 100}%)`,
+                }}
+              />
+              {prayerTimes.map((time) => (
+                <button
+                  key={time.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === time.id}
+                  onClick={() => setActiveTab(time.id)}
+                  className={`relative z-10 h-full flex-1 rounded-xl text-[10px] font-bold transition-colors duration-[220ms] ${activeTab === time.id
+                    ? "text-white"
+                    : "text-white/40 hover:text-white/70"
+                    }`}
+                >
+                  {time.label}
+                </button>
+              ))}
+            </>
+          ) : (
+            <div className="h-full w-full animate-pulse rounded-xl bg-zinc-800" />
+          )}
         </div>
       )}
 

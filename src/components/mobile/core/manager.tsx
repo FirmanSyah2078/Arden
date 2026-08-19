@@ -154,14 +154,14 @@ export const Manager = ({
         {mode === 'scan' ? (
           <div
             key="scan-view"
-            className="h-full w-full animate-in fade-in duration-[220ms] ease-out"
+            className="h-full w-full animate-in fade-in duration-220 ease-out"
           >
             <Qr ref={qrRef} sholat={activeScanner} onCamActive={setIsCamActive} />
           </div>
         ) : (
           <div
             key="manual-view"
-            className="flex h-full min-h-0 w-full flex-col animate-in fade-in duration-[220ms] ease-out"
+            className="flex h-full min-h-0 w-full flex-col animate-in fade-in duration-220 ease-out"
           >
             <Manual
               search={search}

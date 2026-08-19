@@ -1,172 +1,174 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { QrCode, Search, User, History, ChevronDown } from 'lucide-react';
-import { UnifiedHeader } from '@/components/mobile/ui/unified-header';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  ChevronDown,
+  CloudOff,
+  History,
+  QrCode,
+  Search,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
+import { UnifiedHeader } from "@/components/mobile/ui/unified-header";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+const guides = [
+  {
+    title: "Scan a student card",
+    summary: "Use the QR scanner when the student card is available.",
+    icon: QrCode,
+    accent: "text-indigo-400",
+    steps: [
+      "Open Go and stay on Scan mode.",
+      "Tap the camera button to turn on the camera.",
+      "Place the QR code on the student card inside the scan frame.",
+      "Keep the card steady while the system validates the attendance.",
+      "Wait for the result before closing the camera.",
+    ],
+  },
+  {
+    title: "Record attendance manually",
+    summary: "Search by student name or NIS when scanning is unavailable.",
+    icon: Search,
+    accent: "text-zinc-300",
+    steps: [
+      "Switch Go to Manual mode using the dock.",
+      "Type the student's name or NIS in the search bar.",
+      "Select the correct student from the result list.",
+      "Review the identity details before continuing.",
+      "Complete and submit the attendance form.",
+    ],
+  },
+  {
+    title: "Check attendance history",
+    summary: "Review server-confirmed attendance by prayer time.",
+    icon: History,
+    accent: "text-zinc-300",
+    steps: [
+      "Open History from the menu.",
+      "Choose a prayer-time tab at the top.",
+      "Check the student's name, class, NIS, and recorded time.",
+      "History shows confirmed records, not pending offline submissions.",
+    ],
+  },
+  {
+    title: "Handle offline attendance",
+    summary: "Attendance made offline stays pending until it can sync.",
+    icon: CloudOff,
+    accent: "text-amber-300",
+    steps: [
+      "If the connection is unavailable, the attendance is kept in the queue.",
+      "Open Queue to review pending attendance records.",
+      "Do not treat a pending record as server-confirmed success.",
+      "When the connection returns, Arden retries synchronization automatically.",
+      "A rejected record remains visible with its server response.",
+    ],
+  },
+  {
+    title: "Update your profile",
+    summary: "Keep your name, username, and profile photo accurate.",
+    icon: UserRound,
+    accent: "text-zinc-300",
+    steps: [
+      "Open Profile from the menu.",
+      "Tap the camera button to choose a new profile photo.",
+      "Use JPG, PNG, or WebP images up to 5 MB before compression.",
+      "Update your name or username when necessary.",
+      "Save the changes and wait for the confirmation.",
+    ],
+  },
+  {
+    title: "If something goes wrong",
+    summary: "A short checklist for common attendance issues.",
+    icon: ShieldCheck,
+    accent: "text-zinc-300",
+    steps: [
+      "Camera unavailable: check browser camera permission and try again.",
+      "No search result: check the spelling or search with the student's NIS.",
+      "Pending attendance: open Queue instead of History.",
+      "Unexpected result: verify the selected student before submitting again.",
+      "If the issue continues, capture the visible message and report it to the operator.",
+    ],
+  },
+];
 
 export default function GuidePage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const guides = [
-    {
-      title: 'QR Scanner',
-      desc: 'Quickly record your attendance by scanning the provided QR code.',
-      details: [
-        'Ensure your device camera has granted permission to access the scanner.',
-        'Point the viewfinder squarely at the QR code provided by the officer.',
-        'Hold the device steady until the system detects the code automatically.',
-        'Wait for the success feedback before moving away from the scanning area.'
-      ],
-      icon: QrCode,
-      color: 'text-indigo-400'
-    },
-    {
-      title: 'Manual Search',
-      desc: 'Can\'t scan? Use manual search to find identity and record attendance.',
-      details: [
-        'Tap the Search icon if the QR scanner fails or is unavailable.',
-        'Type your full name or Student Identification Number (NIS) in the search bar.',
-        'Select your correct profile from the filtered results list.',
-        'Confirm the details and submit to record your attendance manually.'
-      ],
-      icon: Search,
-      color: 'text-zinc-400'
-    },
-    {
-      title: 'Profile Management',
-      desc: 'Keep your identity updated. Change name or picture in the Me section.',
-      details: [
-        'Navigate to the "Me" section from the main navigation menu.',
-        'Tap on the profile picture to upload a new, professional photo.',
-        'Update your personal information if there are any clerical errors.',
-        'Save changes to ensure your records are always accurate and up-to-date.'
-      ],
-      icon: User,
-      color: 'text-zinc-400'
-    },
-    {
-      title: 'Attendance History',
-      desc: 'Review your attendance logs across prayer times in the History section.',
-      details: [
-        'Access the History page to view your personal attendance timeline.',
-        'Switch between prayer tabs (Dhuhr, Asr, Maghrib, Isha) to filter records.',
-        'Verify the timestamps to ensure your attendance was recorded correctly.',
-        'Use this data to track your consistency over a specific period.'
-      ],
-      icon: History,
-      color: 'text-zinc-400'
-    }
-  ];
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   return (
-    <div className="relative w-full h-full bg-[#151419] flex flex-col px-5 pt-4 font-sans overflow-hidden">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#151419] px-5 pt-4 font-sans">
       <UnifiedHeader />
 
-      {/* BODY - The Invisible Boundary Zone (Zero-Offside) */}
-      <div 
-        className="flex-1 overflow-y-auto custom-scrollbar" 
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+      <div
+        className="min-h-0 flex-1 overflow-y-auto"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}
       >
-        <style jsx>{`
-          div { -ms-overflow-style: none; scrollbar-width: none; }
-          div::-webkit-scrollbar { display: none; }
-        `}</style>
-        <div className="flex flex-col gap-4 pt-6 pb-6">
-          {isLoading ? (
-            <div className="flex flex-col gap-3 w-full">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="flex items-center w-full p-3 bg-[#1F1E23] rounded-2xl border border-white/5 gap-4 animate-pulse">
-                    <div className="w-11 h-11 rounded-xl bg-zinc-800 shrink-0" />
-                    <div className="flex-1 flex flex-col gap-2">
-                      <div className="w-32 h-4 bg-zinc-800 rounded-full" />
-                      <div className="w-48 h-3 bg-zinc-800 rounded-full" />
-                    </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3 w-full">
-              {guides.map((guide, idx) => {
-                const isExpanded = expandedIndex === idx;
-                return (
-                  <div 
-                    key={idx} 
-                    className={cn(
-                      "flex flex-col w-full rounded-2xl border transition-colors duration-300 overflow-hidden",
-                      isExpanded ? "bg-[#25242B] border-white/20 shadow-md" : "bg-[#1F1E23] border-white/5 shadow-sm"
-                    )}
-                    onClick={() => setExpandedIndex(isExpanded ? null : idx)}
-                  >
-                    <div className="flex items-center w-full p-3 cursor-pointer transition-colors">
-                      <div className={cn(
-                        "w-11 h-11 rounded-xl bg-[#2A292F] border border-white/5 flex items-center justify-center shrink-0 shadow-inner transition-colors duration-300",
-                        guide.color
-                      )}>
-                        <guide.icon size={20} />
-                      </div>
-                      <div className="ml-4 flex-1 flex justify-between items-center min-w-0">
-                        <div className="flex flex-col min-w-0">
-                          <h3 className="text-sm font-semibold text-white truncate leading-tight">
-                            {guide.title}
-                          </h3>
-                          <p className="text-[10px] text-white/40 leading-relaxed font-medium truncate">
-                            {guide.desc}
-                          </p>
-                        </div>
-                        <ChevronDown 
-                          size={16} 
-                          className={cn(
-                            "text-white/30 transition-transform duration-300",
-                            isExpanded && "rotate-180 text-white/60"
-                          )} 
-                        />
-                      </div>
-                    </div>
+        <div className="flex flex-col gap-3 pb-6 pt-5">
+          {guides.map((guide, index) => {
+            const Icon = guide.icon;
+            const isExpanded = expandedIndex === index;
 
-                    <div className={cn(
-                      "grid transition-all duration-300 ease-in-out",
-                      isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                    )}>
-                      <div className="overflow-hidden">
-                        <div className="px-4 pb-4 pt-1">
-                          <div className="h-px w-full bg-white/5 mb-3" />
-                          <div className="space-y-3">
-                            {guide.details.map((point, pIdx) => (
-                              <div key={pIdx} className="flex gap-3 items-start">
-                                <div className="w-1 h-1 rounded-full bg-indigo-400 shrink-0 mt-1.5 shadow-[0_0_4px_rgba(129,140,248,0.6)]" />
-                                <p className="text-[11px] text-white/60 leading-relaxed font-medium">
-                                  {point}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+            return (
+              <section
+                key={guide.title}
+                className={cn(
+                  "overflow-hidden rounded-2xl border transition-colors duration-200",
+                  isExpanded
+                    ? "border-indigo-500/40 bg-[#1F1E23]"
+                    : "border-white/5 bg-[#1F1E23]",
+                )}
+              >
+                <button
+                  type="button"
+                  aria-expanded={isExpanded}
+                  onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                  className="flex w-full items-center gap-3 p-3 text-left"
+                >
+                  <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#2A292F]", guide.accent)}>
+                    <Icon size={20} strokeWidth={2} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-zinc-100">{guide.title}</span>
+                    <span className="mt-1 block truncate text-[11px] leading-relaxed text-zinc-500">{guide.summary}</span>
+                  </span>
+                  <ChevronDown
+                    size={17}
+                    className={cn(
+                      "shrink-0 text-zinc-600 transition-transform duration-200",
+                      isExpanded && "rotate-180 text-indigo-400",
+                    )}
+                  />
+                </button>
+
+                {isExpanded && (
+                  <div className="border-t border-white/5 px-4 pb-4 pt-3">
+                    <ol className="space-y-3">
+                      {guide.steps.map((step, stepIndex) => (
+                        <li key={step} className="flex items-start gap-3">
+                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2A292F] text-[10px] font-semibold text-zinc-400">
+                            {stepIndex + 1}
+                          </span>
+                          <span className="text-[11px] leading-relaxed text-zinc-400">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                )}
+              </section>
+            );
+          })}
         </div>
       </div>
 
-      {/* FOOTER - The Safe Zone (No Overlap) */}
-      <div className="pt-4 pb-6 px-4 flex justify-center items-center bg-transparent shrink-0">
+      <div className="flex shrink-0 items-center justify-center px-4 pb-6 pt-4">
         <Button
           onClick={() => router.back()}
           variant="outline"
-          className="w-full max-w-sm h-14 rounded-2xl bg-zinc-900 text-white/80 border-white/10 hover:bg-zinc-800 hover:text-white font-semibold transition-all active:scale-[0.98]"
+          className="h-14 w-full max-w-sm rounded-2xl border-white/10 bg-zinc-900 font-semibold text-white/80 transition-all hover:bg-zinc-800 hover:text-white active:scale-[0.98]"
         >
           Back
         </Button>
