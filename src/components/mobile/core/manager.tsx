@@ -9,7 +9,6 @@ import { Form } from '../popups/form';
 import { AttendanceStatusResponse, StudentMobile } from '@/types/api';
 import { useSholat } from '@/hooks/mobile/use-sholat';
 import { useProfile } from '@/hooks/settings/use-profile';
-import { BottomDock } from '../ui/bottom-dock';
 import {
   saveStudentCache,
   searchStudentCache,
@@ -33,6 +32,7 @@ export const Manager = ({
   const { mode, setMode } = useDock();
   const [search, setSearch] = useState('');
   const [data, setData] = useState<StudentMobile[]>([]);
+  const [hasMore, setHasMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [manualResult, setManualResult] = useState<AttendanceStatusResponse | undefined>(undefined);
@@ -83,19 +83,20 @@ export const Manager = ({
 
   useEffect(() => {
     if (mode !== 'manual') return;
-    if (!search.trim()) { setData([]); setIsLoading(false); return; }
+    if (!search.trim()) { setData([]); setHasMore(false); setIsLoading(false); return; }
     setIsLoading(true);
     const timer = setTimeout(async () => {
       const localResults = searchStudentCache(search)
 
       if (!navigator.onLine) {
-        setData(localResults)
+        setHasMore(localResults.length > 15)
+        setData(localResults.slice(0, 15))
         setIsLoading(false)
         return
       }
       try {
         const res = await fetch(
-          `/api/student?prm=${encodeURIComponent(search)}&limit=15`,
+          `/api/student?prm=${encodeURIComponent(search)}&limit=16`,
         )
 
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
@@ -112,12 +113,15 @@ export const Manager = ({
           }))
 
           saveStudentCache(students)
-          setData(students)
+          setHasMore(students.length > 15)
+          setData(students.slice(0, 15))
         } else {
           setData([])
+          setHasMore(false)
         }
       } catch {
-        setData(searchStudentCache(search))
+        setHasMore(localResults.length > 15)
+        setData(localResults.slice(0, 15))
       } finally {
         setIsLoading(false)
       }
@@ -144,19 +148,26 @@ export const Manager = ({
   };
 
   return (
-    <div className={`relative w-full h-full bg-[#151419] overflow-hidden ${className}`}>
+    <div className={`relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-[#151419] ${className}`}>
 
-      <div className="relative w-full h-full">
+      <div className="relative min-h-0 w-full flex-1">
         {mode === 'scan' ? (
-          <div key="scan-view" className="w-full h-full animate-in fade-in zoom-in-95 duration-500 ease-out">
+          <div
+            key="scan-view"
+            className="h-full w-full animate-in fade-in duration-[220ms] ease-out"
+          >
             <Qr ref={qrRef} sholat={activeScanner} onCamActive={setIsCamActive} />
           </div>
         ) : (
-          <div key="manual-view" className="w-full h-full flex flex-col">
+          <div
+            key="manual-view"
+            className="flex h-full min-h-0 w-full flex-col animate-in fade-in duration-[220ms] ease-out"
+          >
             <Manual
               search={search}
               setSearch={setSearch}
               data={data}
+              hasMore={hasMore}
               isLoading={isLoading}
               onFocus={() => { }}
               onBlur={() => { }}
@@ -170,7 +181,6 @@ export const Manager = ({
           </div>
         )}
       </div>
-      <BottomDock variant="home" handleCamAction={handleCamAction} isCamActive={isCamActive} />
 
       <Form
         key={manualResult?.id}

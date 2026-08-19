@@ -106,7 +106,7 @@ export default function MePage() {
                   ref={fileInputRef}
                   onChange={handleFileChange}
                   className="hidden"
-                  accept="image/*"
+                  accept="image/png, image/jpeg, image/webp"
                 />
               </div>
             </div>

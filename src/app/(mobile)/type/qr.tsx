@@ -278,7 +278,7 @@ const Qr = forwardRef<QrHandle, QrProps>(({ sholat, onCamActive, onCamAction }, 
             </div>
             <h3 className="text-white font-bold text-xl mb-2 tracking-tight animate-in fade-in zoom-in-95 duration-180 fill-mode-both" style={{ animationDelay: '150ms' }}>Scan Student Card</h3>
             <p className="text-white/40 text-xs max-w-55 leading-relaxed font-medium animate-in fade-in zoom-in-95 duration-180 fill-mode-both" style={{ animationDelay: '300ms' }}>
-              Tap the <span className="text-indigo-400 font-bold">camera button</span> to turn on the camera.
+              Tap the <span className="text-indigo-400 font-bold">camera button below</span> to turn on the camera, then align the student's QR code inside the scan frame.
             </p>
           </div>
         </div>

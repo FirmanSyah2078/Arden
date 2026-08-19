@@ -79,7 +79,7 @@ export default function EditProfile({ isOpen, setIsOpen }: EditProfileProps) {
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
-              accept="image/*"
+              accept="image/png, image/jpeg, image/webp"
             />
           </div>
           <div className="flex flex-col items-center gap-2">

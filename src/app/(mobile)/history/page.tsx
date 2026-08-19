@@ -45,7 +45,7 @@ const ListContent = ({
 
   if (!hasPrayers) {
     return (
-      <div className="flex h-full py-50 flex-col items-center justify-center rounded-3xl px-6 text-center shadow-inner">
+      <div className="flex flex-1 flex-col items-center justify-center rounded-3xl px-6 text-center">
         <ClipboardClock className="mb-3 h-12 w-12 text-zinc-500" />
         <p className="text-xs font-medium tracking-wide text-zinc-500">
           No prayer schedule for today
@@ -55,9 +55,9 @@ const ListContent = ({
   }
 
   return (
-    <div className="flex w-full flex-col">
-      <div className="flex w-full flex-col gap-0 pb-2">
-        <ul className="flex w-full flex-col gap-3">
+    <div className="flex w-full flex-1 flex-col">
+      <div className="flex w-full flex-1 flex-col gap-0 pb-2">
+        <ul className="flex w-full flex-1 flex-col gap-3">
           {historyData.length > 0 ? (
             historyData.map((item, idx) => (
               <li key={idx}>
@@ -92,7 +92,7 @@ const ListContent = ({
               </li>
             ))
           ) : (
-            <div className="flex h-full py-50 flex-col items-center justify-center rounded-3xl px-6 text-center shadow-inner">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-3xl px-6 text-center">
               <ClipboardClock className="mb-3 h-12 w-12 text-zinc-500" />
               <p className="text-xs font-medium tracking-wide text-zinc-500">
                 No history available
@@ -115,6 +115,10 @@ export default function HistoryPage() {
     id: prayer,
     label: prayer,
   }))
+
+  const activeTabIndex = prayerTimes.findIndex(
+    (time) => time.id === activeTab
+  )
 
   useEffect(() => {
     if (availablePrayers.length === 0) {
@@ -145,14 +149,25 @@ export default function HistoryPage() {
 
       {/* TAB NAVIGATION - Persistent/Fixed at the top */}
       {prayerTimes.length > 0 && (
-        <div className="mt-4 mb-4 flex h-12 w-full items-center justify-between gap-1 rounded-2xl border border-white/5 bg-[#1F1E23] p-1 shadow-inner">
+        <div className="relative mt-4 mb-4 flex h-12 w-full items-center gap-1 rounded-2xl border border-white/5 bg-[#141317] p-1 shadow-inner">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-1 left-1 rounded-xl border border-indigo-500/50 bg-indigo-600 shadow-[0_6px_16px_-5px_rgba(79,70,229,0.55)] transition-transform duration-[220ms] ease-[cubic-bezier(0.32,0.72,0,1)]"
+            style={{
+              width: `calc((100% - 0.5rem) / ${prayerTimes.length})`,
+              transform: `translateX(${Math.max(activeTabIndex, 0) * 100}%)`,
+            }}
+          />
           {prayerTimes.map((time) => (
             <button
               key={time.id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === time.id}
               onClick={() => setActiveTab(time.id)}
-              className={`h-full flex-1 rounded-xl text-[10px] font-bold transition-all duration-300 ${activeTab === time.id
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-white/40 hover:text-white/60"
+              className={`relative z-10 h-full flex-1 rounded-xl text-[10px] font-bold transition-colors duration-[220ms] ${activeTab === time.id
+                ? "text-white"
+                : "text-white/40 hover:text-white/70"
                 }`}
             >
               {time.label}
@@ -179,7 +194,7 @@ export default function HistoryPage() {
             display: none;
           }
         `}</style>
-        <div className="flex flex-col gap-6 pb-6">
+        <div className="flex min-h-full flex-col pb-6">
           <ListContent
             isLoadingHistory={isPrayerLoading || (availablePrayers.length > 0 && (isLoadingHistory || !activeTab))}
             historyData={historyData}

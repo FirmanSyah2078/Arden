@@ -81,10 +81,33 @@ export function useProfile() {
       }
 
       const compressedFile = await imageCompression(file, options);
-      const previewUrl = URL.createObjectURL(compressedFile);
+
+      // ------------------------------------------------------
+      // FIX: browser-image-compression kadang mengubah MIME
+      // (mis. PNG -> JPEG) tapi nama file tetap .png.
+      // Server menolak jika MIME dan extension tidak konsisten.
+      // Jadi kita bikin File baru dengan extension yang cocok
+      // dengan MIME hasil kompresi.
+      // ------------------------------------------------------
+      const mimeToExt: Record<string, string> = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+      };
+
+      const outMime = mimeToExt[compressedFile.type] ? compressedFile.type : 'image/jpeg';
+      const outExt = mimeToExt[outMime];
+      const safeName = `avatar-${Date.now()}.${outExt}`;
+
+      const normalizedFile = new File([compressedFile], safeName, {
+        type: outMime,
+        lastModified: Date.now(),
+      });
+
+      const previewUrl = URL.createObjectURL(normalizedFile);
 
       handleChange('avatarUrl', previewUrl);
-      setSelectedFile(compressedFile);
+      setSelectedFile(normalizedFile);
     } catch (error) {
       console.error('Image compression failed:', error);
       toast.error('Image compression failed', {position: 'top-center'});
